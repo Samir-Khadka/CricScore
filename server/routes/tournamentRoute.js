@@ -28,4 +28,7 @@ router.put("/update/teams",validateTeam,handleUpdateTeam);
 router.delete("/:id/delete",handleDeleteTeam);
 router.get("/:id/get",handleGetTeamById);
 
+
+
+
 module.exports = router;
