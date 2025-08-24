@@ -34,6 +34,7 @@ import Players from "./pages/players.jsx";
         <Route path="/tournament/:id" element={<SetupTournament />}/>
         <Route path="/players/:tourId/:teamId" element={<Players />}/>
         <Route path="/prematch" element={<PreMatchSetup />} />
+        <Route path="/scoring" element={<Scoring />} />
       </Routes>
       
       

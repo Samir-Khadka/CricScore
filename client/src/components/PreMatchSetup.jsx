@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const PreMatchSetup = () => {
   const location = useLocation();
   const [teams, setTeams] = useState(null);
   const [matchId, setMatchId] = useState(null);
-
-  const host = "http://localhost:5000";
+  const navigate = useNavigate();
+  const host = "http://localhost:3000";
 
   useEffect(() => {
     const t = location.state || null;
@@ -65,7 +65,7 @@ const PreMatchSetup = () => {
     );
     const data = await response.json();
     alert(data.message);
-    //now go to scoring interface
+    navigate('/scoring');
   };
 
   return (
