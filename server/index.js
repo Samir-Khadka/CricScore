@@ -48,7 +48,7 @@ app.use("/api/cricscore/match",  matchRoute);
 
 
 //routes for viewer
-app.use("/api/cricscore/", homepageRoute);
+app.use("/api/cricscore/view", homepageRoute);
 
 app.listen(PORT, () => {
   console.log(`Server started at port ${PORT}`);
