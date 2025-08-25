@@ -12,7 +12,10 @@ const MatchTable = (props) => {
 
   //sending teams to prematch
   const handleLive = (item) => {
-    navigate("/prematch", { state: {teams: [item.teamA, item.teamB], matchId: item._id} });
+    // navigate("/prematch", {state:{teams: [item.teamA, item.teamB],matchId:item._id}});
+    navigate(`/prematch/${item._id}`, {
+  state: {Match:item, teams: [item.teamA, item.teamB] }
+});
   };
 
   //function to format time

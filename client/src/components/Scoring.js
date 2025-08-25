@@ -1,7 +1,7 @@
 import { useState,useEffect, } from "react";
 import'../css/scoring.css';
 import Select from 'react-select';
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation,useNavigate,useParams } from "react-router-dom";
 import '../css/loading.css';
 export const Scoring=()=>{
 
@@ -9,43 +9,149 @@ export const Scoring=()=>{
    const storedUser = localStorage.getItem("user");
   const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   const navigate = useNavigate(); 
+  const { matchId }=useParams();
+  const [Match,setMatch]=useState(null);
+
 
   
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-
-  }, [user]);
-
-    const host = "http://localhost:5000";
-
+  
+  const host = "http://localhost:5000";
+  
   const location=useLocation();
- const { match }= location.state || {};
-
- const [loading, setLoading] = useState(true);
- const [progress, setProgress] = useState(0);
-
-// const teamA_id=match.teamA_id;
-// const teamB_id=match.teamB_id;
-
-//  console.log(match.tournament_name);
-//  console.log(match._id);
-//  console.log("Team A id:"+match.teamA_id);
-//  console.log("Team B id:"+match.teamA_id);
-
+  const { match }= location.state || {};
+  
+  
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  
+  
   const [TeamA,setTeamA]=useState(null);
   const [TeamB,setTeamB]=useState(null);
 
 
+// Fetch match on mount or matchId change
+useEffect(() => {
+  if (!user) {
+    navigate("/login");
+  } else if (matchId) {
+    getMatch();
+  }
+}, [user, matchId]);
 
 
-  // setting the Team na to board if state is present
-  // {match? setTeamA(match.TeamA) : setTeamA('Team A')};
-  // {match? setTeamB(match.TeamA) : setTeamB('Team B')};
+useEffect(() => {
+  const fetchTeamsAndSetBatBall = async () => {
+    if (!Match) return;
+// Assuming Match.playingXI has both teams
+let teamAPlayersStr = "";
+let teamBPlayersStr = "";
 
-  // /:id/get
+if (Match.playingXI && Match.playingXI.length === 2) {
+
+  // Team A
+  teamAPlayersStr = Match.playingXI[0].players
+    .map(player => player.isCaptain ? `${player.name} (C)` : player.name)
+    .join(", "); // joins all player names with comma
+
+  // Team B
+  teamBPlayersStr = Match.playingXI[1].players
+    .map(player => player.isCaptain ? `${player.name} (C)` : player.name)
+    .join(", ");
+}
+
+console.log("Team A Players:", teamAPlayersStr);
+console.log("Team B Players:", teamBPlayersStr);
+
+    setTeamA(teamAPlayersStr);
+    setTeamB(teamBPlayersStr);
+
+    // now teams exist, call setBatBall with data
+    setBatBall(teamAPlayersStr, teamBPlayersStr);
+  };
+
+  fetchTeamsAndSetBatBall();
+}, [Match]);
+
+  //to fetch match from database
+   const getMatch= async()=>{
+
+    const response = await fetch(`${host}/api/cricscore/match/id/${matchId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Fetching Match is:", data.Match);
+      //storing the Match full details
+      setMatch(data.Match);
+      // setTeamA(data.Match.teamA);
+      // setTeamB(data.Match.teamB);
+      localStorage.setItem("Match",data.Match);
+    } else {
+      alert("Unable to Fetch Match");
+    }
+  }
+
+  //to fetch team from database
+//     const getTeam=async(id)=>{
+
+// const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+//         method: "GET",
+//         credentials: "include",
+//         headers: {
+//           Accept: "*/*",
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//       if (response.ok) {
+//         const data = await response.json();
+//         return data.data;
+
+//       }
+//     };
+
+const setBatBall = (TeamA, TeamB) => {
+  const tossWinner = Match.toss.wonBy;
+  const descision = Match.toss.descision;
+
+ const TeamA_squadArray=TeamA
+  .split(',')
+  .map(player => player.trim())
+  .map(player => ({ value: player, label: player }));
+
+const TeamB_squadArray = TeamB
+  .split(',')
+  .map(player => player.trim())
+  .map(player => ({ value: player, label: player }));
+
+  if(tossWinner === Match.teamA){
+    if(descision === "bat"){
+      setBattingoptions(TeamA_squadArray);
+      setbowlers(TeamB_squadArray);
+    } else {
+      setbowlers(TeamA_squadArray);
+      setBattingoptions(TeamB_squadArray);
+    }
+  } else {
+    if(descision === "bat"){
+      setbowlers(TeamA_squadArray);
+      setBattingoptions(TeamB_squadArray);
+    } else {
+      setBattingoptions(TeamA_squadArray);
+      setbowlers(TeamB_squadArray);
+    }
+  }
+};
+
+  
+
 
   //to styling and editing <select> <option>
   const [selectedBastman1, setSelectedBastman1] = useState(null); 
@@ -53,18 +159,10 @@ export const Scoring=()=>{
 
   const [Battingoptions,setBattingoptions] = useState(null)
   const [bowlers,setbowlers]=useState(null);
-//   [
-//   { value: 'Aarif Sheikh', label: 'Aarif Sheikh' },
-//   { value: 'Dipendra Singh Airee', label: 'Dipendra Singh Airee' },
-//   { value: 'Kushal Bhurtel', label: 'Kushal Bhurtel' },
-//   { value: 'Sandeep Lamichhane', label: 'Sandeep Lamichhane' },
-// ];
 
-const [selectedbowler, setSelectedbowler] = useState(null); 
-//   { value: 'Dipendra Singh Airee', label: 'Dipendra Singh Airee' },
-//   { value: 'Kushal Bhurtel', label: 'Kushal Bhurtel' },
-//   { value: 'Sandeep Lamichhane', label: 'Sandeep Lamichhane' },
-// ];
+  const [selectedbowler, setSelectedbowler] = useState(null); 
+
+
 const [over, setover]=useState(null);
 const overoptions=[
   { value: 0, label: "0" },
@@ -158,24 +256,22 @@ useEffect(() => {
 
 <div className="login" style={{height: 'auto'}}>
         <div className="form-container">
-          <h1 style={{alignItems:'center',textAlign:'center'}}> {match ? match.tournament_name :"Tournament Name"}</h1>
-            {/* <h2 style={{textAlign:'start',color:'#212529'}}>Scoring</h2> */}
-            {/* <div style={{  width:'auto',borderBottom: '2px solid gray', borderWidth:'medium'}}/> */}
+          <h1 style={{alignItems:'center',textAlign:'center'}}> {Match ? Match.tournament_name :"Tournament Name"}</h1>
             <form>
             <div id="scoring_head" className="scoring_head">
  <div className="section-title">Score Summary</div>
-             <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 2fr',justifyContent:'center',alignItems:'center',gap:"0.5rem"}}>
-                <span>{ TeamA? TeamA.teamName : 'Team A' }</span>
+             <div style={{display:'grid',gridTemplateColumns:'2fr 0.5fr 2fr',justifyContent:'center',alignItems:'center',gap:"0.5rem"}}>
+                <span>{ Match? Match.teamA : 'Team A' }</span>
                 <span> vs </span>
-                <span>{TeamB ? TeamB.teamName :'Team B'}</span>
+                <span>{Match ? Match.teamB :'Team B'}</span>
              </div>
             </div>
     <div style={{ width:'auto',borderBottom: '2px solid gray', borderWidth:'medium'}}/>
     <div id="score_summary">
 
       <div id="summary_left" style={{display:'grid',gridTemplateRows:'1fr 1fr 1fr 1fr',alignItems:'center'}}>
-        <div id="team_Batting"><span style={{fontSize:'20px', fontWeight:'650'}}>England </span><span> 86/1 </span><span> dec </span><span>  &  </span><span style={{fontSize:'20px',fontWeight:'600'}}>  18/1 <span>(0.4)</span></span></div>
-        <div id="team_Bowling"><span style={{fontSize:'17px', fontWeight:'550'}}>Australia </span><span> 62/4</span><span> dec </span><span>  &  </span><span style={{fontSize:'17px',fontWeight:'550'}}>  36/0 <span>(0.4)</span></span></div>
+        <div id="team_Batting"><span style={{fontSize:'20px', fontWeight:'650'}}>{Match?.teamA || "Team A"} </span><span> 86/1 </span><span> dec </span><span>  &  </span><span style={{fontSize:'20px',fontWeight:'600'}}>  18/1 <span>(0.4)</span></span></div>
+        <div id="team_Bowling"><span style={{fontSize:'17px', fontWeight:'550'}}>{Match?.teamB || "Team B"} </span><span> 62/4</span><span> dec </span><span>  &  </span><span style={{fontSize:'17px',fontWeight:'550'}}>  36/0 <span>(0.4)</span></span></div>
         <div>      </div>
         <div>England Win By 9 wicket</div>
       </div>

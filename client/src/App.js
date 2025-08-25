@@ -30,10 +30,12 @@ import Players from "./pages/players.jsx";
         <Route path="/tournament" element={<Tournament />} />
         <Route path="/match" element={<Match />} />
         <Route path="/viewmatch" element={<ViewMatch />}/>
-        <Route path="/scoring" element={<Scoring />} />
+        <Route path="/scoring/:matchId" element={<Scoring />} />
         <Route path="/tournament/:id" element={<SetupTournament />}/>
+
         <Route path="/players/:tourId/:teamId" element={<Players />}/>
-        <Route path="/prematch" element={<PreMatchSetup />} />
+        {/* <Route path="/prematch" element={<PreMatchSetup />} /> */}
+        <Route path="/prematch/:matchId" element={<PreMatchSetup />} />
       </Routes>
       
       

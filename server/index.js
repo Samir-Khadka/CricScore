@@ -16,15 +16,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //for cors permission
-const corsOption = {
-  origin: "http://localhost:3000", // Allow frontend origin
+const corsOptions = {
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization", "password"],
-  credentials: true,
+  credentials: true, // allow cookies
+  allowedHeaders: ["Content-Type"], // don't put 'credentials' here
 };
 
 //core middlewares
-app.use(cors(corsOption));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
