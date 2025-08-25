@@ -25,6 +25,9 @@ const PreMatchSetup = () => {
 
   const host = "http://localhost:5000";
 
+  const [matchId, setMatchId] = useState(null);
+
+
   
 useEffect(() => {
   getMatch(matchId); // fetch match first
@@ -138,63 +141,27 @@ const getMatch=async(matchId)=>{
     } else {
       alert("Unable to Fetch Match");
     }
-  }
+  };
 
     //to fetch team from database
-    const getTeam=async(id)=>{
+//     const getTeam=async(id)=>{
 
-const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "*/*",
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.data.squad;  //directly return squads 
-
-
-      }
-    };
-
-
-// const saveBothTeams = async () => {
-//   const playersA = teamA_SelectedPlayer.map(p => ({
-//     name: p.value,
-//     isCaptain: p.value === teamA_Captain.value
-//   }));
-
-//   const playersB = teamB_SelectedPlayer.map(p => ({
-//     name: p.value,
-//     isCaptain: p.value === teamB_Captain.value
-//   }));
-
-//   try {
-//     const response = await fetch(
-//       `${host}/api/cricscore/match/${MatchId}/selectXI`,
-//       {
-//         method: "POST",
+// const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+//         method: "GET",
 //         credentials: "include",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           teamA: { teamId: Match.teamA_id, players: playersA },
-//           teamB: { teamId: Match.teamB_id, players: playersB },
-//         }),
+//         headers: {
+//           Accept: "*/*",
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//       if (response.ok) {
+//         const data = await response.json();
+//         return data.data.squad;  //directly return squads 
+
+
 //       }
-//     );
-//     const data = await response.json();
-//     if (!response.ok) {
-//       alert(data.error || "Failed to save Playing XI");
-//       return;
-//     }
-//     console.log("✅ Both teams saved:", data.updatedMatch);
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };
+//     };
 
 
 

@@ -61,7 +61,7 @@ const AddPlayers = (props) => {
       }),
     };
 
-    const host = process.env.REACT_APP_HOST_URI;
+    const host = "http://localhost:5000";
 
     try {
       const response = await fetch(

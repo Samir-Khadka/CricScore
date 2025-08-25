@@ -43,6 +43,7 @@ const TeamTable = (props) => {
   };
 
   const handleNavigation = (teamId) => {
+    console.log("Team ID: ",teamId)
     navigate(`/players/${id}/${teamId}`);
   };
 
@@ -73,7 +74,7 @@ const TeamTable = (props) => {
                       className="btn btn-primary"
                       onClick={() => handleNavigation(item._id)}
                     >
-                      Assign Players
+                      Manage Players
                     </button>
                   </td>
                   <td>

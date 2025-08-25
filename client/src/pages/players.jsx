@@ -9,7 +9,7 @@ const Players = () => {
   const [refresh, setRefresh] = useState(0);
   const [players, setPlayers] = useState(null);
   const [loading, setLoading] = useState(false);
-  const host = process.env.REACT_APP_HOST_URI;
+  const host = "http://localhost:5000";
 
   useEffect(() => {
     fetchPlayers();
@@ -42,7 +42,7 @@ const Players = () => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      alert("Something went wrong while fetching players");
+      // alert("Something went wrong while fetching players");
     }
   };
 
