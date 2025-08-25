@@ -146,7 +146,7 @@
 }
 
 #undo_ball {
-
+margin-left: 1rem;
     width: auto;
     display: flex;
     align-items: center;
@@ -189,10 +189,11 @@
 }
 
 #play_state{
+    gap: 0.78rem;
     display: grid;
     align-items: center;
     justify-content: center;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 4fr 1fr;
 }
 
 #end_inning {

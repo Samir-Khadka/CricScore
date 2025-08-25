@@ -1,0 +1,226 @@
+/* Tournament Card Premium Style */
+/* ===== TournamentCard premium styles (scoped to .setup) ===== */
+
+.setup .card {
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.08);
+  overflow: hidden;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.setup .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.12);
+  border-color: rgba(2, 6, 23, 0.12);
+}
+
+/* Header */
+.setup .card-header {
+  display: flex;              /* override Bootstrap's row spacing quirks */
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem !important;
+  background: #f3f3f0;        /* matches your PreMatch select background */
+  border-bottom: 1px solid rgba(2, 6, 23, 0.08) !important;
+}
+
+.setup .card-header .h3 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #0f172a;
+}
+
+.setup .card-header .h6 {
+  margin: 0;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Body */
+.setup .card-body {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  padding: 1.25rem 1.25rem 1.4rem 1.25rem !important;
+}
+
+.setup .card-body > div {
+  flex: 1 1 320px;     /* responsive columns */
+  min-width: 260px;
+}
+
+/* Titles / rows */
+.setup .card-title {
+  margin: 0.35rem 0;
+  font-size: 0.98rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Subtle separators between groups on larger screens */
+@media (min-width: 992px) {
+  .setup .card-body > div:first-child {
+    border-right: 1px dashed rgba(2, 6, 23, 0.08);
+    padding-right: 1.25rem;
+  }
+}
+
+/* Responsive refinements */
+@media (max-width: 768px) {
+  .setup .card {
+    border-radius: 12px;
+  }
+
+  .setup .card-header {
+    padding: 0.9rem 1rem !important;
+  }
+
+  .setup .card-header .h3 {
+    font-size: 1.15rem;
+  }
+
+  .setup .card-header .h6 {
+    font-size: 0.9rem;
+  }
+
+  .setup .card-body {
+    gap: 1rem 1rem;
+    padding: 1rem !important;
+  }
+
+  .setup .card-body > div {
+    flex: 1 1 100%;
+    min-width: 100%;
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+
+  .setup .card-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* Optional: unify headings with PreMatch look */
+.setup .card .h3,
+.setup .card .h6,
+.setup .card-title {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Nice focus ring if anything inside becomes focusable later */
+.setup .card:focus-within {
+  outline: 2px solid rgba(59, 130, 246, 0.25);
+  outline-offset: 2px;
+}
+
+
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin: 1rem 0;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+}
+
+.card-header .h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-header .h6 {
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.card-body h5 {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .card-header .h3 {
+    font-size: 1.2rem;
+  }
+
+  .card-body h5 {
+    font-size: 0.95rem;
+  }
+}
+
+/* Matching Playing XI Styling */
+.player-selection-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.player-selection-card:hover {
+  background: #f3f4f6;
+  transform: scale(1.02);
+}
+
+.player-selection-card .player-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.player-selection-card .captain-tag {
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
+}

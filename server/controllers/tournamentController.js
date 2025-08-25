@@ -202,7 +202,6 @@ async function handleGetTeamById(req, res) {
     if (!team) {
       return res.status(404).json({ error: "Team not found." });
     }
-
     return res
       .status(200)
       .json({ data: team, message: "Team fetch successful." });
