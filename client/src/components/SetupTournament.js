@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TournamentCard from "./TournamentCard";
+import '../css/TournamentCard.css';
 import CreateTeam from "./CreateTeam";
 import TeamTable from "./TeamTable";
 import { EditTeam } from "./CreateTeam.js";

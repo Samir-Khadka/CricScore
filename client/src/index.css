@@ -9,7 +9,7 @@ body {
 }
 #root{
   background: #cee0f1;
-  height: 100vh;
+  height: fit-content;
 }
 
 code {

@@ -1,5 +1,5 @@
 import { useState,useEffect, } from "react";
-import'../css/scoring.css';
+import'../css/ScoringFinal.css';
 import Select from 'react-select';
 import { useLocation,useNavigate,useParams } from "react-router-dom";
 import '../css/loading.css';

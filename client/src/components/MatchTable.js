@@ -88,14 +88,14 @@ const MatchTable = (props) => {
             props.data.map((item, index) => {
               return (
                 <tr key={item._id}>
-                  <td>{index + 1}</td>
-                  <td>{item.tournament_name}</td>
-                  <td>{item.teamA}</td>
-                  <td>{item.teamB}</td>
-                  <td>{new Date(item.match_date).toDateString()}</td>
-                  <td>{formatTimeTo12Hour(item.match_time)}</td>
-                  <td>{item.venue}</td>
-                  <td>
+                  <td data-label="S.N">{index + 1}</td>
+                  <td data-label="Tournament Name">{item.tournament_name}</td>
+                  <td data-label="Team A">{item.teamA}</td>
+                  <td data-label="Team B">{item.teamB}</td>
+                  <td data-label="Match Date">{new Date(item.match_date).toDateString()}</td>
+                  <td data-label="Match Time">{formatTimeTo12Hour(item.match_time)}</td>
+                  <td data-label="Venue">{item.venue}</td>
+                  <td data-label="Action">
                     <button
                       id="live_btn"
                       style={{ width: "max-content !important" }}
