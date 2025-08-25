@@ -26,8 +26,8 @@ const Home = () => {
     const data = await response.json();
     if(response.ok){
       setTournaments(data.data);
-      console.log("Tournaments", tournaments);
-      console.log("Data", data.data);
+      // console.log("Tournaments", tournaments);
+      // console.log("Data", data.data);
     }
 
   }
@@ -70,7 +70,7 @@ const Home = () => {
         <div className="flex flex-row justify-evenly flex-wrap space-x-2">
           {tournaments && tournaments.map((t, i) => {
             return(
-              <Tournaments name = {t.tournament_name} key={i}/>
+              <Tournaments name = {t.tournament_name} key={i} tour = {tournaments}/>
             );
           })}
         </div>
