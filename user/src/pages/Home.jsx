@@ -33,7 +33,7 @@ const Home = () => {
   }
 
   return (
-    <section className="p-6">
+    <section className="p-6 bg-[#f8f9fa]">
       {/* Live Matches */}
 
       <div>

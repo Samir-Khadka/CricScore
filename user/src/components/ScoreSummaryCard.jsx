@@ -9,7 +9,7 @@ const ScoreSummaryCard = () => {
   }
 
   return (
-    <div className="w-[350px] flex flex-col rounded-lg shadow-md overflow-hidden border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => {handleClick()}}>
+    <div className=" bg-white w-[350px] flex flex-col rounded-lg shadow-md overflow-hidden border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => {handleClick()}}>
       <div className="text-sm font-semibold px-3 py-2 border-b-2 border-gray-200">
         LIVE - Nepal Premier League
       </div>
