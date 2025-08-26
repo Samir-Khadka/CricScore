@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { data, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../css/matchtable.css";
 
 const MatchTable = (props) => {

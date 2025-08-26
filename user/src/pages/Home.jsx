@@ -1,9 +1,39 @@
+import { useEffect } from "react";
 import ScoreSummaryCard from "../components/ScoreSummaryCard";
 import Tournaments from "../components/TournamentsCard";
+import { useState } from "react";
 
 const Home = () => {
+
+  const [tournaments, setTournaments] = useState(null);
+
+  useEffect(()=>{
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const host = "http://localhost:5000";
+
+    const response = await fetch(`${host}/api/cricscore/view/tournaments`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type":"application/json",
+      },
+    });
+
+    const data = await response.json();
+    if(response.ok){
+      setTournaments(data.data);
+      // console.log("Tournaments", tournaments);
+      // console.log("Data", data.data);
+    }
+
+  }
+
   return (
-    <section className="p-6">
+    <section className="p-6 bg-[#f8f9fa]">
       {/* Live Matches */}
 
       <div>
@@ -37,18 +67,12 @@ const Home = () => {
           <p className="text-xl font-semibold">Tournaments</p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row justify-evenly flex-wrap space-x-2 space-y-4">
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
-          <Tournaments />
+        <div className="flex flex-row justify-evenly flex-wrap space-x-2">
+          {tournaments && tournaments.map((t, i) => {
+            return(
+              <Tournaments name = {t.tournament_name} key={i} tour = {tournaments}/>
+            );
+          })}
         </div>
       </div>
     </section>
