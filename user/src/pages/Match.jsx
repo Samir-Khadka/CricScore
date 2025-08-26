@@ -1,8 +1,10 @@
-import {useState } from "react";
+import { useEffect, useState } from "react";
 import TimelineItem from "../components/TimelineItem";
+import Commentary from "../components/Commentary";
 
 const Match = () => {
   const [selectedTab, setSelectedTab] = useState("com");
+
   const tabs = [
     { id: "com", label: "Commentary" },
     { id: "sc", label: "Scorecard" },
@@ -14,7 +16,7 @@ const Match = () => {
     { over: 1, balls: ["0", "2", "6", "4", "WD", "1", "W"] },
     { over: 2, balls: ["1", "0", "0", "2", "1", "4"] },
     { over: 3, balls: ["4NB", "6", "0", "2", "1", "4LB", "W"] },
-    { over: 4, balls: ["6", "WD", "6", "4", "6", "6", "6"]},
+    { over: 4, balls: ["6", "WD", "6", "4", "6", "6", "6"] },
     { over: 5, balls: ["4", "0", "1", "1", "2", "0"] },
     { over: 6, balls: ["6", "4", "1", "0", "0", "W"] },
     { over: 7, balls: ["0", "0", "1", "1", "4", "1"] },
@@ -30,10 +32,106 @@ const Match = () => {
     { over: 17, balls: ["1", "0", "0", "2", "1", "4"] },
     { over: 18, balls: ["4", "6", "4", "6", "2", "W"] },
     { over: 19, balls: ["0", "0", "1", "0", "1", "0"] },
-    { over: 20, balls: ["W", "W", "W", "W"] } // The innings ends with the 10th wicket falling mid-over
-];
+    { over: 20, balls: ["W", "W", "W", "W"] }, // The innings ends with the 10th wicket falling mid-over
+  ];
 
-  timeline.reverse();
+//   we can set commentary as like this
+//   setComments((prev) => [
+//   {
+//     over: 18.6,
+//     batsmen: "Dipendra Singh Airee",
+//     bowler: "James Nessham",
+//     result: "6 runs",
+//   },
+//   ...prev,
+// ]); without reversing each time
+
+
+  const comments = [
+    {
+      over: 18.1,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "6 runs",
+    },
+    {
+      over: 18.2,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "4 runs",
+    },
+    {
+      over: 18.3,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "1 run",
+    },
+    {
+      over: 18.4,
+      batsmen: "Aarif Shiekh",
+      bowler: "James Nessham",
+      result: "2 runs",
+    },
+    {
+      over: 18.5,
+      batsmen: "Aarif Shiekh",
+      bowler: "James Nessham",
+      result: "1 run",
+    },
+    {
+      over: 18.6,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "6 runs",
+    },
+    {
+      over: 19.1,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "6 runs",
+    },
+    {
+      over: 19.2,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "4 runs",
+    },
+    {
+      over: 19.3,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "1 run",
+    },
+    {
+      over: 19.4,
+      batsmen: "Aarif Shiekh",
+      bowler: "James Nessham",
+      result: "2 runs",
+    },
+    {
+      over: 19.5,
+      batsmen: "Aarif Shiekh",
+      bowler: "James Nessham",
+      result: "1 run",
+    },
+    {
+      over: 19.6,
+      batsmen: "Dipendra Singh Airee",
+      bowler: "James Nessham",
+      result: "6 runs",
+    },
+  ];
+
+  useEffect(() => {
+    scrollToLatest();
+  }, []);
+
+  //set timeline to scroll to latest over
+  function scrollToLatest() {
+    const timeline = document.getElementById("timeline");
+    timeline.scrollLeft = timeline.scrollWidth;
+  }
+
   return (
     <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa]">
       {/* live scorecard */}
@@ -83,9 +181,13 @@ const Match = () => {
         </div>
 
         {/* timeline  */}
-        <div className="mt-10 flex flex-row overflow-x-scroll " style={{"scrollbar-width":"none"}}>
+        <div
+          id="timeline"
+          className="mt-10 flex flex-row overflow-x-scroll"
+          style={{ "scrollbar-width": "none" }}
+        >
           {timeline.map((t) => {
-            return t.balls.reverse().map((b, i) => {
+            return t.balls.map((b, i) => {
               return (
                 <div className="flex flex-row items-center">
                   {i === 0 ? (
@@ -133,16 +235,39 @@ const Match = () => {
       </div>
 
       {/* show corresponding info for selected tab  */}
-      <div className="w-7xl h-[500px] mt-15 border-2 border-gray-200 flex flex-row justify-evenly items-center rounded-xl">
+      <div
+        className="w-7xl h-[800px] mt-15 border-2 border-gray-200 p-6 rounded-xl overflow-y-scroll"
+        style={{ scrollbarWidth: "none" }}
+      >
         {selectedTab === "com" ? (
-          <p>You clicked Commentery</p>
+          <div>
+            <p className="text-lg font-bold text-gray-700 mb-6">
+              Live Commentary
+            </p>
+            {comments.map((c) => {
+              return (
+                <Commentary
+                  key={c.over}
+                  over={c.over}
+                  batsmen={c.batsmen}
+                  bowler={c.bowler}
+                  result={c.result}
+                />
+              );
+            })}
+          </div>
         ) : selectedTab === "sc" ? (
           <p>You clicked Scorecard</p>
-        ) : selectedTab === "details" ? (
+        ) : selectedTab === "det" ? (
           <p>You clicked details</p>
         ) : (
           <p>You clicked Points Table</p>
         )}
+      </div>
+
+      {/* match stats  */}
+      <div className="w-7xl h-[200px] mt-15 border-2 border-gray-200 rounded-xl">
+        Match Statistics
       </div>
     </div>
   );
