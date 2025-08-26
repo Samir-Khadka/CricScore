@@ -19,12 +19,12 @@ const PORT = process.env.PORT || 5000;
 const corsOption = {
   origin: ["http://localhost:3000", "http://localhost:5173"], // Allow frontend origin
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization", "password"],
-  credentials: true,
+  credentials: true, // allow cookies
+  allowedHeaders: ["Content-Type"], // don't put 'credentials' here
 };
 
 //core middlewares
-app.use(cors(corsOption));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());

@@ -1,0 +1,109 @@
+/* Table Wrapper */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  background: #f9f9fb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Table Head */
+.table thead {
+  background: linear-gradient(90deg, #0d6efd, #4dabf7);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.table thead th {
+  padding: 14px 16px !important;
+  border: none !important;
+}
+
+/* Table Rows */
+.table tbody tr {
+  background: white;
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+}
+
+.table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Table Cells */
+.table tbody td {
+  padding: 14px 16px !important;
+  vertical-align: middle;
+  font-size: 15px;
+  border-top: none !important;
+}
+
+/* Buttons inside table */
+.table .btn {
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.table .btn-primary {
+  background: #0d6efd;
+  border: none;
+}
+
+.table .btn-primary:hover {
+  background: #0b5ed7;
+}
+
+.table .btn-success {
+  background: #198754;
+  border: none;
+}
+
+.table .btn-success:hover {
+  background: #157347;
+}
+
+.table .btn-danger {
+  background: #dc3545;
+  border: none;
+}
+
+.table .btn-danger:hover {
+  background: #bb2d3b;
+}
+
+/* Responsive Styling */
+@media (max-width: 992px) {
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: block;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px !important;
+    font-size: 14px;
+    border: none !important;
+  }
+
+  .table tbody td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
+    margin-right: 8px;
+  }
+}

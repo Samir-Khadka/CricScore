@@ -1,3 +1,4 @@
+import "../css/TournamentCard.css";
 const TournamentCard = (props) => {
     return (
          <div className="">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import '../css/table.css';
 
 const Table = (props) => {
   const [editId, setEditId] = useState(null);
@@ -137,43 +138,43 @@ const Table = (props) => {
             props.data.map((item, index) => {
               return (
                 <tr key={item._id}>
-                  <td>{index + 1}</td>
-                  <td>
+                  <td data-label="S.N">{index + 1}</td>
+                  <td data-label="Tournament Name">
                     {
                       item.tournament_name
                     }
                   </td>
-                  <td>
+                  <td data-label="From">
                     {
                       new Date(item.start_date).toDateString()
                     }
                   </td>
-                  <td>
+                  <td data-label="To">
                     {
                       new Date(item.end_date).toDateString()
                     }
                   </td>
-                  <td>
+                  <td data-label="Venue">
                     {
                       item.venue
                     }
                   </td>
-                  <td>
+                  <td data-label="Location">
                     {
                       item.location
                     }
                   </td>
-                  <td>
+                  <td data-label="Format">
                     {
                       item.format
                     }
                   </td>
-                  <td>
+                  <td data-label="Organizer">
                     {
                       item.organizer || "-"
                     }
                   </td>
-                  <td>
+                  <td data-label="Action">
                       <button
                         type="button"
                         className="btn btn-primary"
