@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import TimelineItem from "../components/TimelineItem";
 import Commentary from "../components/Commentary";
 import PlayerScoreCard from "../components/PlayerScoreCard";
+import Scorecard from "../components/Scorecard";
+import MatchDetails from "../components/MatchDetails";
+import PointsTable from "../components/PointsTable";
 
 const Match = () => {
   const [selectedTab, setSelectedTab] = useState("com");
+  const [scSelectedTab, setScSelectedTab] = useState("tabA");
 
   const tabs = [
     { id: "com", label: "Commentary" },
@@ -132,6 +136,243 @@ const Match = () => {
     timeline.scrollLeft = timeline.scrollWidth;
   }
 
+  const scorecard = [
+    {
+      name: "Kushal Bhurtel",
+      status: "not out",
+      runs: 60,
+      balls: 30,
+      fours: 5,
+      sixes: 4,
+      sr: 200,
+    },
+    {
+      name: "Aasif Sheikh",
+      status: "c David Warner b Josh Hazlewood",
+      runs: 45,
+      balls: 35,
+      fours: 3,
+      sixes: 2,
+      sr: 128.57,
+    },
+    {
+      name: "Rohit Paudel",
+      status: "b Pat Cummins",
+      runs: 20,
+      balls: 15,
+      fours: 2,
+      sixes: 1,
+      sr: 133.33,
+    },
+    {
+      name: "Dipendra Singh Airee",
+      status: "c Mitchell Marsh & b Mitchell Starc",
+      runs: 12,
+      balls: 8,
+      fours: 1,
+      sixes: 1,
+      sr: 150,
+    },
+    {
+      name: "Aarif Sheikh",
+      status: "c Steve Smith",
+      runs: 5,
+      balls: 10,
+      fours: 0,
+      sixes: 0,
+      sr: 50,
+    },
+    {
+      name: "Sompal Kami",
+      status: "run out (Glenn Maxwell)",
+      runs: 3,
+      balls: 4,
+      fours: 0,
+      sixes: 0,
+      sr: 75,
+    },
+    {
+      name: "Sandeep Lamichhane",
+      status: "lbw b Adam Zampa",
+      runs: 0,
+      balls: 1,
+      fours: 0,
+      sixes: 0,
+      sr: 0,
+    },
+    {
+      name: "Karan KC",
+      status: "run out (Travis Head)",
+      runs: 1,
+      balls: 2,
+      fours: 0,
+      sixes: 0,
+      sr: 50,
+    },
+    {
+      name: "Gulsan Jha",
+      status: "b Mitchell Starc",
+      runs: 8,
+      balls: 5,
+      fours: 1,
+      sixes: 0,
+      sr: 160,
+    },
+    {
+      name: "Binod Bhandari",
+      status: "st Alex Carey",
+      runs: 15,
+      balls: 10,
+      fours: 2,
+      sixes: 0,
+      sr: 150,
+    },
+    {
+      name: "Lalit Rajbanshi",
+      status: "not out",
+      runs: 4,
+      balls: 3,
+      fours: 0,
+      sixes: 0,
+      sr: 133.33,
+    },
+  ];
+  const fallOfWickets = [
+    { wicket: 1, score: 20, player: "Rohit Paudel", over: 5.3 },
+    { wicket: 2, score: 32, player: "Dipendra Singh Airee", over: 8.2 },
+    { wicket: 3, score: 37, player: "Aarif Sheikh", over: 10.1 },
+    { wicket: 4, score: 40, player: "Sompal Kami", over: 10.4 },
+    { wicket: 5, score: 40, player: "Sandeep Lamichhane", over: 11.2 },
+    { wicket: 6, score: 41, player: "Karan KC", over: 11.4 },
+    { wicket: 7, score: 49, player: "Gulsan Jha", over: 12.5 },
+    { wicket: 8, score: 64, player: "Binod Bhandari", over: 14.3 },
+    { wicket: 9, score: 109, player: "Aasif Sheikh", over: 16.5 },
+  ];
+  const bowlingScorecard = [
+    {
+      name: "Mitchell Starc",
+      overs: 4,
+      maidens: 0,
+      runs: 28,
+      wickets: 2,
+      economy: 7.0,
+    },
+    {
+      name: "Josh Hazlewood",
+      overs: 3.5,
+      maidens: 0,
+      runs: 22,
+      wickets: 1,
+      economy: 5.74,
+    },
+    {
+      name: "Pat Cummins",
+      overs: 4,
+      maidens: 1,
+      runs: 20,
+      wickets: 1,
+      economy: 5.0,
+    },
+    {
+      name: "Adam Zampa",
+      overs: 3.2,
+      maidens: 0,
+      runs: 25,
+      wickets: 1,
+      economy: 7.81,
+    },
+    {
+      name: "Mitchell Marsh",
+      overs: 2,
+      maidens: 0,
+      runs: 12,
+      wickets: 1,
+      economy: 6.0,
+    },
+    {
+      name: "Glenn Maxwell",
+      overs: 1,
+      maidens: 0,
+      runs: 4,
+      wickets: 0,
+      economy: 4.0,
+    },
+  ];
+
+  const australiaBatting = [
+  { name: "David Warner", status: "b Sandeep Lamichhane", runs: 45, balls: 28, fours: 5, sixes: 2, sr: 160.71 },
+  { name: "Travis Head", status: "c Aasif Sheikh b Karan KC", runs: 30, balls: 20, fours: 3, sixes: 1, sr: 150.00 },
+  { name: "Mitchell Marsh", status: "run out (Kushal Bhurtel)", runs: 12, balls: 8, fours: 1, sixes: 0, sr: 150.00 },
+  { name: "Steve Smith", status: "not out", runs: 50, balls: 35, fours: 4, sixes: 1, sr: 142.85 },
+  { name: "Marnus Labuschagne", status: "c Rohit Paudel b Sompal Kami", runs: 8, balls: 10, fours: 0, sixes: 0, sr: 80.00 },
+  { name: "Glenn Maxwell", status: "b Gulsan Jha", runs: 15, balls: 7, fours: 1, sixes: 1, sr: 214.28 },
+  { name: "Alex Carey", status: "c & b Sandeep Lamichhane", runs: 5, balls: 3, fours: 0, sixes: 1, sr: 166.67 },
+  { name: "Pat Cummins", status: "not out", runs: 15, balls: 10, fours: 1, sixes: 1, sr: 150.00 },
+  { name: "Mitchell Starc", status: "did not bat", runs: "-", balls: "-", fours: "-", sixes: "-", sr: "-" },
+  { name: "Josh Hazlewood", status: "did not bat", runs: "-", balls: "-", fours: "-", sixes: "-", sr: "-" },
+  { name: "Adam Zampa", status: "did not bat", runs: "-", balls: "-", fours: "-", sixes: "-", sr: "-" }
+];
+
+  const fallOfWicketsAustralia = [
+    { wicket: 1, score: 68, player: "Travis Head", over: 7.2 },
+    { wicket: 2, score: 90, player: "David Warner", over: 9.5 },
+    { wicket: 3, score: 102, player: "Mitchell Marsh", over: 11.3 },
+    { wicket: 4, score: 110, player: "Marnus Labuschagne", over: 13.1 },
+    { wicket: 5, score: 125, player: "Glenn Maxwell", over: 14.2 },
+    { wicket: 6, score: 130, player: "Alex Carey", over: 14.5 },
+  ];
+
+  const nepalBowling = [
+    {
+      name: "Sandeep Lamichhane",
+      overs: 4,
+      maidens: 0,
+      runs: 30,
+      wickets: 2,
+      economy: 7.5,
+    },
+    {
+      name: "Karan KC",
+      overs: 4,
+      maidens: 0,
+      runs: 35,
+      wickets: 1,
+      economy: 8.75,
+    },
+    {
+      name: "Sompal Kami",
+      overs: 3,
+      maidens: 0,
+      runs: 25,
+      wickets: 1,
+      economy: 8.33,
+    },
+    {
+      name: "Gulsan Jha",
+      overs: 3.2,
+      maidens: 0,
+      runs: 20,
+      wickets: 2,
+      economy: 6.0,
+    },
+    {
+      name: "Lalit Rajbanshi",
+      overs: 2,
+      maidens: 0,
+      runs: 15,
+      wickets: 0,
+      economy: 7.5,
+    },
+    {
+      name: "Dipendra Singh Airee",
+      overs: 3.4,
+      maidens: 0,
+      runs: 22,
+      wickets: 0,
+      economy: 6.0,
+    },
+  ];
+
   return (
     <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa]">
       {/* live scorecard */}
@@ -176,7 +417,7 @@ const Match = () => {
         <div className=" border-2 border-gray-200 rounded-2xl mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center">
           <div className="mt-4 md:mt-0">
             <PlayerScoreCard
-              isBatsmen = {true}
+              isBatsmen={true}
               name="Binod Bhandari"
               score="35(13)"
               onStrike={true}
@@ -187,7 +428,7 @@ const Match = () => {
           </div>
           <div className="">
             <PlayerScoreCard
-              isBatsmen = {true}
+              isBatsmen={true}
               name="Ishan Pandey"
               score="45(16)"
               onStrike={false}
@@ -207,7 +448,7 @@ const Match = () => {
           </div>
           <div className="">
             <PlayerScoreCard
-              isBatsmen = {false}
+              isBatsmen={false}
               name="Kishor Mahato"
               score="4 - 25"
               onStrike={false}
@@ -230,7 +471,7 @@ const Match = () => {
                 <div className="flex flex-row items-center">
                   {i === 0 ? (
                     <p className="text-md font-semibold text-gray-500 px-3">
-                      {t.over -1}
+                      {t.over - 1}
                     </p>
                   ) : (
                     ""
@@ -274,7 +515,7 @@ const Match = () => {
 
       {/* show corresponding info for selected tab  */}
       <div
-        className="lg:w-7xl h-[800px] mt-15 border-2 border-gray-200 p-6 rounded-xl overflow-y-scroll mx-3 md:mx-0"
+        className="lg:w-7xl mt-15 border-2 border-gray-200 p-6 rounded-xl  mx-3 md:mx-0"
         style={{ scrollbarWidth: "none" }}
       >
         {selectedTab === "com" ? (
@@ -282,24 +523,70 @@ const Match = () => {
             <p className="text-lg font-bold text-gray-700 mb-6">
               Live Commentary
             </p>
-            {comments.map((c) => {
-              return (
-                <Commentary
-                  key={c.over}
-                  over={c.over}
-                  batsmen={c.batsmen}
-                  bowler={c.bowler}
-                  result={c.result}
-                />
-              );
-            })}
+            <div
+              className="h-[800px] overflow-y-scroll"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {comments.map((c) => {
+                return (
+                  <Commentary
+                    key={c.over}
+                    over={c.over}
+                    batsmen={c.batsmen}
+                    bowler={c.bowler}
+                    result={c.result}
+                  />
+                );
+              })}
+            </div>
           </div>
         ) : selectedTab === "sc" ? (
-          <p>You clicked Scorecard</p>
+          <div>
+            <p className="block text-lg font-bold text-gray-700 mb-6">
+              Scorecard
+            </p>
+            <div className="flex flex-row flex-wrap gap-5 px-6 mb-10">
+              <p
+                id="teamA"
+                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-blue-400 transition-colors hover:text-white cursor-pointer ${
+                  scSelectedTab === "teamA" ? `bg-blue-400 text-white` : ``
+                }`}
+                onClick={() => setScSelectedTab("teamA")}
+              >
+                Nepal
+              </p>
+              <p
+                id="teamB"
+                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-blue-400 transition-colors hover:text-white cursor-pointer ${
+                  scSelectedTab === "teamB" ? `bg-blue-400 text-white` : ``
+                }`}
+                onClick={() => setScSelectedTab("teamB")}
+              >
+                Australia
+              </p>
+            </div>
+
+            {/* now show scorecard according to selected tab and make background as blue for selected tab  */}
+            {scSelectedTab === "teamA" ? (
+              <Scorecard
+                teamName={"Nepal"}
+                scorecard={scorecard}
+                fallOfWickets={fallOfWickets}
+                bowlingScorecard={bowlingScorecard}
+              />
+            ) : (
+              <Scorecard
+                teamName={"Australia"}
+                scorecard={australiaBatting}
+                fallOfWickets={fallOfWicketsAustralia}
+                bowlingScorecard={nepalBowling}
+              />
+            )}
+          </div>
         ) : selectedTab === "det" ? (
-          <p>You clicked details</p>
+          <MatchDetails />
         ) : (
-          <p>You clicked Points Table</p>
+          <PointsTable />
         )}
       </div>
 
