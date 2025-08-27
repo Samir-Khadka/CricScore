@@ -25,7 +25,7 @@ const PreMatchSetup = () => {
 
   const host = "http://localhost:5000";
 
-  const [matchId, setMatchId] = useState(null);
+  // const [matchId, setMatchId] = useState(null);
 
 
   
@@ -144,24 +144,24 @@ const getMatch=async(matchId)=>{
   };
 
     //to fetch team from database
-//     const getTeam=async(id)=>{
+    const getTeam=async(id)=>{
 
-// const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
-//         method: "GET",
-//         credentials: "include",
-//         headers: {
-//           Accept: "*/*",
-//           "Content-Type": "application/json",
-//         },
-//       });
+const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+        },
+      });
 
-//       if (response.ok) {
-//         const data = await response.json();
-//         return data.data.squad;  //directly return squads 
+      if (response.ok) {
+        const data = await response.json();
+        return data.data.squad;  //directly return squads 
 
 
-//       }
-//     };
+      }
+    };
 
 
 
