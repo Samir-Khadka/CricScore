@@ -1,8 +1,8 @@
 @import "tailwindcss";
 @tailwind utilities;
 
-@layer components{
+@layer components {
     .tab-bg {
-        @apply text-white font-bold  bg-[#0d6efd];
+        @apply text-white font-bold bg-[#0d6efd];
     }
 }
