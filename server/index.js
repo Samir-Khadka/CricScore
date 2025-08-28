@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //for cors permission
-const corsOption = {
+const corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:5173"], // Allow frontend origin
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // allow cookies
@@ -47,7 +47,6 @@ app.use("/api/cricscore/tournament", tournamentRoute);
 
 app.use("/api/cricscore/players", playersRoute);
 app.use("/api/cricscore/match",  matchRoute);
-
 
 
 app.listen(PORT, () => {

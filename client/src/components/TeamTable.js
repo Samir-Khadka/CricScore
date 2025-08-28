@@ -43,6 +43,7 @@ const TeamTable = (props) => {
   };
 
   const handleNavigation = (teamId) => {
+    console.log("Team ID: ",teamId)
     navigate(`/players/${id}/${teamId}`);
   };
 
