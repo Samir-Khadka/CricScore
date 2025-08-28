@@ -151,7 +151,7 @@ const AddPlayers = (props) => {
                 type="submit"
                 name="submit"
                 value="Add Players"
-                style={{ backgroundColor: "#0d6efd" }}
+                style={{ backgroundColor: "#0d6efd !important" }}
               />
             </div>
           </form>

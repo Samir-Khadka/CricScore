@@ -35,7 +35,9 @@ useEffect(() => {
   if (!user) {
     navigate("/login");
   } else if (matchId) {
+    setLoading(true);
     getMatch();
+    setLoading(50);
   }
 }, [user, matchId]);
 
@@ -48,7 +50,7 @@ let teamAPlayersStr = "";
 let teamBPlayersStr = "";
 
 if (Match.playingXI && Match.playingXI.length === 2) {
-
+setLoading(75);
   // Team A
   teamAPlayersStr = Match.playingXI[0].players
     .map(player => player.isCaptain ? `${player.name} (C)` : player.name)
@@ -65,6 +67,7 @@ console.log("Team B Players:", teamBPlayersStr);
 
     setTeamA(teamAPlayersStr);
     setTeamB(teamBPlayersStr);
+    setLoading(80);
 
     // now teams exist, call setBatBall with data
     setBatBall(teamAPlayersStr, teamBPlayersStr);
@@ -87,6 +90,7 @@ console.log("Team B Players:", teamBPlayersStr);
     
     if (response.ok) {
       const data = await response.json();
+      setLoading(30);
       console.log("Fetching Match is:", data.Match);
       //storing the Match full details
       setMatch(data.Match);
@@ -120,7 +124,7 @@ console.log("Team B Players:", teamBPlayersStr);
 const setBatBall = (TeamA, TeamB) => {
   const tossWinner = Match.toss.wonBy;
   const descision = Match.toss.descision;
-
+setLoading(90);
  const TeamA_squadArray=TeamA
   .split(',')
   .map(player => player.trim())
@@ -148,6 +152,8 @@ const TeamB_squadArray = TeamB
       setbowlers(TeamB_squadArray);
     }
   }
+  setLoading(100);
+  setLoading(false);
 };
 
   
@@ -217,32 +223,19 @@ const playStateOptions = [
 
 // 0
 
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-       setProgress(20); // Start slow
 
-    const interval = setInterval(() => {
-      setProgress(prev => (prev < 90 ? prev + 10 : prev));
-    }, 200); // Fake loading forward
-    try {
-      // await Promise.all([fetchTeamAData(), fetchTeamBData()]);
-      setProgress(100);
-    } catch (error) {
-      console.error("Error loading data", error);
-    } finally {
-          setTimeout(() => {
-        setLoading(false);
-        setProgress(0);
-        clearInterval(interval);
-      }, 400); // Let the bar stay full for a bit
-    }
-  };
+//for penalty select 
+  const [penalty, setPenalty] = useState("");
 
-  fetchData();
-}, [match]);
-
-
+  const penaltyOptions = [
+    "Penalty - 5 runs (Unfair play)",
+    "Penalty - Player conduct",
+    "Penalty - Time wasting",
+    "Penalty - Illegal fielding",
+    "Penalty - Ball tampering",
+    "Penalty - Obstructing field",
+    "Penalty - Others",
+  ];
 
   return (
     
@@ -259,11 +252,17 @@ useEffect(() => {
           <h1 style={{alignItems:'center',textAlign:'center'}}> {Match ? Match.tournament_name :"Tournament Name"}</h1>
             <form>
             <div id="scoring_head" className="scoring_head">
+             <div style={{display:'grid',gridTemplateColumns:'2.5fr 2fr',justifyContent:'center',alignItems:'center',gap:"0.5rem"}}>
  <div className="section-title">Score Summary</div>
-             <div style={{display:'grid',gridTemplateColumns:'2fr 0.5fr 2fr',justifyContent:'center',alignItems:'center',gap:"0.5rem"}}>
+              <div>
+
+              <div id="teams_name" style={{display:'grid',gridTemplateColumns:'2fr 0.5fr 2fr',justifyContent:'center',alignItems:'center',gap:"0.1rem"}}>
                 <span>{ Match? Match.teamA : 'Team A' }</span>
                 <span> vs </span>
                 <span>{Match ? Match.teamB :'Team B'}</span>
+
+              </div>
+              </div>
              </div>
             </div>
     <div style={{ width:'auto',borderBottom: '2px solid gray', borderWidth:'medium'}}/>
@@ -312,11 +311,12 @@ useEffect(() => {
     <div style={{  width:'auto',borderBottom: '2px solid gray', borderWidth:'medium'}}/>
 <div id="play_control" name="play_control" style={{display:'grid', gridTemplateColumns:'5fr 2fr 5fr'}}>
 
-                <div id="left_scoring" className="form-group" style={{  display:'flex' ,flexDirection:'column',gap:'1rem' ,zIndex:'4',position:'relative',fontWeight:'500', margin:'1rem'}}>
+                <div id="left_scoring" className="form-group" style={{  display:'grid' ,gridTemplateRows:'1fr 1fr 3fr',gap:'1rem' ,zIndex:'4',position:'relative',fontWeight:'500', margin:'1rem'}}>
                   <div id="Striker" style={{display:'grid' ,alignItems:'center',justifyContent:'center', gridTemplateColumns:'1fr 4fr'}}>
 
 <label htmlFor="bastman1">Striker:</label>
 <Select
+className="premium-select"
   id="batsman1" name="batsman1"
   options={Battingoptions?Battingoptions:null}
   value={Battingoptions?Battingoptions.find(opt => opt.value === selectedBastman1) || null  :null}
@@ -341,6 +341,7 @@ useEffect(() => {
 
 <label htmlFor="batsman2">Non Striker:</label>
 <Select
+className="premium-select"
   id="batsman2" name="batsman2"
   options={Battingoptions?Battingoptions:null}
   value={Battingoptions? Battingoptions.find(opt => opt.value === selectedBastman2) || null :null} 
@@ -361,6 +362,7 @@ useEffect(() => {
     {/* Swap Button */}
   <button
     type="button"
+    disabled={isPause}
     onClick={() => {
       const temp = selectedBastman1;
       setSelectedBastman1(selectedBastman2);
@@ -375,8 +377,9 @@ useEffect(() => {
       backgroundColor: '#6f6e6e',
       color: 'white',
       border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer'
+      borderRadius: '10px',
+      cursor: 'pointer',
+      marginLeft:'5px',
     }}
   >⟲</button>
   </div>
@@ -434,10 +437,10 @@ useEffect(() => {
   </tbody>
 </table>
 <div id="ps" style={{display:"flex",flexDirection:'row',gap:'1rem',position:'absolute', bottom:'1.5rem'}}>
-  <span>P/S</span>
-  <table>
+  <span style={{marginBottom:'10px'}}>P/S</span>
+  <table style={{alignItems:'center'}}>
     <thead>
-    <tr>
+    <tr style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'0.5rem'}}>
       <th>6</th>
       <th>1</th>
       <th>0</th>
@@ -447,10 +450,11 @@ useEffect(() => {
   </table>
 </div>
 </div>
-  <div id="right_scoring" className="form-group" style={{  display:'flex' ,flexDirection:'column',gap:'1rem' ,zIndex:'3',position:'relative',fontWeight:'500',margin:'1rem'}}>
+  <div id="right_scoring" className="form-group" style={{  display:'flex' ,flexDirection:'column',gap:'1.5rem' ,zIndex:'3',position:'relative',fontWeight:'500',margin:'1rem'}}>
 <div id="bowler_bowler " style={{display:'grid' ,alignItems:'center' ,justifyContent:'center',gridTemplateColumns:'1fr 4fr'}}>
 <label htmlFor="bowler">Bowler:</label>              
-<Select
+<Select 
+  className="premium-select"
   id="bowler" name="bowler"
   options={bowlers?bowlers:null}
   value={bowlers?bowlers.find(opt => opt.value === selectedbowler) || null:null}
@@ -473,6 +477,7 @@ useEffect(() => {
 <label htmlFor="over_ball">Over/Ball:</label>
 <span id="over_ball">
   <Select
+  className="premium-select"
   id="over" name="over"
   options={overoptions}
   value={overoptions.find(opt => opt.value === over) || null}
@@ -489,6 +494,7 @@ useEffect(() => {
   required
 />
 <Select
+className="premium-select"
   id="ball" name="ball"
   options={balloptions}
   value={balloptions.find(opt => opt.value === ball) || null}
@@ -504,13 +510,16 @@ useEffect(() => {
   }}
   required
 />
-    <button type="button" id="undo_ball" className="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="35" height="35">
+<div style={{display:'flex',justifyContent:'end'}}>
+
+    <button disabled={isPause} type="button" id="undo_ball" className="btn btn-success">Undo Ball<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="35" height="35">
   <circle cx="256" cy="256" r="238" fill="#4DB6AC"/>
   <polygon fill="none" stroke="#FFFFFF" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"
     points="168.5,357 230.3,279.4 106.8,279.4"/>
   <path d="M405.2,279.4c0-165.9-236.7-165.9-236.7,0"
     fill="none" stroke="#FFFFFF" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"/>
 </svg></button>
+    </div>
 </span>
     </div>
 
@@ -518,6 +527,7 @@ useEffect(() => {
       <div id="state" style={{display:'grid',alignItems:'center',justifyContent:'center',gridTemplateColumns:'1fr 3fr'}}>
 <label htmlFor="state_state">Play State:</label>
       <Select
+      className="premium-select"
     isDisabled={isPause}
   id="state_state" name="state_state"
   options={playStateOptions?playStateOptions:null}
@@ -553,7 +563,7 @@ useEffect(() => {
 </svg></button>
 {isPause && (
     // Resume SVG
-    <button  onClick={handleResumeState}id="resume_inning" type="button" className="btn btn-outline-success">Play
+    <button  onClick={handleResumeState}id="resume_inning" type="button" className="btn btn-outline-success">Resume
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="35" height="35">
       <circle cx="256" cy="256" r="230" fill="#16A34A" />
       <polygon points="200,160 200,360 340,260" fill="#FFFFFF" stroke="#FFFFFF" strokeWidth="5" />
@@ -585,7 +595,8 @@ useEffect(() => {
   </div>
 
   <div className="scoring-panel" >
-    {/* <div className="label">Wicket</div> */}
+    <div className="wick-pen">
+
     <button disabled={isPause} type="button" id="wicket" className="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36">
   <path fill="#111111" d="M125.991 40.945h10.041v10.041c0 5.5 4.46 9.96 9.96 9.96h70.005c5.5 0 9.96-4.46 9.96-9.96V40.945h10.041c5.5 0 9.96-4.46 9.96-9.96s-4.46-9.96-9.96-9.96h-10.041V10.983c0-5.501-4.46-9.96-9.96-9.96h-70.005c-5.5 0-9.96 4.459-9.96 9.96v10.042h-10.041c-5.5 0-9.96 4.46-9.96 9.96s4.46 9.96 9.96 9.96z"/>
   <path fill="#111111" d="M276.002 40.945h10.041v10.041c0 5.5 4.46 9.96 9.96 9.96h70.005c5.5 0 9.96-4.46 9.96-9.96V40.945h10.041c5.5 0 9.96-4.46 9.96-9.96s-4.46-9.96-9.96-9.96h-10.041V10.983c0-5.501-4.46-9.96-9.96-9.96h-70.005c-5.5 0-9.96 4.459-9.96 9.96v10.042h-10.041c-5.5 0-9.96 4.46-9.96 9.96s4.46 9.96 9.96 9.96z"/>
@@ -594,42 +605,93 @@ useEffect(() => {
   <path fill="#00BFFF" d="M110.949 100.948h30.083v350.106h-30.083V100.948z"/>
   <path fill="#B0E0E6" d="M80.947 491.057v-20.083c110.749 0 228.966 0 350.105 0v20.082c-35.919 0-340.205.001-350.105.001z"/>
 </svg></button>
+    {/* <div className="label">Pen</div> */}
+          <button
+        disabled={isPause}
+        type="button"
+        id="penalty"
+        className="btn btn-warning pen-btn"
+        onClick={()=>{alert(penalty?penalty:"Select Penalty!")}}
+      >
+        Pen
+      </button>
+      <select
+        className="pen-select"
+        value={penalty}
+        onChange={(e) => setPenalty(e.target.value)}
+      >
+        <option value="">Select Penalty</option>
+        {penaltyOptions.map((opt, i) => (
+          <option key={i} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="runs">
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>0</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>1</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>2</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>w</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+1</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+2</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>1</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>2</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>1</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>2</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>1</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>2</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>0</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>1</button>
-    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>2</button>
-    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>3</button>
-    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>4</button>
-
-    <div className="label">Pen</div>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>4</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ce293'}}>6</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+3</button>
+    </div>
+    <div className="wides">
+    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>w</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+1</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+2</button>
+     <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>+4</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#71abf1'}}>?</button>
+    </div>
+    <div className="bytes">
+    <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>1</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>2</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#d75a5a',color:'white'}}>4</button>
+    </div>
+    <div className="legbytes">
+    <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>1</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>2</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#eddb76'}}>4</button>
-    <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>3</button>
+    </div>
+    <div className="noball_b">
+    <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>1</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>2</button>
+      <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#7ba8a3'}}>4</button>
+    </div>
+
+    <div className="noball_lb">
+    <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>0</button>
+    <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>1</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>3</button>
     <button disabled={isPause} className="scoring-button" style={{background:'#44d7e1'}}>4</button>
+    </div>
+    <div className="noball_run">
+    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>0</button>
+    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>1</button>
+    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>2</button>
+    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>3</button>
+    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>4</button>
     <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>6</button>
-    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>-</button>
-    <button disabled={isPause} className="scoring-button"  style={{background:'#c43138',color:'whitesmoke'}}>-</button>
+    </div>
+
+
+
+
+
+
+ 
+   
+
+
+
+  
+
+ 
   </div>
 
 {/* <button type="button" id="add_run" className="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="50" height="50">

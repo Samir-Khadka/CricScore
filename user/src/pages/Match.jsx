@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+const Match = () => {
+  const [selectedTab, setSelectedTab] = useState("com");
 import TimelineItem from "../components/TimelineItem";
 import Commentary from "../components/Commentary";
 import PlayerScoreCard from "../components/PlayerScoreCard";
@@ -9,6 +11,7 @@ import PointsTable from "../components/PointsTable";
 const Match = () => {
   const [selectedTab, setSelectedTab] = useState("com");
   const [scSelectedTab, setScSelectedTab] = useState("tabA");
+
 
   const tabs = [
     { id: "com", label: "Commentary" },
@@ -377,6 +380,10 @@ const Match = () => {
     <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa]">
       {/* live scorecard */}
 
+      <div className="w-7xl p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white">
+        {/* live logo and tournament name  */}
+
+        <div className=" flex flex-row justify-between">
       <div className="w-fit lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white">
         {/* live logo and tournament name  */}
 
@@ -388,6 +395,10 @@ const Match = () => {
           <p className="text-gray-500">Nepal Premier League</p>
         </div>
 
+        {/* scores */}
+
+        <div className=" h-[250px] flex flex-row justify-evenly items-center">
+          <div className="flex flex-row gap-20">
         {/* scores*/}
 
         <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap">
@@ -402,8 +413,13 @@ const Match = () => {
               </p>
             </div>
           </div>
+
+          <p className="text-gray-500 text-md">vs</p>
+          <div className="flex flex-row gap-20">
+
           <p className="text-gray-500 text-md mt-5 md:mt-0">vs</p>
           <div className="flex flex-row gap-20 mt-5 md:mt-0">
+
             <div>
               <p className="text-3xl font-bold text-gray-700">0 / 0</p>
               <p className="font-semibold mt-2 text-gray-500">(0 / 20) overs</p>
@@ -413,6 +429,14 @@ const Match = () => {
         </div>
 
         {/* match stats */}
+
+        <div className=" h-[100px] border-2 border-gray-200 rounded-2xl p-4">
+          <div>
+            Current Partnership 58(16) <br />
+            Current Run Rate 12.4
+          </div>
+        </div>
+
 
         <div className=" border-2 border-gray-200 rounded-2xl mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center">
           <div className="mt-4 md:mt-0">
@@ -494,7 +518,9 @@ const Match = () => {
       </div>
 
       {/* commentry, scorecard and other info  */}
+
       <div className="lg:w-4xl bg-[#efefef] mt-15 border-4 border-gray-100 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
+
         {tabs.map((t, i) => {
           return (
             <div
@@ -514,6 +540,17 @@ const Match = () => {
       </div>
 
       {/* show corresponding info for selected tab  */}
+      <div className="w-7xl h-[500px] mt-15 border-2 border-gray-200 flex flex-row justify-evenly items-center rounded-xl">
+        {selectedTab === "com" ? (
+          <p>You clicked Commentery</p>
+        ) : selectedTab === "sc" ? (
+          <p>You clicked Scorecard</p>
+        ) : selectedTab === "details" ? (
+          <p>You clicked details</p>
+        ) : (
+          <p>You clicked Points Table</p>
+        )}
+      </div>
       <div
         className="lg:w-7xl mt-15 border-2 border-gray-200 p-6 rounded-xl  mx-3 md:mx-0"
         style={{ scrollbarWidth: "none" }}

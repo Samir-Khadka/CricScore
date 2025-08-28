@@ -24,7 +24,7 @@ const corsOptions = {
 };
 
 //core middlewares
-app.use(cors(corsOptions));
+app.use(cors(corsOption));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -43,12 +43,10 @@ app.use("/api/cricscore/tournament", tournamentRoute);
 
 
 // app.use("/api/cricscore/match", matchRoute);
-app.use("/api/cricscore/match", matchRoute);
+// app.use("/api/cricscore/match", matchRoute);
 
 app.use("/api/cricscore/players", playersRoute);
 app.use("/api/cricscore/match",  matchRoute);
-
-
 
 
 app.listen(PORT, () => {

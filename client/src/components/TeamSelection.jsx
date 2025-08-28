@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../css/PreMatch.css";
 
 export default function TeamSelection(props) {
-  const players = props.squad.split(",").map(p => ({ value: p.trim(), label: p.trim() }));
+  // const players = props.squad.split(",").map(p => ({ value: p.trim(), label: p.trim() }));
 
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [captain, setCaptain] = useState(null);
@@ -32,6 +32,7 @@ const handleCaptainSelect = (captainPlayer) => {
 
   //  Styles for players select (expandable multi)
   const playerSelectStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     valueContainer: (provided) => ({
       ...provided,
       maxHeight: 90,
@@ -48,7 +49,8 @@ const handleCaptainSelect = (captainPlayer) => {
       "&:hover": { borderColor: "#007bff" },
       fontSize: "14px",
       minHeight: "42px",
-      padding: "0 4px"
+      padding: "0 4px",
+      zIndex: "2"
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -73,6 +75,7 @@ const handleCaptainSelect = (captainPlayer) => {
 
   // Styles for captain select (compact)
   const captainSelectStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
       ...provided,
              backgroundColor: "#f3f3f0",
@@ -114,9 +117,10 @@ const handleCaptainSelect = (captainPlayer) => {
         <Select
           id="squad"
           isMulti
-          options={players}
+          options={props.squad}
           value={selectedPlayers}
           onChange={handlePlayerSelect}
+          menuPortalTarget={document.body}
           styles={playerSelectStyles}
           placeholder="Choose up to 11 Players"
           closeMenuOnSelect={false}
@@ -134,6 +138,7 @@ const handleCaptainSelect = (captainPlayer) => {
           options={selectedPlayers}
           value={captain}
           onChange={handleCaptainSelect}
+          menuPortalTarget={document.body}
           styles={captainSelectStyles}
           placeholder="Choose Captain"
           isClearable

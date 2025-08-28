@@ -1,0 +1,36 @@
+.form-group textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  resize: vertical;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  transition: border 0.2s;
+}
+.form-group textarea:focus {
+  border-color: #0d6efd;
+  outline: none;
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.4);
+}
+.squad-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+  background: #fdfdfd;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.squad-textarea:focus {
+  border-color: #0d6efd;
+  outline: none;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.35);
+  background: #fff;
+}

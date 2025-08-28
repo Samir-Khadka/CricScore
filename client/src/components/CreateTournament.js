@@ -181,7 +181,6 @@ export const CreateTournament = (props) => {
 
  export const EditTournamet=(props)=>{
 
-  console.log("generation props:"+props.editedData);
   const [tournament_name,SetTournament_name]=useState(props.editedData.tournament_name);
   const [start_date,Setstart_date]=useState(props.editedData.start_date);
   const [end_date,Setend_date]=useState(props.editedData.end_date);
