@@ -61,7 +61,7 @@ const AddPlayers = (props) => {
       }),
     };
 
-    const host = process.env.REACT_APP_HOST_URI;
+    const host = "http://localhost:5000";
 
     try {
       const response = await fetch(
@@ -151,7 +151,7 @@ const AddPlayers = (props) => {
                 type="submit"
                 name="submit"
                 value="Add Players"
-                style={{ backgroundColor: "#0d6efd" }}
+                style={{ backgroundColor: "#0d6efd !important" }}
               />
             </div>
           </form>

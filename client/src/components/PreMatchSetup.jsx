@@ -4,6 +4,7 @@ import { useContext } from "react";
 import cricContext from '../context/CricContext.js';
 import { Navigate, useLocation,useParams, useNavigate } from "react-router-dom";
 import TeamSelection from './TeamSelection.jsx';
+import LoadingBar from 'react-top-loading-bar';
 import '../css/PreMatch.css';
 import '../css/PreMatchNew.css';
 
@@ -13,12 +14,22 @@ const PreMatchSetup = () => {
   const [MatchId, setMatchId] = useState(null);
   const navigate=useNavigate();
   const [Match,setMatch]=useState(null);
+
+  // for top bar loading
+    const [loading, setLoading] = useState(false);
+      const [progress, setProgress] = useState(0);
+
   const [TeamA_squad,setTeamA_squad]=useState(null);
   const [TeamB_squad,setTeamB_squad]=useState(null);
 
   const { teamA_SelectedPlayer,setTeamA_SelectedPlayer,teamB_SelectedPlayer,setTeamB_SelectedPlayer }=useContext(cricContext);
   const [teamA_Captain,setteamA_Captain]=useState(null);
   const [teamB_Captain,setteamB_Captain]=useState(null);
+
+  //storing player data from backend
+    // local state initialized from props
+    const [playerA_Data, setplayerA_Data] = useState(null); 
+    const [playerB_Data, setplayerB_Data] = useState(null); 
 
 
   const { matchId } = useParams();  //
@@ -27,6 +38,8 @@ const PreMatchSetup = () => {
 
   
 useEffect(() => {
+  setLoading(true);
+  setProgress(30);
   getMatch(matchId); // fetch match first
   if (location.state) {
     setTeams(location.state?.teams || []);
@@ -36,13 +49,41 @@ useEffect(() => {
   }
 }, [location.state, matchId]);
 
+
+//to set the player squ
+
 // Fetch squads when Match is updated
 useEffect(() => {
+  // setLoading(true);
   if (Match) {
-    getTeam(Match.teamA_id).then(setTeamA_squad);
-    getTeam(Match.teamB_id).then(setTeamB_squad);
+    getTeam(Match.tournament_id,Match.teamA_id).then(setplayerA_Data);
+    getTeam(Match.tournament_id,Match.teamB_id).then(setplayerB_Data);
+    setProgress(60);
   }
+
 }, [Match]);
+
+useEffect(() => {
+if (playerA_Data && playerB_Data) {
+  setProgress(80);
+  const teamA = playerA_Data.map(p => ({
+    value: p.name.trim(),
+    label: p.name.trim(),
+  }));
+  
+  const teamB = playerB_Data.map(p => ({
+    value: p.name.trim(),
+    label: p.name.trim(),
+  }));
+
+  console.log("Team A data:", teamA);
+  console.log("Team B data:", teamB);
+setProgress(100);
+  setTeamA_squad(teamA);
+  setTeamB_squad(teamB);
+  setLoading(false);
+}
+}, [playerA_Data, playerB_Data, loading]);
 
 
   useEffect(() => {
@@ -121,6 +162,7 @@ const handleSubmit = async (e) => {
 
 const getMatch=async(matchId)=>{
 
+
     const response = await fetch(`${host}/api/cricscore/match/id/${matchId}`, {
       method: "GET",
       credentials: "include",
@@ -135,15 +177,16 @@ const getMatch=async(matchId)=>{
       console.log("Fetching Match is:", data.Match);
       setMatch(data.Match);
       localStorage.setItem("Match",data.Match);
+      setProgress(40);
     } else {
       alert("Unable to Fetch Match");
     }
-  }
+  };
 
     //to fetch team from database
-    const getTeam=async(id)=>{
+    const getTeam=async(tourId,teamId)=>{
 
-const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+const response=await fetch(`${host}/api/cricscore/players/${tourId}/${teamId}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -154,53 +197,28 @@ const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
 
       if (response.ok) {
         const data = await response.json();
-        return data.data.squad;  //directly return squads 
+        console.log("PLAYER DATA:"+JSON.stringify(data.players[0].players));
+        return data.players[0].players;  //directly return whole players data
 
 
       }
+   setLoading(false);
     };
-
-
-// const saveBothTeams = async () => {
-//   const playersA = teamA_SelectedPlayer.map(p => ({
-//     name: p.value,
-//     isCaptain: p.value === teamA_Captain.value
-//   }));
-
-//   const playersB = teamB_SelectedPlayer.map(p => ({
-//     name: p.value,
-//     isCaptain: p.value === teamB_Captain.value
-//   }));
-
-//   try {
-//     const response = await fetch(
-//       `${host}/api/cricscore/match/${MatchId}/selectXI`,
-//       {
-//         method: "POST",
-//         credentials: "include",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           teamA: { teamId: Match.teamA_id, players: playersA },
-//           teamB: { teamId: Match.teamB_id, players: playersB },
-//         }),
-//       }
-//     );
-//     const data = await response.json();
-//     if (!response.ok) {
-//       alert(data.error || "Failed to save Playing XI");
-//       return;
-//     }
-//     console.log("✅ Both teams saved:", data.updatedMatch);
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };
 
 
 
   return (
+    
     <div className="tournament-container tournament-container-pre">
-  <div className="form-container">
+            {loading && (
+        <div className="loading-bar-container">
+          <div
+            className="loading-bar-progress"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      )}
+  <div className="form-container" id="form_prematch">
     <h2 className="prematch-title">Pre-Match Setup</h2>
     <form onSubmit={handleSubmit} className="prematch-grid">
       {/* LEFT SIDE FORM */}

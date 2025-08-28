@@ -1,0 +1,15 @@
+.form-container {
+    margin: 0rem auto;
+    padding: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.login{
+    width: auto !important;
+}
+.modal-body {
+    padding:none !important;
+}
+
+#update_submit_btn{
+    background-color: #0d6efd !important;
+}

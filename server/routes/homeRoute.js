@@ -1,9 +1,10 @@
 const express = require("express");
+const { handleGetAllTournaments, handleGetTournamentInfo } = require("../controllers/viewerController");
 const router = express.Router();
 
 
-router.get("/", (req, res) => {
-    res.send({message: "Home Page"});
-});
+// Get all tournaments 
+router.get("/tournaments", handleGetAllTournaments);
+router.get("/tournaments/:id", handleGetTournamentInfo);
 
 module.exports = router;

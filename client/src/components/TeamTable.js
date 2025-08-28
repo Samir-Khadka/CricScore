@@ -64,16 +64,16 @@ const TeamTable = (props) => {
             props.data.map((item, index) => {
               return (
                 <tr key={index + 1}>
-                  <td>{index + 1}</td>
-                  <td>{item.teamName}</td>
-                  <td>{item.teamCoach}</td>
-                  <td>
+                  <td data-label="S.N">{index + 1}</td>
+                  <td data-label="Team Name">{item.teamName}</td>
+                  <td data-label="Team Coach"> {item.teamCoach}</td>
+                  <td data-label="Action">
                     <button
                       type="button"
                       className="btn btn-primary"
                       onClick={() => handleNavigation(item._id)}
                     >
-                      Assign Players
+                      Manage Players
                     </button>
                   </td>
                   <td>

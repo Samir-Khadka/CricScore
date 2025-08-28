@@ -186,7 +186,7 @@ export const EditMatch = (props) => {
     const match_date1 = match_date;
     const match_time1 = match_time;
     const venue1 = selectedVenue || "";
-    const host = process.env.REACT_APP_HOST_URI;
+    // const host = process.env.REACT_APP_HOST_URI;
     const response = await fetch(`${host}/api/cricscore/match/${matchId}`, {
       method: "PUT",
       credentials: "include",

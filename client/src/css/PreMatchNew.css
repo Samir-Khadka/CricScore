@@ -8,13 +8,14 @@
   min-height: 100vh;
 }
 
-.form-container {
+.form-container ,#form_prematch{
+  margin: 0rem auto !important;
   background: #fff;
-  padding: 2rem;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 1200px;
+  padding: 1.5rem 0rem 0rem 1.5rem !important;
+  border-radius: 14px !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+  width: 100% !important;
+  max-width: 1200px !important;
 }
 
 /* Title */

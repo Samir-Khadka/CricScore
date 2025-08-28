@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Players = require("../models/Players");
 async function handleAddPlayers(req, res) {
   try {
@@ -35,7 +36,7 @@ async function handleGetPlayers(req, res) {
     if (players.length !== 0) {
       return res
         .status(200)
-        .json({ message: "Players fetched successfully", players: players });
+        .json({ message: "Players fetched successfully", players });
     }
     return res.status(404).json({ message: "Players not found" });
   } catch (error) {
@@ -50,17 +51,44 @@ async function handleDeletePlayers(req, res) {
   try {
     const id = req.params.id;
     await Players.findByIdAndDelete({ _id:id });
-    return res.status(200);
+    return res.status(200).json({ message:"Players Deleted Successfully"});
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res
       .status(500)
       .json({ message: "Something went wrong while deleting players" });
   }
 }
 
+// Update players for a given tournament + team
+async function handleUpdatePlayers (req, res) {
+ try {
+    const { tourId, teamId, players } = req.body;
+
+    const updated = await Players.findOneAndUpdate(
+      { 
+        tournamentId: new mongoose.Types.ObjectId(tourId), 
+        teamId: new mongoose.Types.ObjectId(teamId) 
+      },
+      { $set: { players } },
+      { new: true, upsert: false }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Players not found to update" });
+    }
+
+    res.json({ message: "Players updated successfully", updated });
+  } catch (err) {
+    console.error("Error updating players:", err);
+    res.status(500).json({ message: "Error updating players", error: err.message });
+  }
+
+};
+
 module.exports = {
   handleAddPlayers,
   handleGetPlayers,
   handleDeletePlayers,
+  handleUpdatePlayers,
 };

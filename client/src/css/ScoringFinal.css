@@ -14,7 +14,7 @@
 .section-title {
   font-size: 1.4rem;
   font-weight: 700;
-  margin: 1.5rem 0 1rem;
+  margin: .3rem 0 1rem !important;
   color: #1f2937;
   border-left: 5px solid #2563eb;
   padding-left: 10px;
@@ -29,7 +29,7 @@
   padding: 1rem;
   background: #f9fafb;
   border-radius: 12px;
-  margin-bottom: 1.5rem;
+  margin-bottom: .2rem;
 }
 
 #summary_left {
@@ -69,7 +69,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 0.3rem 0;
 }
 
 #left_scoring,
@@ -98,6 +98,23 @@
   margin-bottom: 1rem;
   text-align: center;
 }
+#this_over{
+      display: grid !important;
+    align-items: end !important;
+    justify-content: center !important;
+    grid-template-columns: 2fr 4fr !important;
+    margin-bottom: 1.5rem !important;
+}
+#ps{
+      width: 89% !important;
+          display: grid !important;
+    gap: 0rem !important;
+    position: absolute !important;
+    bottom: 1.5rem !important;
+    grid-template-columns: 0.5fr 5fr !important;
+    align-items: center;
+    justify-content: center;
+}
 
 #center_scoring th,
 #center_scoring td {
@@ -124,7 +141,18 @@
   border: none;
   transition: all 0.2s ease;
 }
+#wicket{
+  background: #de333b !important;
+}
 
+#resume_inning{
+  background: #7ce293;
+        display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color:#fff;
+}
 .scoring-button:hover:not(:disabled),
 #wicket:hover,
 #undo_ball:hover,
@@ -136,9 +164,14 @@
 
 .scoring-panel {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  grid-template-columns: repeat(8, 1fr);
   gap: 0.6rem;
   margin-top: 1rem;
+}
+#play_state{
+      gap: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .scoring-panel .label {
@@ -146,12 +179,17 @@
   align-self: center;
   font-weight: 600;
   font-size: 0.9rem;
+      display: flex;
+    justify-content: center;
+    border: 2px solid brown;
+    padding: 12px;
+    border-radius: 7px
 }
 
 /* ---------- Headers ---------- */
 .header-table {
   display: grid;
-  grid-template-columns: repeat(19, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   text-align: center;
   font-weight: 700;
   border-radius: 8px;
@@ -202,4 +240,168 @@
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     font-size: 0.75rem;
   }
+}
+
+/* Premium compact select styling */
+.premium-select,.css-13cymwt-control,.css-16xfy0z-control {
+    height: 34px !important;
+    padding: 0 0 0 0px !important;
+    font-size: 0.9rem !important;
+    line-height: 34px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  /* background: #fff url("data:image/svg+xml;utf8,<svg fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/></svg>") no-repeat right 8px center !important; */
+  background-size: 14px !important;
+  appearance: none !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.premium-select:focus{
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+.css-15amt9c-placeholder {
+    margin-bottom: 10px !important;
+
+}
+
+.css-163qls0-placeholder {
+    margin-bottom: 10px !important;
+}
+.css-olqui2-singleValue {
+    margin-bottom: 10px !important;
+}
+
+
+
+/* to set the disable look for all select compoenent */
+/* Keep same look when disabled */
+ .css-13cymwt-control.premium-disabled,
+ .css-1fdsijx-control.premium-disabled,
+ .css-13cymwt-control.is-disabled,
+ .css-1fdsijx-control.is-disabled {
+  height: 34px !important;
+  min-height: 34px !important;
+  opacity: 0.5 !important; /* faded look to show it's disabled */
+  cursor: not-allowed !important;
+  background-color: #f9fafb !important; /* light gray background */
+}
+ .css-16xfy0z-control.premium-disabled,
+ .css-16xfy0z-control.premium-disabled,
+ .css-16xfy0z-control.is-disabled,
+ .css-16xfy0z-control.is-disabled {
+  height: 34px !important;
+  min-height: 34px !important;
+  opacity: 0.5 !important; /* faded look to show it's disabled */
+  cursor: not-allowed !important;
+  background-color: #f9fafb !important; /* light gray background */
+}
+
+.form-select {
+    --bs-form-select-bg-img: none !important;
+    display: block;
+    width: 100%;
+    padding: .0rem 0rem 0rem 0rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-image: none !important;
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.css-1dimb5e-singleValue {
+    margin-bottom: 9px !important;
+}
+
+.css-19bb58m {
+  margin-bottom: -6px !important;
+}
+
+#over_ball{
+
+      display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+#undo_ball{
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 0.3rem;
+background-color: #198754;
+color:#efecd0
+}
+#end_inning{
+  background-color: #ff3d46 !important;
+      display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color:#fff
+}
+
+.wick-pen{
+      display: grid;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.runs,.wides,.bytes,.legbytes,.noball_b,.noball_lb,.noball_run{
+
+      display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+
+/* Penalty button */
+.pen-btn {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.pen-btn:hover {
+  background: #f59e0b !important;
+  transform: translateY(-1px);
+}
+
+/* Premium compact select styling (only for Penalty) */
+.pen-select {
+  margin-top: 6px;
+  display: block;
+  width: 160px;
+  height: 34px;
+  padding: 0 28px 0 10px;
+  font-size: 0.85rem;
+  line-height: 34px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml;utf8,<svg fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/></svg>")
+    no-repeat right 8px center;
+  background-size: 14px;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pen-select:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
 }

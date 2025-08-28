@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import AddPlayers from "../modal-forms/AddPlayers";
 import EditPlayers from "../modal-forms/EditPlayers";
+import '../css/player.css';
 
 const Players = () => {
   const { tourId, teamId } = useParams();
@@ -9,7 +10,7 @@ const Players = () => {
   const [refresh, setRefresh] = useState(0);
   const [players, setPlayers] = useState(null);
   const [loading, setLoading] = useState(false);
-  const host = process.env.REACT_APP_HOST_URI;
+  const host = "http://localhost:5000";
 
   useEffect(() => {
     fetchPlayers();
@@ -42,12 +43,14 @@ const Players = () => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      alert("Something went wrong while fetching players");
+      // alert("Something went wrong while fetching players");
     }
   };
 
   const handleDelete = async (id) => {
     var c = window.confirm("Are you sure to delete players?");
+     if (!c) return;
+
     const reqOptions = {
       method: "DELETE",
       credentials: "include",
@@ -64,6 +67,8 @@ const Players = () => {
           reqOptions
         );
         if (response.ok) {
+          const data= await response.json();
+          alert(data.message);
           setRefresh(refresh + 1);
         }
       }
@@ -72,6 +77,7 @@ const Players = () => {
     }
   };
   const modalref = useRef(null);
+
 
   return (
     <>
@@ -95,6 +101,7 @@ const Players = () => {
           data-bs-toggle="modal"
           data-bs-target="#staticBackdrop"
           ref={modalref}
+          onClick={()=>{setisEdit(true)}}
           disabled={!players ? true : false}
         >
           Edit Players
@@ -124,12 +131,12 @@ const Players = () => {
               players.players.map((p, index) => {
                 return (
                   <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
+                    <td data-label="S.N">{index + 1}</td>
+                    <td data-label="Player Name">
                       {p.name} {p.isCaptain ? "(C)" : ""}{" "}
                       {p.role === "wicket_keeper" || p.role === "wk_batsman" ? "(WK)" : ""}{" "}
                     </td>
-                    <td style={{ textTransform: "capitalize" }}>{p.role}</td>
+                    <td data-label="Playing Role" style={{ textTransform: "capitalize" }}>{p.role}</td>
                   </tr>
                 );
               })}
@@ -168,7 +175,15 @@ const Players = () => {
                     setRefresh={setRefresh}
                   />
                 ) : (
-                  <EditPlayers />
+                  <EditPlayers 
+                  tourId={tourId}
+                    players={players}                     
+                    setPlayers={setPlayers}
+                    teamId={teamId}
+                    refresh={refresh}
+                    setRefresh={setRefresh}
+                    setisEdit={setisEdit}
+                    />
                 )}
               </div>
               <div className="modal-footer">
@@ -176,7 +191,7 @@ const Players = () => {
                   type="button"
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
-                  //   onClick={handleClose}
+                  onClick={() => setisEdit(false)}   // ✅ reset to AddPlayers mode
                 >
                   Close
                 </button>

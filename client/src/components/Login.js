@@ -145,7 +145,7 @@ export const Login = () => {
 
             <div
               className="form-group"
-              style={{ display: "flex", gap: "0.5rem" }}
+              style={{ display: "flex", gap: "0.5rem",flexDirection:'row' }}
             >
               <input type="checkbox" id="remp" name="remp" />
               <label htmlFor="remp">Remember Password</label>
