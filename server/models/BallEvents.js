@@ -84,10 +84,6 @@ const BallEventsSchema = new Schema(
         },
       ],
     },
-
-    commentary: {
-      type: String,
-    },
   },
   { timestamps: true }
 );

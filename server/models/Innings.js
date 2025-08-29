@@ -41,6 +41,11 @@ const InningsSchema = new Schema(
       default: 0,
     },
 
+    over: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     balls: {
       type: Number,
       required: true,

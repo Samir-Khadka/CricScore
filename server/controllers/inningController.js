@@ -7,7 +7,6 @@ async function handleCreateInnings(req, res) {
 
     var batting_team = "";
     var fielding_team = "";
-    var batting_team_name = "";
 
     if (toss.decision === "bat") {
       batting_team = toss.wonBy;
@@ -53,12 +52,6 @@ async function handleCreateInnings(req, res) {
     console.log("Error at create Innings: ", error);
     return 0;
   }
-}
-
-async function handleGetInnings(tournament, match, inning) {
-
-
-
 }
 
 module.exports = {
