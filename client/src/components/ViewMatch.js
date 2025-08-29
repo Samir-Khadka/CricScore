@@ -3,14 +3,16 @@ import MatchTable from "./MatchTable";
 import EditMatch from "./EditMatch";
 import { useState, useEffect, useRef } from "react";
 import { Match } from "./CreateMatch";
+
 const ViewMatch = () => {
   //fetching scorer id from the localstorage
   const userData = JSON.parse(localStorage.getItem("user"));
-  console.log("Userdata:"+userData);
+  console.log("Userdata:" + userData);
 
-  const scorerId =userData.id || userData.scorer?.id || userData.user?.scorer?.id;
+  const scorerId =
+    userData.id || userData.scorer?.id || userData.user?.scorer?.id;
 
-  console.log("The id is:"+scorerId);
+  console.log("The id is:" + scorerId);
 
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -123,7 +125,6 @@ const ViewMatch = () => {
                 ></button>
               </div>
               <div className="modal-body">
-                
                 {!isEdit ? (
                   <Match
                     isEdit={true}

@@ -14,8 +14,14 @@ const MatchTable = (props) => {
   const handleLive = (item) => {
     // navigate("/prematch", {state:{teams: [item.teamA, item.teamB],matchId:item._id}});
     navigate(`/prematch/${item._id}`, {
-  state: {Match:item, teams: [item.teamA, item.teamB] }
-});
+      state: {
+        Match: item,
+        teams: [
+          { name: item.teamA, id: item.teamA_id },
+          { name: item.teamB, id: item.teamB_id },
+        ],
+      },
+    });
   };
 
   //function to format time
@@ -39,7 +45,7 @@ const MatchTable = (props) => {
         headers: {
           Accept: "*/*",
           "Content-Type": "application/json",
-        }
+        },
       });
 
       if (response.ok) {
@@ -92,8 +98,12 @@ const MatchTable = (props) => {
                   <td data-label="Tournament Name">{item.tournament_name}</td>
                   <td data-label="Team A">{item.teamA}</td>
                   <td data-label="Team B">{item.teamB}</td>
-                  <td data-label="Match Date">{new Date(item.match_date).toDateString()}</td>
-                  <td data-label="Match Time">{formatTimeTo12Hour(item.match_time)}</td>
+                  <td data-label="Match Date">
+                    {new Date(item.match_date).toDateString()}
+                  </td>
+                  <td data-label="Match Time">
+                    {formatTimeTo12Hour(item.match_time)}
+                  </td>
                   <td data-label="Venue">{item.venue}</td>
                   <td data-label="Action">
                     <button
