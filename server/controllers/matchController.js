@@ -1,5 +1,4 @@
-
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 const Match = require("../models/Match");
 
 async function handleCreateMatch(req, res) {
@@ -53,10 +52,9 @@ async function handleGetMatches(req, res) {
   }
 }
 
-async function handleGetMatch(req,res){
-
-   const { matchId } = req.params;
-console.log("Match id is:"+matchId);
+async function handleGetMatch(req, res) {
+  const { matchId } = req.params;
+  console.log("Match id is:" + matchId);
 
   try {
     // Validate if matchId is a valid MongoDB ObjectId
@@ -71,13 +69,10 @@ console.log("Match id is:"+matchId);
       return res.status(404).json({ message: "Match not found." });
     }
 
-    return res.status(200).json({ Match:match });
-    
+    return res.status(200).json({ Match: match });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
-
-
 }
 async function handleUpdateMatch(req, res) {
   try {
@@ -123,18 +118,15 @@ async function handlePreMatch(req, res) {
     if (!match) {
       return res.status(422).json({ message: "Match not found" });
     }
-    await Match.findByIdAndUpdate(
-      matchId,
-      {
-        toss: { wonBy: req.body.tossWinner, decision: req.body.decision },
-        umpires: {
-          onField: req.body.onfield.split(","),
-          third: req.body.third,
-          tv: req.body.tv,
-        },
-        matchRefree: req.body.r,
-      }
-    );
+    await Match.findByIdAndUpdate(matchId, {
+      toss: { wonBy: req.body.tossWinner, decision: req.body.decision },
+      umpires: {
+        onField: req.body.onfield.split(","),
+        third: req.body.third,
+        tv: req.body.tv,
+      },
+      matchRefree: req.body.r,
+    });
     return res.status(200).json({ message: "Prematch updated successfully" });
   } catch (error) {
     console.log(error);
@@ -171,15 +163,13 @@ async function handlePreMatch(req, res) {
 //     const updatedMatch = await match.save();
 //       console.log("Updated Matched with playing Team:"+updatedMatch);
 //     res.status(200).json({ updatedMatch });
-   
-
 
 //   } catch (err) {
 //     console.error(err);
 //     res.status(500).json({ error: err.message });
 //   }
 // }
-async function savePlayingXI (req, res){
+async function savePlayingXI(req, res, next) {
   const { matchId } = req.params;
   const { playingXI, toss, umpires, matchRefree } = req.body;
 
@@ -197,15 +187,20 @@ async function savePlayingXI (req, res){
 
     // Save playing XI
     match.playingXI = playingXI;
-
+    match.matchState = "Live";
     await match.save();
 
+    //also create inning for this match
+    req.body.matchId = matchId;
+    req.body.refered_from = "savePlayingXI";
+    next();
+    
     res.json({ message: "Match setup complete", updatedMatch: match });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-};
+}
 
 module.exports = {
   handleCreateMatch,

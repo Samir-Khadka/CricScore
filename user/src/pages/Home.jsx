@@ -4,8 +4,6 @@ import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
 
 const Home = () => {
-
-
   const [tournaments, setTournaments] = useState(null);
 
   useEffect(() => {
@@ -20,20 +18,17 @@ const Home = () => {
       credentials: "include",
       headers: {
         Accept: "*/*",
-        "Content-Type":"application/json",
+        "Content-Type": "application/json",
       },
     });
 
     const data = await response.json();
-
     if (response.ok) {
       setTournaments(data.data);
       // console.log("Tournaments", tournaments);
       // console.log("Data", data.data);
     }
-
   };
-
 
   return (
     <section className="p-6 bg-[#f8f9fa]">
@@ -41,11 +36,25 @@ const Home = () => {
 
       <div>
         <div className="flex flex-row justify-between mt-5">
-          <p className="text-xl font-semibold">Live Matches</p>
+          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">Live Matches</p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row justify-evenly mt-2">
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-2">
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
+          <ScoreSummaryCard />
+          <ScoreSummaryCard />
+          <ScoreSummaryCard />
+          <ScoreSummaryCard />
+        </div>
+      </div>
+
+      {/* upcoming */}
+
+      <div>
+        <div className="flex flex-row justify-between mt-10">
+          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">Upcoming Matches</p>
+          <p className="text-sm font-semibold text-gray-500">View All</p>
+        </div>
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
           <ScoreSummaryCard />
           <ScoreSummaryCard />
           <ScoreSummaryCard />
@@ -67,11 +76,11 @@ const Home = () => {
       {/* recently completed */}
 
       <div>
-        <div className="flex flex-row justify-between mt-5">
-          <p className="text-xl font-semibold">Recent Matches</p>
+        <div className="flex flex-row justify-between mt-10">
+          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">Recent Matches</p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-2">
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
           <ScoreSummaryCard />
           <ScoreSummaryCard />
           <ScoreSummaryCard />
@@ -83,17 +92,10 @@ const Home = () => {
 
       <div>
         <div className="flex flex-row justify-between p-3 mt-10">
-          <p className="text-xl font-semibold">Tournaments</p>
+          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">Tournaments</p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row justify-evenly flex-wrap space-x-2">
-          {tournaments && tournaments.map((t, i) => {
-            return(
-              <Tournaments name = {t.tournament_name} key={i} tour = {tournaments}/>
-            );
-          })}
-
-        <div className="flex flex-row justify-evenly flex-wrap gap-7">
+        <div className="flex flex-row justify-evenly flex-wrap gap-7 mt-5">
           {tournaments &&
             tournaments.map((t, i) => {
               return (
