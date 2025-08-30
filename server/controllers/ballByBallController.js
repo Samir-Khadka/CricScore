@@ -46,6 +46,8 @@ async function handleBallByBall(req, res) {
       ...req.body,
     });
 
+    
+
     //send data through websocket(updateInning)
     //if(req.body.event === "end_of_inning"){
     //endOfInning(inningNumber)
