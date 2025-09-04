@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Players = require("../models/Players");
+const Team=require("../models/Teams");
 async function handleAddPlayers(req, res) {
   try {
     const pExists = await Players.find({
@@ -46,6 +47,27 @@ async function handleGetPlayers(req, res) {
       .json({ message: "Something went wrong while fetching players." });
   }
 }
+async function handleGetTeams(req, res) {
+  try {
+    const teamId = req.params.teamId;
+    const Team = await Team.find({ _id: new mongoose.Types.ObjectId(teamId) });
+
+
+    if (Team.length !== 0) {
+      console.log('The fetched team'+Team);
+      return res
+        .status(200)
+        .json({ message: "Players fetched successfully", Team:Team });
+    }
+    return res.status(404).json({ message: "Team not found" });
+  } 
+  catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong while fetching Team." });
+  }
+};
 
 async function handleDeletePlayers(req, res) {
   try {
@@ -91,4 +113,5 @@ module.exports = {
   handleGetPlayers,
   handleDeletePlayers,
   handleUpdatePlayers,
+  handleGetTeams,
 };

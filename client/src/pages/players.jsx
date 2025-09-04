@@ -12,6 +12,8 @@ const Players = () => {
   const [loading, setLoading] = useState(false);
   const host = "http://localhost:5000";
 
+   const modalref = useRef(null);
+
   useEffect(() => {
     fetchPlayers();
   }, [refresh]);
@@ -38,6 +40,7 @@ const Players = () => {
         setPlayers(r.players[0]);
         setLoading(false);
       } else if (response.status === 404) {
+        setPlayers(null);
         //show "no players added to table row"
       }
     } catch (error) {
@@ -76,7 +79,7 @@ const Players = () => {
       alert("Something went wrong while deleting");
     }
   };
-  const modalref = useRef(null);
+ 
 
 
   return (
@@ -102,7 +105,7 @@ const Players = () => {
           data-bs-target="#staticBackdrop"
           ref={modalref}
           onClick={()=>{setisEdit(true)}}
-          disabled={!players ? true : false}
+          disabled={ !players ? true : false}
         >
           Edit Players
         </button>

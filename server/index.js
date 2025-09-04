@@ -12,11 +12,12 @@ const matchRoute = require("./routes/matchRoute.js");
 const ballByballRoute = require("./routes/ballByBallRoute.js");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
+const PORT=5000;
 
 //for cors permission
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:5173"], // Allow frontend origin
+  origin: ["http://localhost:3000", "http://localhost:5173","http://localhost:5000"], // Allow frontend origin
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // allow cookies
   allowedHeaders: ["Content-Type"], // don't put 'credentials' here
@@ -42,6 +43,8 @@ app.use(checkAuthCookie("token"));
 app.use("/api/cricscore/tournament", tournamentRoute);
 app.use("/api/cricscore/players", playersRoute);
 app.use("/api/cricscore/match", matchRoute);
+
+app.use("/api/cricscore/teams",playersRoute);
 
 app.listen(PORT, () => {
   console.log(`Server started at port ${PORT}`);

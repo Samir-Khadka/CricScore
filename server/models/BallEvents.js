@@ -11,7 +11,8 @@ const BallEventsSchema = new Schema(
 
     sequence: {
       type: Number,
-      required: true,
+      // required: true,
+      default:0,
     },
 
     over: {
@@ -37,9 +38,9 @@ const BallEventsSchema = new Schema(
       },
       extras: {
         wide: { type: Number, default: 0 },
-        noBall: { type: Number, default: 0 },
+        no_ball: { type: Number, default: 0 },
         bye: { type: Number, default: 0 },
-        legBye: { type: Number, default: 0 },
+        leg_bye: { type: Number, default: 0 },
         penalties: { type: Number, default: 0 },
       },
       total: {

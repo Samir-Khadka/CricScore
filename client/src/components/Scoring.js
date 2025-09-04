@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../css/ScoringFinal.css";
 import Select from "react-select";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -21,147 +21,122 @@ export const Scoring = () => {
   const [TeamA, setTeamA] = useState(null);
   const [TeamB, setTeamB] = useState(null);
 
-  // Fetch match on mount or matchId change
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    } else if (matchId) {
-      setLoading(true);
-      getMatch();
-      setLoading(50);
-    }
-  }, [user, matchId]);
+  const[teamA_full,setTeamA_full]=useState(null);
+  const[teamB_full,setTeamB_full]=useState(null);
 
-  useEffect(() => {
-    const fetchTeamsAndSetBatBall = async () => {
-      if (!Match) return;
-      // Assuming Match.playingXI has both teams
-      let teamAPlayersStr = "";
-      let teamBPlayersStr = "";
-
-      if (Match.playingXI && Match.playingXI.length === 2) {
-        setLoading(75);
-        // Team A
-        teamAPlayersStr = Match.playingXI[0].players
-          .map((player) =>
-            player.isCaptain ? `${player.name} (C)` : player.name
-          )
-          .join(", "); // joins all player names with comma
-
-        // Team B
-        teamBPlayersStr = Match.playingXI[1].players
-          .map((player) =>
-            player.isCaptain ? `${player.name} (C)` : player.name
-          )
-          .join(", ");
-      }
-
-      console.log("Team A Players:", teamAPlayersStr);
-      console.log("Team B Players:", teamBPlayersStr);
-
-      setTeamA(teamAPlayersStr);
-      setTeamB(teamBPlayersStr);
-      setLoading(80);
-
-      // now teams exist, call setBatBall with data
-      setBatBall(teamAPlayersStr, teamBPlayersStr);
-    };
-
-    fetchTeamsAndSetBatBall();
-  }, [Match]);
-
-  //to fetch match from database
-  const getMatch = async () => {
-    const response = await fetch(`${host}/api/cricscore/match/id/${matchId}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setLoading(30);
-      console.log("Fetching Match is:", data.Match);
-      //storing the Match full details
-      setMatch(data.Match);
-      // setTeamA(data.Match.teamA);
-      // setTeamB(data.Match.teamB);
-      localStorage.setItem("Match", data.Match);
-    } else {
-      alert("Unable to Fetch Match");
-    }
-  };
-
-  //to fetch team from database
-  //     const getTeam=async(id)=>{
-
-  // const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
-  //         method: "GET",
-  //         credentials: "include",
-  //         headers: {
-  //           Accept: "*/*",
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         return data.data;
-
-  //       }
-  //     };
-
-  const setBatBall = (TeamA, TeamB) => {
-    const tossWinner = Match.toss.wonBy;
-    const descision = Match.toss.descision;
-    setLoading(90);
-    const TeamA_squadArray = TeamA.split(",")
-      .map((player) => player.trim())
-      .map((player) => ({ value: player, label: player }));
-
-    const TeamB_squadArray = TeamB.split(",")
-      .map((player) => player.trim())
-      .map((player) => ({ value: player, label: player }));
-
-    if (tossWinner === Match.teamA) {
-      if (descision === "bat") {
-        setBattingoptions(TeamA_squadArray);
-        setbowlers(TeamB_squadArray);
-      } else {
-        setbowlers(TeamA_squadArray);
-        setBattingoptions(TeamB_squadArray);
-      }
-    } else {
-      if (descision === "bat") {
-        setbowlers(TeamA_squadArray);
-        setBattingoptions(TeamB_squadArray);
-      } else {
-        setBattingoptions(TeamA_squadArray);
-        setbowlers(TeamB_squadArray);
-      }
-    }
-    setLoading(100);
-    setLoading(false);
-  };
-
-  //to styling and editing <select> <option>
+    //to styling and editing <select> <option>
   const [selectedBastman1, setSelectedBastman1] = useState(null);
-  const [selectedBastman2, setSelectedBastman2] = useState(null);
+  const[selectedBastman1_Name,setSelectedBastman1_Name]=useState(null);
 
+  const [selectedBastman2, setSelectedBastman2] = useState(null);
+  const[selectedBastman2_Name,setSelectedBastman2_Name]=useState(null);
+
+  const[bastman_out,setbastman_out]=useState(null);
+
+  const [selectedbowler, setSelectedbowler] = useState(null);
+  const [selectedbowler_Name, setSelectedbowler_Name] = useState(null);
+  
   const [Battingoptions, setBattingoptions] = useState(null);
   const [bowlers, setbowlers] = useState(null);
 
-  const [selectedbowler, setSelectedbowler] = useState(null);
+    const [playState, setPlayState] = useState("in_play");
+  const [isPause, setIsPause] = useState(false);
+  
+
+  const[batting_team_Id,setbatting_team_id]=useState(null);
+  const[fieldingTeam_Id,setfieldingTeam_id]=useState(null);
+
+  const[selectedFielders,setSelectedFielders]=useState(bowlers ? bowlers.map((p) => p.label.trim()):[""] );
 
   const [over, setover] = useState(null);
-  const overoptions = [
+
+  const[Ballevent,setballevent]=useState(null);
+  const[updatedInning,setupdateInning]=useState({});
+
+
+  const[event,setevents]=useState("");
+  
+  const [bat_run,setbat_run]=useState(0);
+
+  const[backup_run,setbackup_run]=useState(null);
+
+  const [wide,setwide]=useState(0);
+  const [no_ball,setno_ball]=useState(0);
+  const [bye,setbye]=useState(0);
+  const [leg_bye,setleg_bye]=useState(0);
+  //for penalty select
+  const [penalty, setPenalty] = useState(null);
+  const [penalty_count,setPenalty_cout]=useState(0);
+  const [target,settarget]=useState(0);
+  const [is_out,setis_out]=useState(false);
+  const[how_out,sethow_out]=useState("");
+
+    //handling the playState
+const [overBalls, setOverBalls] = useState(["NA", "NA", "NA", "NA", "NA", "NA"])
+const [currentOver, setCurrentOver] = useState(null);
+const [current_Ball,setcurrent_Ball]=useState(0);
+
+//states for storing result from backend Match and Inning 
+const[result_run,setresult_run]=useState('NA');
+const[result_runRate,setresult_runRate]=useState('NA');
+const[result_fours,setresult_fours]=useState(0);
+const[result_sixes,setresult_sixes]=useState(0);
+const[result_wickets,setresult_wickets]=useState(0);
+const[result_overrun,setresult_overrun]=useState(0);
+const[result_session,setresult_session]=useState(0);
+const[batsman_run,setbatsman_run]=useState(0);
+const[batsman_ball,setbatsman_ball]=useState(0);
+const[non_striker_ball,setnon_striker_ball]=useState(0);
+const[non_striker_run,setnon_striker_run]=useState(0);
+
+
+
+const[batsman_Partnership_ball,setbatsman_Partnership_ball]=useState(0);
+const[batsman_Partnership_run,setbatsman_Partnership_run]=useState(0);
+const [total_fours,settotal_fours]=useState(0);
+const [total_sixes,settotal_sixes]=useState(0);
+const [bastman1_four,setbastman1_four]=useState(0);
+const [bastman1_six,setbastman1_six]=useState(0);
+const [bastman2_four,setbastman2_four]=useState(0);
+const [bastman2_six,setbastman2_six]=useState(0);
+
+const [battingTeam,setbattingTeam]=useState(null);
+const[ballingTeam,setballingTeam]=useState(null);
+
+
+
+const[resultover,setresult_over]=useState(null);
+
+  const dropdownref=useRef(null);
+  const penaltyref=useRef(null);
+
+    const overoptions = [
     { value: 0, label: "0" },
     { value: 1, label: "1" },
+    { value: 2, label: "2" },
+    { value: 3, label: "3" },
+    { value: 4, label: "4" },
+    { value: 5, label: "5" },
+    { value: 6, label: "6" },
+    { value: 7, label: "7" },
+    { value: 8, label: "8" },
+    { value: 9, label: "9" },
+    { value: 10, label: "10" },
+    { value: 11, label: "11" },
+    { value: 12, label: "12" },
+    { value: 13, label: "13" },
+    { value: 14, label: "14" },
+    { value: 15, label: "15" },
   ];
 
+const how_outOptions = [
+  { label: "Bowled", value: "bowled" },
+  { label: "Caught", value: "caught" },
+  { label: "Run Out", value: "run_out" },
+  { label: "Stumped", value: "stumped" },
+  { label: "LBW", value: "lbw" }
+];
+const [session,setsession]=useState(null);
   const [ball, setball] = useState(null);
   const balloptions = [
     { value: 1, label: "1" },
@@ -170,9 +145,8 @@ export const Scoring = () => {
     { value: 4, label: "4" },
     { value: 5, label: "5" },
     { value: 6, label: "6" },
-    { value: 7, label: "7" },
   ];
-
+  
   const playStateOptions = [
     { value: "in_play", label: "In Play" },
     { value: "drinks", label: "Drinks" },
@@ -191,36 +165,598 @@ export const Scoring = () => {
     { value: "other_no_play_state", label: "Other/No Play State" },
   ];
 
-  //handling the playState
+  // Fetch match on mount or matchId change
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (matchId) {
+      setLoading(true);
+      getMatch();
+      setLoading(50);
+    }
+  }, [user, matchId]);
 
-  const [playState, setPlayState] = useState("in_play");
-  const [isPause, setIsPause] = useState(false);
+  useEffect(() => {
+    const fetchTeamsAndSetBatBall = async () => {
+      if (!Match) return;
+      // Assuming Match.playingXI has both teams
+      let teamAPlayersObj = [];
+      let teamBPlayersObj = [];
 
+      if (Match.playingXI && Match.playingXI.length === 2) {
+        setLoading(75);
+        setTeamA_full(Match.playingXI[0].players);
+        setTeamB_full(Match.playingXI[1].players);
+
+      // Team A
+      teamAPlayersObj = Match.playingXI[0].players.map((player) => ({
+        _id: player._id,
+        player: player.isCaptain ? `${player.name} (C)` : player.name,
+      }));
+
+      // Team B
+      teamBPlayersObj = Match.playingXI[1].players.map((player) => ({
+        _id: player._id,
+        player: player.isCaptain ? `${player.name} (C)` : player.name,
+      }));
+    
+          console.log("Team A player"+teamAPlayersObj);
+          console.log("Team A player"+teamBPlayersObj);
+      }
+
+
+      setTeamA(teamAPlayersObj);
+      setTeamB(teamBPlayersObj);
+      setLoading(80);
+
+      // now teams exist, call setBatBall with data
+      await setBatBall(teamAPlayersObj, teamBPlayersObj);
+               
+    };
+    fetchTeamsAndSetBatBall();
+  }, [Match]);
+
+useEffect(() => {
+  if (!event) return; // do nothing if no action
+
+  const sendBall = async () => {
+    await ballByball();  // will use fresh state values
+    setevents("");       // reset after sending
+  };
+
+  sendBall();
+}, [
+  bat_run,
+  wide,
+  no_ball,
+  bye,
+  leg_bye,
+  penalty_count,
+  event,
+  selectedBastman1,
+  selectedBastman1_Name,
+  selectedBastman2,
+  selectedBastman2_Name,
+  selectedbowler,
+  selectedbowler_Name,
+  is_out,
+  how_out,
+  bastman_out,
+  over,
+  ball,
+  playState,
+]);
+
+  //to fetch match from database
+  const getMatch = async () => {
+    const response = await fetch(`${host}/api/cricscore/match/id/${matchId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setLoading(30);
+      console.log("Fetching Match is:", data.Match);
+
+      //storing the Match full details
+      setMatch(data.Match);
+      setsession(data.Match?.setsession);
+
+      // setTeamA(data.Match.teamA);
+      // setTeamB(data.Match.teamB);
+      localStorage.setItem("Match", data.Match);
+    } else {
+      alert("Unable to Fetch Match");
+    }
+  };
+
+  // to fetch team from database
+      const getTeam=async(id)=>{
+
+  const response=await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "*/*",
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("The team is ",data.team);
+          console.log("The team namei s",data.team.teamName);
+          return data.team;
+
+        }
+      };
+
+  const setBatBall = async (TeamA, TeamB) => {
+    const tossWinner = Match.toss.wonBy;
+    const descision = Match.toss.descision;
+    let ballingId,battingId;
+    setLoading(90);
+    const TeamA_squadArray = TeamA
+      .map((player) => ({ value: player._id, label: player.player }));
+
+    const TeamB_squadArray = TeamB
+      .map((player) => ({ value: player._id, label: player.player }));
+
+    if (tossWinner === Match.teamA) {
+      if (descision === "bat") {
+        battingId=Match.teamA_id;
+        ballingId=Match.teamB_id;
+        setBattingoptions(TeamA_squadArray);
+        setbowlers(TeamB_squadArray);
+      } else {
+        battingId=Match.teamB_id;
+        ballingId=Match.teamA_id
+        setbowlers(TeamA_squadArray);
+        setBattingoptions(TeamB_squadArray);
+
+      }
+    } else {
+      if (descision === "bat") {
+        battingId=Match.teamB_id;
+        ballingId=Match.teamA_id
+        setBattingoptions(TeamB_squadArray);
+        setbowlers(TeamA_squadArray);
+      } else {
+        battingId=Match.teamA_id;
+        ballingId=Match.teamB_id;
+        setBattingoptions(TeamA_squadArray);
+        setbowlers(TeamB_squadArray);
+      }
+    }
+
+
+
+    setfieldingTeam_id(ballingId);
+    setbatting_team_id(battingId);
+    
+await CreateInning(battingId,ballingId);
+
+let batting_team = await getTeam(battingId);
+setbattingTeam(batting_team);
+
+let balling_team = await getTeam(ballingId);
+setballingTeam(balling_team);
+
+
+    setLoading(100);
+    setLoading(false);
+
+    console.log("Bowlers"+TeamA_squadArray);
+    console.log(TeamB_squadArray);
+
+  };
+
+
+  
+
+
+   const handleWicketClick = () => {
+    if (dropdownref.current) {
+      // toggle dropdown manually
+      dropdownref.current.classList.toggle("show");
+    }
+  }
+   const handlepenclick = () => {
+    if (penaltyref.current) {
+      // toggle dropdown manually
+      penaltyref.current.classList.toggle("show");
+    }
+  }
+
+    const handleSelect = async (value) => {
+    sethow_out(value);
+    setbat_run(0);
+    setis_out(true);
+if(selectedBastman1){
+  setbastman_out(selectedBastman1);
+}
+
+
+    // close dropdown after selection
+    if (dropdownref.current) {
+      dropdownref.current.classList.remove("show");
+    }
+    // you can send to backend here
+    // await ballByball();
+  };
+  const handlepenalty=async (e)=>{
+       // close dropdown after selection
+       setbat_run(0);
+        setPenalty(e.value);
+        setPenalty_cout(1);
+       if (penaltyref.current) {
+         penaltyref.current.classList.remove("show");
+        }
+        // await ballByball();
+
+  }
+
+  
+
+  
   const handlePlayStateChange = (selectedOption) => {
     const selectedValue = selectedOption?.value || "in_play";
     setPlayState(selectedValue);
     setIsPause(selectedValue !== "in_play");
   };
-
+  
   const handleResumeState = () => {
     setIsPause(false);
     setPlayState("in_play");
   };
+  
+  const [ball1,setball1]=useState(null);
+  const [ball2,setball2]=useState(null);
+  const [ball3,setball3]=useState(null);
+  const [ball4,setball4]=useState(null);
+  const [ball5,setball5]=useState(null);
+  const [ball6,setball6]=useState(null);
+  
+  //to reset when over is changed
+const change_over=()=>{setOverBalls(()=>{
 
-  // 0
-
-  //for penalty select
-  const [penalty, setPenalty] = useState("");
-
+  setball1('NA');
+  setball2('NA');
+  setball3('NA');
+  setball4('NA');
+  setball5('NA');
+  setball6('NA');
+  return ["NA", "NA", "NA", "NA", "NA", "NA"]
+});}
+  
   const penaltyOptions = [
-    "Penalty - 5 runs (Unfair play)",
-    "Penalty - Player conduct",
-    "Penalty - Time wasting",
-    "Penalty - Illegal fielding",
-    "Penalty - Ball tampering",
-    "Penalty - Obstructing field",
-    "Penalty - Others",
+     "5 runs (Unfair play)",
+    "Time wasting",
+    "Illegal fielding",
+    "Ball tampering",
+    "Others",
   ];
+  
+// Swap function
+const handleSwap = () => {
+  setSelectedBastman1((prev1) => {
+    const newStriker = selectedBastman2;
+    setSelectedBastman2(prev1);  // swap values
+    return newStriker;
+  });
+
+  setSelectedBastman1_Name((prevName) => {
+    const newStrikerName = selectedBastman2_Name;
+    setSelectedBastman2_Name(prevName);
+    return newStrikerName;
+  });
+};
+
+// Effect to trigger payload update when striker/non-striker changes
+useEffect(() => {
+  const sendUpdate = async () => {
+    await ballByball(); // safe async call
+  };
+
+  if (selectedBastman1 && selectedBastman2 && selectedbowler) {
+    sendUpdate();
+  }
+}, [selectedBastman1, selectedBastman2]);
+  
+    // /api/cricscore/ballByball"
+  // /:tournamentId/:matchId
+   
+    const ballByball = async () => {
+
+        const payload={
+"over":over,
+"play_state":playState,
+"match_state":playState,
+"ball":ball,
+"event":event,
+"bat_run":bat_run,
+"extras":{
+  "wide":wide,
+  "no_ball":no_ball,
+  "bye":bye,
+  "leg_bye":leg_bye,
+  "penalties":penalty_count,
+
+},
+"target":target?target:0,
+"batsman":selectedBastman1_Name,
+"batsman_id":selectedBastman1,
+"non_striker":selectedBastman2_Name,
+"non_striker_id":selectedBastman2,
+"bowler":selectedbowler_Name,
+"bowler_id":selectedbowler,
+"is_out":is_out,
+"how_out":how_out?how_out :'',
+"batsman_out":bastman_out ? bastman_out :'', //passing id of out player
+"fielders":bowlers.map((p) => p.value.trim())   //pass the fielders as array separated by comma id
+  };
+
+    const response = await fetch(`${host}/api/cricscore/ballByball/${Match.tournament_id}/${matchId}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+       },
+        body: JSON.stringify(payload), // 👈 send payload here
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      //to remove the bastman who is out 
+      console.log("BallEvent result is:", data.ballEvent);
+      console.log("UpdatedInning result is:", data.updatedInning);
+
+      setupdateInning( data.updatedInning);
+      settarget(data.updatedInning?.target);
+
+
+
+      //securly  storing ball Event
+      if(data.ballEvent){
+        setballevent(data.ballEvent);
+      }
+      
+
+
+
+ //storing the over and prevent to reset the This Over value on swapping the bastman
+const currentOver1 = data.ballEvent?.over;
+const currentBall = data.ballEvent?.ball ?? 1;
+setCurrentOver(currentOver1);
+setcurrent_Ball(currentBall);
+
+
+//to handle the over for the swapping of two bastman to prevent from zero 
+if(data.ballEvent?.runs.total===0 && data.ballEvent?.wicket.is_out===false && data.ballEvent.event==='run'){
+  if(currentBall===1){
+  setball1(backup_run);
+}
+ else if(currentBall===2){
+  setball2(backup_run);
+}
+else if(currentBall===3){
+  setball3(backup_run);
+}
+else if(currentBall===4){
+  setball4(backup_run);
+}
+else if(currentBall===5){
+  setball5(backup_run);
+}
+else if(currentBall===6){
+  setball6(backup_run);
+}
+}
+
+else{
+
+
+
+if(currentBall===1){
+  setball1((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+if(currentBall===2){
+  setball2((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+if(currentBall===3){
+  setball3((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+if(currentBall===4){
+  setball4((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+if(currentBall===5){
+  setball5((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+if(currentBall===6){
+  setball6((data.ballEvent?.runs.total) ? data.ballEvent.runs.total :null);
+}
+
+}
+
+
+// ✅ Only reset when over changes, not on swap
+
+setOverBalls((prev) => {
+  if (currentOver1!== resultover) {
+    setCurrentOver(currentOver1 ? currentOver : Ballevent?.over);
+    return ["NA", "NA", "NA", "NA", "NA", "NA"];
+  }
+
+  let newBalls = [...prev];
+  const ballIndex = (currentBall ?? 1) - 1;
+
+  const ballValue = data.ballEvent?.wicket?.is_out
+    ? "W"
+    : data.ballEvent?.runs?.total ?? 0;
+
+  newBalls[ballIndex] = ballValue;
+  return newBalls;
+});
+setresult_over(currentOver1);
+
+      //setting ball over for each ball to display On This Over
+
+
+
+      alert("Match Update Success.....");    
+        // console.log("Updated over:"+data.ballEvent.runs.total);
+
+
+      //uupdating the the result from the backend for showing in the scorere page
+
+      setresult_run(data.updatedInning.runs);
+      setresult_wickets(data.updatedInning.wickets);
+
+      setresult_runRate(data.updatedInning.current_run_rate);
+      
+      //to get the total run,sixes ,ball,and four for the specific bastman at the current time
+
+if (data.updatedInning?.batsmen) {
+  data.updatedInning.batsmen.forEach((player) => {
+    if (String(player.id) === String(selectedBastman1)) {
+      setbatsman_run(player.runs);
+      setbatsman_ball(player.balls);
+      setbastman1_four(player.fours);
+      setbastman1_six(player.sixes);
+      console.log("Bastman run is:"+player.runs);
+    }
+
+    if (String(player.id) === String(selectedBastman2)) {
+      setnon_striker_ball(player.balls);
+      setnon_striker_run(player.runs);
+      setbastman2_four(player.fours);
+      setbastman2_six(player.sixes);
+            console.log("Bastman2 run is:"+player.runs);
+
+    
+    }
+  });
+
+  //setting total peerSharing overview,sum of two bastmand result
+let strikerStats, nonStrikerStats;
+data.updatedInning.batsmen.forEach((player) => {
+  if (String(player.id) === String(selectedBastman1)) strikerStats = player;
+  if (String(player.id) === String(selectedBastman2)) nonStrikerStats = player;
+});
+
+if (strikerStats && nonStrikerStats) {
+  setbatsman_Partnership_ball(strikerStats.balls + nonStrikerStats.balls);
+  setbatsman_Partnership_run(strikerStats.runs + nonStrikerStats.runs);
+  settotal_fours(strikerStats.fours + nonStrikerStats.fours);
+  settotal_sixes(strikerStats.sixes + nonStrikerStats.sixes);
+}
+
+  console.log("Bastman run:"+batsman_run);
+  console.log("Bastman ball "+batsman_ball);
+};
+
+
+      //updating the over run 
+ if (ball === 1) {
+  // first ball of a new over → reset
+  setresult_overrun(data.ballEvent?.runs.total);
+} else {
+  // same over → accumulate
+  setresult_overrun(prev => prev + data.ballEvent?.runs.total);
+}
+
+    if (is_out && selectedBastman1) {
+setBattingoptions((prev) =>
+  prev.filter((p) => String(p.value) !== String(selectedBastman1))
+)}
+  
+//backing up the current run 
+setbackup_run(bat_run);
+           // 🔄 reset states after sending a ball
+      setbat_run(0);
+      setwide(0);
+      setbye(0);
+      setleg_bye(0);
+      setno_ball(0);
+      setPenalty(null);
+      setevents("");
+      setis_out(false);
+      sethow_out("");
+      setPenalty_cout(0);
+      setbastman_out(null);
+      setSelectedFielders([]);
+      setPenalty_cout(0);
+
+}
+      else{
+        alert("Unable to Send BallBYBall Match");
+      };
+    }
+    const CreateInning = async (batting_team_Id,fieldingTeam_Id) => {
+
+        const payload={
+         inningNumber:1,
+          battingTeam:batting_team_Id,
+          fieldingTeam:fieldingTeam_Id,
+
+  };
+
+    const response = await fetch(`${host}/api/cricscore/ballByball/inning/${Match.tournament_id}/${matchId}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+       },
+        body: JSON.stringify(payload), // 👈 send payload here
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      //to remove the bastman who is out 
+
+      alert(data.message);
+alert("Inning Set Successfully"); 
+    }
+     else {
+      alert("Unable to set Inning");
+    }
+  };
+//    //to fetch team from database
+//   const getTeam = async (teamId) => {
+//     const response = await fetch(
+//       `${host}/api/cricscore/teams/${teamId}`,
+//       {
+//         method: "GET",
+//         credentials: "include",
+//         headers: {
+//           Accept: "*/*",
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     if (response.ok) {
+//       const data = await response.json();
+  
+//       console.log("The fetched Team is:"+data.Team);
+//       return data.Team
+// ;    }
+//   };
+
+
+  //to create inning when the match start
+
+
+
 
   return (
     <>
@@ -239,7 +775,7 @@ export const Scoring = () => {
             {" "}
             {Match ? Match.tournament_name : "Tournament Name"}
           </h1>
-          <form>
+          <div>
             <div id="scoring_head" className="scoring_head">
               <div
                 style={{
@@ -286,27 +822,21 @@ export const Scoring = () => {
                 }}
               >
                 <div id="team_Batting">
-                  <span style={{ fontSize: "20px", fontWeight: "650" }}>
-                    {Match?.teamA || "Team A"}{" "}
+                  <span style={{ fontSize: "20px", fontWeight: "650" }}>{
+                    battingTeam ? battingTeam?.teamName : (Match?.teamA || "Team A")}
                   </span>
-                  <span> 86/1 </span>
-                  <span> dec </span>
-                  <span> & </span>
-                  <span style={{ fontSize: "20px", fontWeight: "600" }}>
-                    {" "}
-                    18/1 <span>(0.4)</span>
+                  <span style={{ fontSize: "20px", fontWeight: "500" }}>{
+                     (result_run ?result_run : 0) +'/'+ (result_wickets ?result_wickets:0 )}<span style={{marginLeft:'0.3rem'}}>({currentOver?currentOver:0}.{current_Ball?current_Ball:1})</span>
+                     <span></span>
+                     <span>Target:{updatedInning?.target}</span>
                   </span>
                 </div>
                 <div id="team_Bowling">
                   <span style={{ fontSize: "17px", fontWeight: "550" }}>
-                    {Match?.teamB || "Team B"}{" "}
+                    {ballingTeam ? ballingTeam?.teamName :(Match?.teamB || "Team B")}
                   </span>
-                  <span> 62/4</span>
-                  <span> dec </span>
-                  <span> & </span>
-                  <span style={{ fontSize: "17px", fontWeight: "550" }}>
-                    {" "}
-                    36/0 <span>(0.4)</span>
+                  <span style={{ fontSize: "17px", fontWeight: "550" }}>{
+                     (result_run ?result_run : 0) +'/'+ (result_wickets ?result_wickets:0 )}<span style={{marginLeft:'0.3rem'}}>({currentOver?currentOver:0}.{current_Ball?current_Ball:1})</span>
                   </span>
                 </div>
                 <div> </div>
@@ -318,19 +848,19 @@ export const Scoring = () => {
                   style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
                 >
                   <div id="col1_head">
+                    <div className="">Over Runs</div>
                     <div className="">Last Wicket</div>
-                    <div className="">Last 5 Overs</div>
                     <div className="">Sessions</div>
                     <div className="">Run Rate</div>
                   </div>
                   <div id="col1_value" style={{ fontWeight: "600" }}>
-                    <div className="">0/1</div>
-                    <div className="">N/A</div>
-                    <div className="">202/6</div>
-                    <div className="">27</div>
+                    <div>{result_overrun?result_overrun:0}</div>
+                    <div className="">{ (result_run ?result_run : 0) +'/'+ (result_wickets ?result_wickets:0 )}</div>
+                    <div className="">{session ? session: 'Day'}</div>
+                    <div className="">{result_runRate ? result_runRate :"NA"}</div>
                   </div>
                 </div>
-                <div
+                {/* <div
                   id="summary_right_right"
                   style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
                 >
@@ -338,15 +868,15 @@ export const Scoring = () => {
                     <div className="">DRS</div>
                     <div className="">Over Rate</div>
                     <div className="">Cut Off</div>
-                    <div className="">Over Runs</div>
+
                   </div>
                   <div id="col2_value" style={{ fontWeight: "600" }}>
+                    <div>N/A</div>2
                     <div>N/A</div>
                     <div>N/A</div>
-                    <div>N/A</div>
-                    <div>79</div>
+                    
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -395,10 +925,13 @@ export const Scoring = () => {
                       Battingoptions
                         ? Battingoptions.find(
                             (opt) => opt.value === selectedBastman1
+                            
                           ) || null
                         : null
                     }
-                    onChange={(opt) => setSelectedBastman1(opt?.value)}
+                    onChange={(opt) => {setSelectedBastman1(opt?.value)
+                      setSelectedBastman1_Name(opt?.label)}
+                    }
                     isDisabled={isPause}
                     isClearable
                     placeholder="Striker"
@@ -436,7 +969,8 @@ export const Scoring = () => {
                           ) || null
                         : null
                     }
-                    onChange={(opt) => setSelectedBastman2(opt?.value)}
+                    onChange={(opt) => {setSelectedBastman2(opt?.value)
+                  setSelectedBastman2_Name(opt?.label)}}
                     isClearable
                     placeholder="Non Striker"
                     isDisabled={isPause}
@@ -454,10 +988,9 @@ export const Scoring = () => {
                   <button
                     type="button"
                     disabled={isPause}
-                    onClick={() => {
-                      const temp = selectedBastman1;
-                      setSelectedBastman1(selectedBastman2);
-                      setSelectedBastman2(temp);
+                    onClick={()=>{
+                      handleSwap();
+                      setevents("run");
                     }}
                     style={{
                       width: "auto",
@@ -488,12 +1021,24 @@ export const Scoring = () => {
                   <label htmlFor="over">This Over:</label>
                   <table id="over">
                     <thead>
-                      <tr className="current_over">
-                        <td>6</td>
-                        <td>6</td>
-                        <td>W</td>
-                        <td>6</td>
-                      </tr>
+ {/* <tr className="current_over" id="current_over">
+  {overBalls.map((ball, index) => (
+    <td key={index}>
+      {index === 0 && ball1 ? ball1:ball}
+    </td>
+  ))}
+</tr> */}
+<tr className="current_over" id="current_over">
+  {overBalls.map((ball, index) => {
+    const manualBalls = [ball1, ball2, ball3, ball4, ball5, ball6]; 
+    return (
+      <td key={index}>
+        {manualBalls[index] ? manualBalls[index] : ball}
+      </td>
+    );
+  })}
+</tr>
+
                     </thead>
                   </table>
                 </div>
@@ -519,28 +1064,20 @@ export const Scoring = () => {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>18</td>
-                      <td>3</td>
-                      <td>0</td>
-                      <td>3</td>
+                      <td>{batsman_run ? batsman_run : 0}</td>
+                      <td>{batsman_ball ? batsman_ball : 0}</td>
+                      <td>{bastman1_four ? bastman1_four : 0}</td>
+                      <td>{bastman1_six ? bastman1_six : 0}</td>
                     </tr>
                     <tr>
-                      <td>18</td>
-                      <td>3</td>
-                      <td>0</td>
-                      <td>3</td>
                     </tr>
                     <tr>
-                      <td>18</td>
-                      <td>3</td>
-                      <td>0</td>
-                      <td>3</td>
+                      <td>{non_striker_run ? non_striker_run : 0}</td>
+                      <td>{non_striker_ball ? non_striker_ball : 0}</td>
+                      <td>{bastman2_four ? bastman2_four : 0}</td>
+                      <td>{bastman2_six ? bastman2_six : 0}</td>
                     </tr>
                     <tr>
-                      <td>18</td>
-                      <td>3</td>
-                      <td>0</td>
-                      <td>3</td>
                     </tr>
                   </tbody>
                 </table>
@@ -564,10 +1101,10 @@ export const Scoring = () => {
                           gap: "0.5rem",
                         }}
                       >
-                        <th>6</th>
-                        <th>1</th>
-                        <th>0</th>
-                        <th>0</th>
+                        <th>{batsman_run+non_striker_run}</th>
+                        <th>{batsman_ball+non_striker_ball}</th>
+                        <th>{bastman1_four+bastman2_four}</th>
+                        <th>{bastman1_six + bastman2_six}</th>
                       </tr>
                     </thead>
                   </table>
@@ -607,7 +1144,8 @@ export const Scoring = () => {
                           null
                         : null
                     }
-                    onChange={(opt) => setSelectedbowler(opt?.value)}
+                    onChange={(opt) =>{ setSelectedbowler(opt?.value)
+                  setSelectedbowler_Name(opt?.label)}}
                     isDisabled={isPause}
                     isClearable
                     placeholder="Bowler"
@@ -641,7 +1179,10 @@ export const Scoring = () => {
                       value={
                         overoptions.find((opt) => opt.value === over) || null
                       }
-                      onChange={(opt) => setover(opt?.value)}
+                      onChange={(opt) => {
+                        setover(opt?.value);
+                        change_over();
+                      }}
                       isDisabled={isPause}
                       placeholder="Over"
                       styles={{
@@ -819,6 +1360,7 @@ export const Scoring = () => {
                 </div>
               </div>
             </div>
+            {/* </form> */}
 
             {/* <div id="scoring"> */}
 
@@ -884,13 +1426,17 @@ export const Scoring = () => {
               </div>
             </div>
 
-            <div className="scoring-panel">
+            <form className="scoring-panel">
               <div className="wick-pen">
-                <button
+
+                 {/* <div className="label">Pen</div>  */}
+                  <div className="btn-group">
+                        <button typeof="button"
                   disabled={isPause}
                   type="button"
                   id="wicket"
                   className="btn btn-success"
+                  onClick={handleWicketClick}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -924,69 +1470,117 @@ export const Scoring = () => {
                     />
                   </svg>
                 </button>
-                {/* <div className="label">Pen</div> */}
+
+        {/* Dropdown part of the same button */}
+        {/* <button
+          type="button"
+          className="btn  dropdown-toggle dropdown-toggle-split"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          disabled={isPause}
+        >
+          <span className="visually-hidden">Toggle Dropdown</span>
+        </button> */}
+        <ul className="dropdown-menu" ref={dropdownref}>
+          {how_outOptions.map((opt, i) => (
+            <li key={i}>
+              <button type="button"
+                className="dropdown-item"
+                onClick={() => {handleSelect(opt.value)
+                  setevents("wicket")}
+                }
+              >
+                {opt.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="btn-group">
+                
+                <ul className="dropdown-menu" ref={penaltyref}>
+                  {penaltyOptions.map((opt, i) => (
+            <li key={i}>
+              <button type="button"
+                className="dropdown-item"
+                onClick={(e) =>{ 
+                  handlepenalty(e.target.value)
+                  setevents("Penalty")
+                }}
+              >
+                {opt}
+              </button>
+            </li>
+                  ))}
+                </ul>
                 <button
                   disabled={isPause}
                   type="button"
                   id="penalty"
                   className="btn btn-warning pen-btn"
-                  onClick={() => {
-                    alert(penalty ? penalty : "Select Penalty!");
-                  }}
+                  onClick={handlepenclick}
                 >
                   Pen
                 </button>
-                <select
-                  className="pen-select"
-                  value={penalty}
-                  onChange={(e) => setPenalty(e.target.value)}
-                >
-                  <option value="">Select Penalty</option>
-                  {penaltyOptions.map((opt, i) => (
-                    <option key={i} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
+                </div>
               </div>
 
               <div className="runs">
-                <button
+                <button type="button"onClick={()=>{setbat_run(0) 
+                setevents("run")
+                  
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
                 >
                   0
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbat_run(1)
+                setevents("run")
+                
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbat_run(2)
+                setevents("run")
+                
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
                 >
                   2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbat_run(3)
+                setevents("run")
+                
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbat_run(4)
+                setevents("four")
+                
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
                 >
                   4
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbat_run(6)
+                setevents("six")
+                
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ce293" }}
@@ -995,42 +1589,60 @@ export const Scoring = () => {
                 </button>
               </div>
               <div className="wides">
-                <button
+                <button type="button"onClick={()=>{setwide(1)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
                 >
                   w
                 </button>
-                <button
+                <button type="button"onClick={()=>{setwide(2)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
                 >
                   +1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setwide(3)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
                 >
                   +2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setwide(4)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
                 >
                   +3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setwide(5)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
                 >
                   +4
                 </button>
-                <button
+                <button type="button"onClick={()=>{setwide(6)
+                setevents("wide")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#71abf1" }}
@@ -1039,28 +1651,40 @@ export const Scoring = () => {
                 </button>
               </div>
               <div className="bytes">
-                <button
+                <button type="button" onClick={()=>{setbye(1)
+                setevents("bytes")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#d75a5a", color: "white" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbye(2)
+                setevents("bytes")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#d75a5a", color: "white" }}
                 >
                   2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbye(3)
+                setevents("bytes")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#d75a5a", color: "white" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setbye(4)
+                setevents("bytes")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#d75a5a", color: "white" }}
@@ -1069,28 +1693,40 @@ export const Scoring = () => {
                 </button>
               </div>
               <div className="legbytes">
-                <button
+                <button type="button"onClick={()=>{setleg_bye(1)
+                setevents("legbyte")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#eddb76" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setleg_bye(2)
+                setevents("legbyte")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#eddb76" }}
                 >
                   2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setleg_bye(3)
+                setevents("legbyte")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#eddb76" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setleg_bye(4)
+                setevents("legbyte")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#eddb76" }}
@@ -1099,28 +1735,40 @@ export const Scoring = () => {
                 </button>
               </div>
               <div className="noball_b">
-                <button
+                <button type="button"onClick={()=>{setno_ball(1)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ba8a3" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(2)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ba8a3" }}
                 >
                   2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(3)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ba8a3" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(4)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#7ba8a3" }}
@@ -1130,28 +1778,40 @@ export const Scoring = () => {
               </div>
 
               <div className="noball_lb">
-                <button
+                <button type="button"onClick={()=>{setno_ball(0)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#44d7e1" }}
                 >
                   0
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(1)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#44d7e1" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(3)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#44d7e1" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(4)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#44d7e1" }}
@@ -1160,42 +1820,60 @@ export const Scoring = () => {
                 </button>
               </div>
               <div className="noball_run">
-                <button
+                <button type="button"onClick={()=>{setno_ball(0)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
                 >
                   0
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(1)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
                 >
                   1
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(2)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
                 >
                   2
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(3)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
                 >
                   3
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(4)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
                 >
                   4
                 </button>
-                <button
+                <button type="button"onClick={()=>{setno_ball(6)
+                setevents("noball")
+              
+                }}
                   disabled={isPause}
                   className="scoring-button"
                   style={{ background: "#c43138", color: "whitesmoke" }}
@@ -1203,23 +1881,8 @@ export const Scoring = () => {
                   6
                 </button>
               </div>
-            </div>
-
-            {/* <button type="button" id="add_run" className="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="50" height="50">
-  <path fill="#EA685E" d="M10,55c0,0,11.3-0.7,15-3s20.3-25.3,22.5-29c2.4-3.7-11.8-9.6-11.8-9.6s-3.3-2.1-5.3-1.1s0.1,4.3,1.6,6.3c1.5,2,0,4.9-3.2,4.4c-1.4-0.2-7-0.9-7-0.9s0.1,3.8-0.8,8.9c-0.9,5.4-1.2,9.4-3.8,12.8S8.7,48.3,8,51S10,55,10,55z"/>
-  <path fill="#E64C3C" d="M38.9,14.9l-0.3,0.3c-2.1,3.8-1,8.6,2.5,11l3.2,1.5c1.6-2.2,2.7-3.9,3.2-4.7C49.1,20.5,43,16.9,38.9,14.9z"/>
-  <path fill="#F8B319" d="M46,19.3c0,0-7.9,12-9.8,14.8c-1.9,2.8-11,14.5-14,15.9c-3,1.4-14,3.3-14,3.3C8.8,54.4,10,55,10,55s11.3-0.7,15-3c3.7-2.3,20.3-25.3,22.5-29C48.2,21.9,47.4,20.6,46,19.3z"/>
-  <path fill="none" stroke="#2C3E50" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" d="M10,55c0,0,11.3-0.7,15-3s20.3-25.3,22.5-29c2.4-3.7-11.8-9.6-11.8-9.6s-3.3-2.1-5.3-1.1s0.1,4.3,1.6,6.3c1.5,2,0,4.9-3.2,4.4c-1.4-0.2-7-0.9-7-0.9s0.1,3.8-0.8,8.9c-0.9,5.4-1.2,9.4-3.8,12.8S8.7,48.3,8,51S10,55,10,55z"/>
-  <polyline fill="#8C623B" points="28.4,55 39.2,42.2 42.6,55 52.4,42.2 56,55"/>
-  <polyline fill="none" stroke="#2C3E50" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" points="28.4,55 39.2,42.2 42.6,55 52.4,42.2 56,55"/>
-  <path fill="none" stroke="#2C3E50" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" d="M8.2,53.3c0,0,11-1.9,14-3.3s12.1-13.1,14-15.9S46,19.3,46,19.3"/>
-  <line x1="21.2" y1="29.3" x2="31.9" y2="34.2" stroke="#2C3E50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" fill="none"/>
-  <line x1="20.7" y1="32.8" x2="29.9" y2="37.1" stroke="#2C3E50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" fill="none"/>
-  <line x1="20.1" y1="36.3" x2="27.8" y2="40" stroke="#2C3E50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" fill="none"/>
-  <path d="M41.1,26.3c-3.5-2.5-4.6-7.2-2.5-11" stroke="#2C3E50" strokeWidth="2" strokeDasharray="0,3" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" fill="none"/>
-</svg>
-Add run</button> */}
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </>
