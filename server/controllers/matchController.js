@@ -115,16 +115,22 @@ async function handlePreMatch(req, res) {
   try {
     const matchId = req.params.matchId;
     const match = await Match.findById(matchId);
+    console.log("req.body.onField:", req.body.onField);
     if (!match) {
       return res.status(422).json({ message: "Match not found" });
     }
     await Match.findByIdAndUpdate(matchId, {
       toss: { wonBy: req.body.tossWinner, decision: req.body.decision },
-      umpires: {
-        onField: req.body.onfield.split(","),
-        third: req.body.third,
-        tv: req.body.tv,
-      },
+      umpires:{
+      onField: Array.isArray(req.body.onField)
+        ? req.body.onField
+        : req.body.onField
+        ? req.body.onField.split(",").map(u => u.trim())
+        : [],
+      third: req.body.third || null,
+      tv: req.body.tv || null,
+    },
+    session:req.body.session,
       matchRefree: req.body.r,
     });
     return res.status(200).json({ message: "Prematch updated successfully" });
@@ -171,7 +177,7 @@ async function handlePreMatch(req, res) {
 // }
 async function savePlayingXI(req, res, next) {
   const { matchId } = req.params;
-  const { playingXI, toss, umpires, matchRefree } = req.body;
+  const { playingXI, toss, umpires, matchRefree,session } = req.body;
 
   if (!playingXI || !Array.isArray(playingXI) || playingXI.length !== 2)
     return res.status(400).json({ message: "Both teams must be included" });
@@ -184,6 +190,7 @@ async function savePlayingXI(req, res, next) {
     if (toss) match.toss = toss;
     if (umpires) match.umpires = umpires;
     if (matchRefree) match.matchRefree = matchRefree;
+    if(session) match.session=session;
 
     // Save playing XI
     match.playingXI = playingXI;

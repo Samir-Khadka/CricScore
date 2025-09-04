@@ -52,7 +52,10 @@ const MatchSchema = new Schema(
     },
     matchState: {
       type: String,
-      required: true,
+    },
+    session:{
+      type:String,
+      default:"Afternoon"
     },
     umpires: {
       onField: [String],

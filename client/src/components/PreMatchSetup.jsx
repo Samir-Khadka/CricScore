@@ -47,6 +47,13 @@ const PreMatchSetup = () => {
 
   // const [matchId, setMatchId] = useState(null);
 
+  const sessions = [
+  { value: "Morning", label: "Morning (09:30 - 12:00)" },
+  { value: "Afternoon", label: "Afternoon (12:40 - 15:00)" },
+  { value: "Evening", label: "Evening (15:20 - 17:30)" }
+];
+
+
   useEffect(() => {
     setLoading(true);
     setProgress(30);
@@ -119,6 +126,7 @@ const PreMatchSetup = () => {
     const third = document.getElementById("third").value;
     const tv = document.getElementById("tv").value;
     const r = document.getElementById("refree").value;
+    const session=document.getElementById("session").value;
 
     if (!teamA_SelectedPlayer || teamA_SelectedPlayer.length !== 11)
       return alert("Select 11 players for Team A");
@@ -126,20 +134,22 @@ const PreMatchSetup = () => {
       return alert("Select 11 players for Team B");
     if (!teamA_Captain || !teamB_Captain)
       return alert("Select captain for both teams");
+    if(!session) return alert("Please Select Session.");
 
     // Prepare payload
     const payload = {
       tournament_id: Match.tournament_id,
       teamA: Match.teamA_id,
       teamB: Match.teamB_id,
+      session:session,
       toss: {
         wonBy: tossWinner,
         decision,
       },
       umpires: {
-        onField: onfield.split(","),
-        third,
-        tv,
+        onField:onfield.split(','),
+        third:third,
+        tv:tv,
       },
 
       matchRefree: r,
@@ -258,6 +268,16 @@ const PreMatchSetup = () => {
                 <option value="ball">Bowling</option>
               </select>
             </div>
+            <div className="form-group">
+              <label htmlFor="session">Session</label>
+            <select name="session" id="session" required>
+  {sessions.map((session) => (
+    <option key={session.value} value={session.value}>
+      {session.label}
+    </option>
+  ))}
+</select>
+  </div>
 
             <div className="form-group">
               <label htmlFor="onfield">OnField Umpires</label>

@@ -204,7 +204,7 @@ async function handleGetTeamById(req, res) {
     }
     return res
       .status(200)
-      .json({ data: team, message: "Team fetch successful." });
+      .json({ team:team, message: "Team fetch successful." });
   } catch (error) {
     console.error("Error fetching team:", error);
     return res.status(500).json({ error: "Internal server error." });

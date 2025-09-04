@@ -1,7 +1,8 @@
 const express = require("express");
 const Innings = require("../models/Innings");
-const { handleCreateBallEvent } = require("../controllers/ballEventController");
-const { handleBallByBall } = require("../controllers/ballByBallController");
+const { startInning }=require("../services/CreateInning");
+// const { handleCreateBallEvent } = require("../controllers/ballEventController");
+const handleBallByBall = require("../controllers/ballByBallController");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -9,5 +10,6 @@ router.get("/", (req, res) => {
 });
 
 router.post("/:tournamentId/:matchId", handleBallByBall);
+router.post("/inning/:tournamentId/:matchId", startInning);
 
 module.exports = router;
