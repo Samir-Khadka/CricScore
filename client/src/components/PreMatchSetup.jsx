@@ -2,62 +2,62 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { useContext } from "react";
 import cricContext from "../context/CricContext.js";
-import {
-  Navigate,
-  useLocation,
-  useParams,
-  useNavigate,
-} from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import TeamSelection from "./TeamSelection.jsx";
-import LoadingBar from "react-top-loading-bar";
 import "../css/PreMatch.css";
 import "../css/PreMatchNew.css";
 
 const PreMatchSetup = () => {
+  //hooks for getting data from react router
   const location = useLocation();
+  const { matchId } = useParams();
+  const navigate = useNavigate();
+
+  //states for match and teams
   const [teams, setTeams] = useState(null);
   const [MatchId, setMatchId] = useState(null);
-  const navigate = useNavigate();
   const [Match, setMatch] = useState(null);
 
   // for top bar loading
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  //both teams squad
   const [TeamA_squad, setTeamA_squad] = useState(null);
   const [TeamB_squad, setTeamB_squad] = useState(null);
 
+  //values from context for playing xi
   const {
     teamA_SelectedPlayer,
     setTeamA_SelectedPlayer,
     teamB_SelectedPlayer,
     setTeamB_SelectedPlayer,
   } = useContext(cricContext);
+
+  //captains
   const [teamA_Captain, setteamA_Captain] = useState(null);
   const [teamB_Captain, setteamB_Captain] = useState(null);
 
   //storing player data from backend
-  // local state initialized from props
   const [playerA_Data, setplayerA_Data] = useState(null);
   const [playerB_Data, setplayerB_Data] = useState(null);
-
-  const { matchId } = useParams(); //
 
   const host = "http://localhost:5000";
 
   // const [matchId, setMatchId] = useState(null);
 
   const sessions = [
-  { value: "Morning", label: "Morning (09:30 - 12:00)" },
-  { value: "Afternoon", label: "Afternoon (12:40 - 15:00)" },
-  { value: "Evening", label: "Evening (15:20 - 17:30)" }
-];
+    { value: "Morning", label: "Morning (09:30 - 12:00)" },
+    { value: "Afternoon", label: "Afternoon (12:40 - 15:00)" },
+    { value: "Evening", label: "Evening (15:20 - 17:30)" },
+  ];
 
-
+  //set teams from previous page
   useEffect(() => {
     setLoading(true);
     setProgress(30);
     getMatch(matchId); // fetch match first
+
     if (location.state) {
       setTeams(location.state?.teams || []);
       setMatchId(matchId);
@@ -66,11 +66,8 @@ const PreMatchSetup = () => {
     }
   }, [location.state, matchId]);
 
-  //to set the player squ
-
-  // Fetch squads when Match is updated
+  //once match is fetched, get players from backend
   useEffect(() => {
-    // setLoading(true);
     if (Match) {
       getTeam(Match.tournament_id, Match.teamA_id).then(setplayerA_Data);
       getTeam(Match.tournament_id, Match.teamB_id).then(setplayerB_Data);
@@ -78,6 +75,7 @@ const PreMatchSetup = () => {
     }
   }, [Match]);
 
+  //once players are fetched, transform it into objects for displaying in select
   useEffect(() => {
     if (playerA_Data && playerB_Data) {
       setProgress(80);
@@ -100,6 +98,7 @@ const PreMatchSetup = () => {
     }
   }, [playerA_Data, playerB_Data, loading]);
 
+  //populate teams name for toss
   useEffect(() => {
     populateSelectTeam();
   }, [teams]);
@@ -116,7 +115,8 @@ const PreMatchSetup = () => {
     }
   };
 
-  //to fetch match from database
+  //to send prematch data to database
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -126,7 +126,7 @@ const PreMatchSetup = () => {
     const third = document.getElementById("third").value;
     const tv = document.getElementById("tv").value;
     const r = document.getElementById("refree").value;
-    const session=document.getElementById("session").value;
+    const session = document.getElementById("session").value;
 
     if (!teamA_SelectedPlayer || teamA_SelectedPlayer.length !== 11)
       return alert("Select 11 players for Team A");
@@ -134,22 +134,22 @@ const PreMatchSetup = () => {
       return alert("Select 11 players for Team B");
     if (!teamA_Captain || !teamB_Captain)
       return alert("Select captain for both teams");
-    if(!session) return alert("Please Select Session.");
+    if (!session) return alert("Please Select Session.");
 
     // Prepare payload
     const payload = {
       tournament_id: Match.tournament_id,
       teamA: Match.teamA_id,
       teamB: Match.teamB_id,
-      session:session,
+      session: session,
       toss: {
         wonBy: tossWinner,
         decision,
       },
       umpires: {
-        onField:onfield.split(','),
-        third:third,
-        tv:tv,
+        onField: onfield.split(","),
+        third: third,
+        tv: tv,
       },
 
       matchRefree: r,
@@ -172,7 +172,6 @@ const PreMatchSetup = () => {
           })),
         },
       ],
-
     };
 
     try {
@@ -191,7 +190,7 @@ const PreMatchSetup = () => {
       if (!response.ok)
         return alert(data.message || "Failed to save Playing XI");
 
-      console.log("✅ Both teams saved:", data.updatedMatch);
+      console.log("Both teams saved:", data.updatedMatch);
       navigate(`/scoring/${MatchId}`, { state: { matchId: MatchId } });
     } catch (error) {
       console.error("Error saving Playing XI:", error);
@@ -270,14 +269,14 @@ const PreMatchSetup = () => {
             </div>
             <div className="form-group">
               <label htmlFor="session">Session</label>
-            <select name="session" id="session" required>
-  {sessions.map((session) => (
-    <option key={session.value} value={session.value}>
-      {session.label}
-    </option>
-  ))}
-</select>
-  </div>
+              <select name="session" id="session" required>
+                {sessions.map((session) => (
+                  <option key={session.value} value={session.value}>
+                    {session.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="form-group">
               <label htmlFor="onfield">OnField Umpires</label>
