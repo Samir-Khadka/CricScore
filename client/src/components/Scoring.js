@@ -1,11 +1,15 @@
 import scoring_btns, {
+  how_outOptions,
   initialBallFields,
   isBallCounted,
 } from "../services/ScoringService";
-import ScoringButtons from "./ScoringButtons";
+import ScoringButtons from "./ScoringComponents/ScoringButtons";
 import Select from "react-select";
 import "../css/ScoringFinal.css";
 import { useState } from "react";
+import DropdownButton from "./ScoringComponents/DropdownButton";
+import { ReactComponent as WicketIcon } from "../assets/wicket.svg";
+import FielderSelector from "./ScoringComponents/FielderSelector";
 
 const Scoring = () => {
   //payload state - only initialBallFields are reset after each ball
@@ -15,11 +19,14 @@ const Scoring = () => {
     match_state: "live",
     ball: 0,
     target: 0,
-    batsman: null,
-    non_striker: null,
-    bowler: null,
+    striker: "*Virat Kohli",
+    non_striker: "Rohit Paudel",
+    bowler: "Sandeep Lamichhane",
     ...initialBallFields,
   });
+
+  const [howOut, setHowOut] = useState(null);
+  const [showFielderModal, setShowFielderModal] = useState(false);
 
   return (
     <>
@@ -83,7 +90,10 @@ const Scoring = () => {
                   </span>
                   <span style={{ fontSize: "20px", fontWeight: "500" }}>
                     Current Runs: {ballByBallPayload.bat_run}
-                    <span style={{ marginLeft: "0.3rem" }}> Current ball: ({ballByBallPayload.ball})</span>
+                    <span style={{ marginLeft: "0.3rem" }}>
+                      {" "}
+                      Current ball: ({ballByBallPayload.ball})
+                    </span>
                     <span></span>
                     <span></span>
                   </span>
@@ -524,47 +534,63 @@ const Scoring = () => {
             <div className="scoring-panel">
               <div className="wick-pen">
                 {/* wicket button  */}
-                <div className="btn-group">
-                  <button
-                    typeof="button"
-                    type="button"
-                    id="wicket"
-                    className="btn btn-success"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 512 512"
-                      width="36"
-                      height="36"
-                    >
-                      <path
-                        fill="#111111"
-                        d="M125.991 40.945h10.041v10.041c0 5.5 4.46 9.96 9.96 9.96h70.005c5.5 0 9.96-4.46 9.96-9.96V40.945h10.041c5.5 0 9.96-4.46 9.96-9.96s-4.46-9.96-9.96-9.96h-10.041V10.983c0-5.501-4.46-9.96-9.96-9.96h-70.005c-5.5 0-9.96 4.459-9.96 9.96v10.042h-10.041c-5.5 0-9.96 4.46-9.96 9.96s4.46 9.96 9.96 9.96z"
-                      />
-                      <path
-                        fill="#111111"
-                        d="M276.002 40.945h10.041v10.041c0 5.5 4.46 9.96 9.96 9.96h70.005c5.5 0 9.96-4.46 9.96-9.96V40.945h10.041c5.5 0 9.96-4.46 9.96-9.96s-4.46-9.96-9.96-9.96h-10.041V10.983c0-5.501-4.46-9.96-9.96-9.96h-70.005c-5.5 0-9.96 4.459-9.96 9.96v10.042h-10.041c-5.5 0-9.96 4.46-9.96 9.96s4.46 9.96 9.96 9.96z"
-                      />
-                      <path
-                        fill="#87CEEB"
-                        d="M431.053 451.054h-10.082V100.948c0-10.984-8.936-19.92-19.92-19.92h-30.083c-10.984 0-19.92 8.936-19.92 19.92v350.106h-60.086V100.948c0-10.984-8.936-19.92-19.92-19.92h-30.082c-10.984 0-19.92 8.936-19.92 19.92v350.106h-60.086V100.948c0-10.984-8.936-19.92-19.92-19.92h-30.083c-10.984 0-19.92 8.936-19.92 19.92v350.106H80.947c-10.984 0-19.92 8.936-19.92 19.92v20.083c0 10.984 8.936 19.92 19.92 19.92h350.105c10.984 0 19.92-8.936 19.92-19.92v-20.083c0-10.984-8.936-19.92-19.919-19.92z"
-                      />
-                      <path
-                        fill="#00BFFF"
-                        d="M370.967 100.948h30.083v350.106h-30.083V100.948z"
-                      />
-                      <path
-                        fill="#00BFFF"
-                        d="M110.949 100.948h30.083v350.106h-30.083V100.948z"
-                      />
-                      <path
-                        fill="#B0E0E6"
-                        d="M80.947 491.057v-20.083c110.749 0 228.966 0 350.105 0v20.082c-35.919 0-340.205.001-350.105.001z"
-                      />
-                    </svg>
-                  </button>
-                  <ul className="dropdown-menu"></ul>
-                </div>
+
+                <DropdownButton
+                  btnClass="btn-success"
+                  icon={<WicketIcon />}
+                  options={how_outOptions}
+                  onSelect={(how_out) => {
+                    setHowOut(how_out);
+
+                    // base payload for any wicket
+                    setBallByBallPayload((payload) => ({
+                      ...payload,
+                      event: "wicket",
+                      is_out: true,
+                      how_out,
+                      batsman_out:
+                        how_out === "run_out_non_striker"
+                          ? payload.non_striker
+                          : payload.striker,
+                      fielders: [],
+                    }));
+
+                    // open fielder modal if needed
+                    if (
+                      how_out === "caught" ||
+                      how_out === "run_out_striker" ||
+                      how_out === "run_out_non_striker"
+                    ) {
+                      setShowFielderModal(true);
+                    } else {
+                      //send payload here
+                    }
+                  }}
+                />
+
+                <FielderSelector
+                  key={""}
+                  show={showFielderModal}
+                  onClose={() => setShowFielderModal(false)}
+                  options={[
+                    { label: "Fielder1", value: "F1" },
+                    { label: "Fielder2", value: "F2" },
+                    { label: "Fielder3", value: "F3" },
+                    { label: "Fielder4", value: "F4" },
+                    { label: "Fielder5", value: "F5" },
+                  ]}
+                  onConfirm={(ids) => {
+                    setBallByBallPayload((payload) => {
+                      const newPayload = {
+                        ...payload,
+                        fielders: ids,
+                      };
+                      console.log(newPayload);
+                      return newPayload;
+                    });
+                  }}
+                />
+
                 {/* penalty button  */}
                 <div className="btn-group">
                   <ul className="dropdown-menu"></ul>

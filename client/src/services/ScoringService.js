@@ -36,9 +36,10 @@ export const playStateOptions = [
 export const how_outOptions = [
   { label: "Bowled", value: "bowled" },
   { label: "Caught", value: "caught" },
-  { label: "Run Out", value: "run_out" },
   { label: "Stumped", value: "stumped" },
   { label: "LBW", value: "lbw" },
+  { label: "Run Out (Striker)", value: "run_out_striker" },
+  { label: "Run Out (Non-Striker)", value: "run_out_non_striker" },
 ];
 
 const scoring_btns = [
@@ -319,6 +320,14 @@ const ballsNotCounted = new Set([
   "noball_run",
 ]);
 
-export function isBallCounted(event){
+export function isBallCounted(event) {
   return !ballsNotCounted.has(event);
 }
+
+export const penaltyOptions = [
+  "5 runs (Unfair play)",
+  "Time wasting",
+  "Illegal fielding",
+  "Ball tampering",
+  "Others",
+];
