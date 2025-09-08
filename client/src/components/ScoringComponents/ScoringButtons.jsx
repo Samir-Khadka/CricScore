@@ -5,6 +5,7 @@ const ScoringButtons = (props) => {
         return (
           <button
             key={i}
+            disabled={props.disabled}
             type="button"
             className="scoring-button"
             style={{ background: `${props.data.background}` }}

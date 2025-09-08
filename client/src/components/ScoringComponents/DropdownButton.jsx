@@ -1,7 +1,7 @@
-const DropdownButton = ({ icon, label, options, onSelect, btnClass }) => {
+const DropdownButton = ({disabled, icon, label, options, onSelect, btnClass }) => {
   return (
     <div className="btn-group">
-      <button type="button" className={`btn ${btnClass}`}>
+      <button type="button" className={`btn ${btnClass}`} disabled={disabled}>
         {icon ? icon : label}
       </button>
 
@@ -10,6 +10,7 @@ const DropdownButton = ({ icon, label, options, onSelect, btnClass }) => {
         className={`btn ${btnClass} dropdown-toggle dropdown-toggle-split`}
         data-bs-toggle="dropdown"
         aria-expanded="false"
+        disabled={disabled}
       >
         <span className="visually-hidden">Toggle Dropdown</span>
       </button>

@@ -2,6 +2,8 @@ import scoring_btns, {
   how_outOptions,
   initialBallFields,
   isBallCounted,
+  match_states_options,
+  play_states_options,
 } from "../services/ScoringService";
 import ScoringButtons from "./ScoringComponents/ScoringButtons";
 import Select from "react-select";
@@ -27,6 +29,26 @@ const Scoring = () => {
 
   const [howOut, setHowOut] = useState(null);
   const [showFielderModal, setShowFielderModal] = useState(false);
+  const [playState, setPlayState] = useState("in_play");
+  const [matchState, setMatchState] = useState("live");
+  const [selectedbowler, setSelectedbowler] = useState(null);
+  const [isPause, setIsPause] = useState(false);
+
+  const bowler = [
+    { label: "Bowler 1", value: "b1" },
+    { label: "Bowler 2", value: "b2" },
+  ];
+
+  const handleMatchStateChange = (selectedOption) => {
+    const selectedValue = selectedOption?.value || "live";
+    setMatchState(selectedValue);
+    setIsPause(selectedValue !== "live");
+  };
+
+  const handleResumeState = () => {
+    setIsPause(false);
+    setMatchState("live");
+  };
 
   return (
     <>
@@ -191,6 +213,7 @@ const Scoring = () => {
                     required
                   />
                 </div>
+
                 {/* non striker dropdown  */}
                 <div
                   id="non_striker"
@@ -238,6 +261,7 @@ const Scoring = () => {
                     ⟲
                   </button>
                 </div>
+
                 {/* this over  */}
                 <div
                   id="this_over"
@@ -293,6 +317,7 @@ const Scoring = () => {
                   margin: "1rem",
                 }}
               >
+                {/* bowler */}
                 <div
                   id="bowler_bowler"
                   style={{
@@ -317,85 +342,22 @@ const Scoring = () => {
                         marginBottom: "10px",
                       }),
                     }}
+                    options={bowler ? bowler : null}
+                    value={
+                      bowler
+                        ? bowler.find((opt) => opt.value === selectedbowler) ||
+                          null
+                        : null
+                    }
+                    onChange={(opt) => {
+                      setSelectedbowler(opt?.value);
+                    }}
+                    isDisabled={isPause}
                     required
                   />
                 </div>
-                <div
-                  id="over_over"
-                  style={{
-                    display: "grid",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gridTemplateColumns: "1fr 4fr",
-                  }}
-                >
-                  <label htmlFor="over_ball">Over/Ball:</label>
-                  <span id="over_ball">
-                    <Select
-                      className="premium-select"
-                      id="over"
-                      name="over"
-                      placeholder="Over"
-                      styles={{
-                        placeholder: (base) => ({
-                          ...base,
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          color: "#888",
-                        }),
-                      }}
-                      required
-                    />
-                    <Select
-                      className="premium-select"
-                      id="ball"
-                      name="ball"
-                      placeholder="Ball"
-                      styles={{
-                        placeholder: (base) => ({
-                          ...base,
-                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                          color: "#888",
-                        }),
-                      }}
-                      required
-                    />
-                    {/* undo button  */}
-                    <div style={{ display: "flex", justifyContent: "end" }}>
-                      <button
-                        type="button"
-                        id="undo_ball"
-                        className="btn btn-success"
-                      >
-                        Undo Ball
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 512 512"
-                          width="35"
-                          height="35"
-                        >
-                          <circle cx="256" cy="256" r="238" fill="#4DB6AC" />
-                          <polygon
-                            fill="none"
-                            stroke="#FFFFFF"
-                            strokeWidth="16"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            points="168.5,357 230.3,279.4 106.8,279.4"
-                          />
-                          <path
-                            d="M405.2,279.4c0-165.9-236.7-165.9-236.7,0"
-                            fill="none"
-                            stroke="#FFFFFF"
-                            strokeWidth="16"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </span>
-                </div>
 
+                {/* play state  */}
                 <div id="play_state">
                   <div
                     id="state"
@@ -420,45 +382,96 @@ const Scoring = () => {
                           marginBottom: "10px",
                         }),
                       }}
+                      options={play_states_options}
+                      value={
+                        play_states_options.find(
+                          (opt) => opt.value === playState
+                        ) || null
+                      }
+                      onChange={(state) => {
+                        setBallByBallPayload((payload) => {
+                          setPlayState(state.label);
+                          const newPayload = {
+                            ...payload,
+                            play_state: state.value,
+                          };
+                          console.log(newPayload);
+                          return newPayload;
+                        });
+                      }}
+                      isDisabled={isPause}
                       required
                     />
                   </div>
+                </div>
+                {/* match state  */}
+                <div id="play_state">
+                  <div
+                    id="state"
+                    style={{
+                      display: "grid",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gridTemplateColumns: "1fr 3fr",
+                    }}
+                  >
+                    <label htmlFor="state_state">Match State:</label>
+                    <Select
+                      className="premium-select"
+                      id="state_state"
+                      name="state_state"
+                      placeholder="Match State"
+                      options={match_states_options}
+                      value={
+                        match_states_options.find(
+                          (opt) => opt.value === matchState
+                        ) || null
+                      }
+                      onChange={handleMatchStateChange}
+                      styles={{
+                        placeholder: (base) => ({
+                          ...base,
+                          color: "#888",
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          marginBottom: "10px",
+                        }),
+                      }}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* undo ball  */}
+                <div style={{ display: "flex", justifyContent: "end" }}>
                   <button
                     type="button"
-                    id="end_inning"
+                    id="undo_ball"
                     className="btn btn-success"
+                    disabled={isPause}
                   >
-                    End
+                    Undo Ball
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 512 512"
                       width="35"
                       height="35"
                     >
-                      <circle cx="250" cy="245" r="230" fill="#DC2626" />
-                      <line
-                        x1="190"
-                        y1="120"
-                        x2="280"
-                        y2="350"
+                      <circle cx="256" cy="256" r="238" fill="#4DB6AC" />
+                      <polygon
+                        fill="none"
                         stroke="#FFFFFF"
                         strokeWidth="16"
                         strokeLinecap="round"
+                        strokeLinejoin="round"
+                        points="168.5,357 230.3,279.4 106.8,279.4"
                       />
                       <path
-                        d="M190,120 c30,10 60,0 90,10 s60,0 90,10 v60 c-30,-10 -60,0 -90,-10 s-60,0 -90,-10 z"
-                        fill="#FFFFFF"
+                        d="M405.2,279.4c0-165.9-236.7-165.9-236.7,0"
+                        fill="none"
                         stroke="#FFFFFF"
-                        strokeWidth="4"
+                        strokeWidth="16"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
-                      />
-                      <rect
-                        x="270"
-                        y="350"
-                        width="35"
-                        height="10"
-                        rx="4"
-                        fill="#FFFFFF"
                       />
                     </svg>
                   </button>
@@ -536,6 +549,7 @@ const Scoring = () => {
                 {/* wicket button  */}
 
                 <DropdownButton
+                  disabled={isPause}
                   btnClass="btn-success"
                   icon={<WicketIcon />}
                   options={how_outOptions}
@@ -547,7 +561,7 @@ const Scoring = () => {
                       ...payload,
                       event: "wicket",
                       is_out: true,
-                      how_out,
+                      howOut,
                       batsman_out:
                         how_out === "run_out_non_striker"
                           ? payload.non_striker
@@ -608,6 +622,7 @@ const Scoring = () => {
                 return (
                   <ScoringButtons
                     key={i}
+                    disabled={isPause}
                     data={buttonGroup}
                     onButtonClick={(update) => {
                       console.log("Latest Update is: ", update);

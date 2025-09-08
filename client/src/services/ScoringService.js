@@ -15,23 +15,26 @@ export const initialBallFields = {
   fielders: [],
 };
 
-export const playStateOptions = [
+export const play_states_options = [
   { value: "in_play", label: "In Play" },
-  { value: "drinks", label: "Drinks" },
-  { value: "ball_change", label: "Ball Change" },
-  { value: "injury", label: "Injury" },
-  { value: "crowd_interruption", label: "Crowd Interruption" },
-  { value: "timeout", label: "Timeout" },
-  { value: "drinks_time_off", label: "Drinks (Time Off)" },
-  { value: "rain", label: "Rain" },
-  { value: "ground_delay", label: "Ground Delay" },
-  { value: "bad_light", label: "Bad Light" },
-  { value: "break_in_play", label: "Break In Play" },
-  { value: "lunch", label: "Lunch" },
-  { value: "tea", label: "Tea" },
-  { value: "end_of_day", label: "End of Day" },
-  { value: "other_no_play_state", label: "Other/No Play State" },
+  { value: "over_end", label: "Over End" },
+  { value: "innings_end", label: "Innings End" },
+  { value: "drinks_break", label: "Drinks Break" },
+  { value: "strategic_timeout", label: "Strategic Timeout" },
+  { value: "injury_break", label: "Injury Break" },
 ];
+
+export const match_states_options = [
+  { value: "live", label: "Live" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "completed", label: "Completed" },
+  { value: "drinks", label: "Drinks Break" },
+  { value: "rain_delay", label: "Rain Delay" },
+  { value: "stumps", label: "Stumps (Day End)" },
+  { value: "abandoned", label: "Abandoned" },
+  { value: "no_result", label: "No Result" },
+];
+
 
 export const how_outOptions = [
   { label: "Bowled", value: "bowled" },
