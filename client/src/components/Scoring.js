@@ -8,12 +8,47 @@ import scoring_btns, {
 import ScoringButtons from "./ScoringComponents/ScoringButtons";
 import Select from "react-select";
 import "../css/ScoringFinal.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DropdownButton from "./ScoringComponents/DropdownButton";
 import { ReactComponent as WicketIcon } from "../assets/wicket.svg";
 import FielderSelector from "./ScoringComponents/FielderSelector";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Scoring = () => {
+  const storedUser = localStorage.getItem("user");
+  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
+  const navigate = useNavigate();
+  const { matchId } = useParams();
+  const [Match, setMatch] = useState(null);
+
+  const host = "http://localhost:5000";
+
+  const location = useLocation();
+  const { match } = location.state || {};
+
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  const [TeamA, setTeamA] = useState(null);
+  const [TeamB, setTeamB] = useState(null);
+
+  const [teamA_full, setTeamA_full] = useState(null);
+  const [teamB_full, setTeamB_full] = useState(null);
+
+  //to styling and editing <select> <option>
+  const [selectedBastman1, setSelectedBastman1] = useState(null);
+  const [selectedBastman1_Name, setSelectedBastman1_Name] = useState(null);
+
+  const [selectedBastman2, setSelectedBastman2] = useState(null);
+  const [selectedBastman2_Name, setSelectedBastman2_Name] = useState(null);
+
+  const [Battingoptions, setBattingoptions] = useState(null);
+
+  const [batting_team_Id, setbatting_team_id] = useState(null);
+  const [fieldingTeam_Id, setfieldingTeam_id] = useState(null);
+  const [battingTeam, setbattingTeam] = useState(null);
+  const [ballingTeam, setballingTeam] = useState(null);
+
   //payload state - only initialBallFields are reset after each ball
   const [ballByBallPayload, setBallByBallPayload] = useState({
     inningNumber: 1,
@@ -21,12 +56,13 @@ const Scoring = () => {
     match_state: "live",
     ball: 0,
     target: 0,
-    striker: "*Virat Kohli",
-    non_striker: "Rohit Paudel",
-    bowler: "Sandeep Lamichhane",
+    striker: "",
+    non_striker: "",
+    bowler: "",
     ...initialBallFields,
   });
 
+  const [inningNumber, setInningNumber] = useState(1);
   const [howOut, setHowOut] = useState(null);
   const [showFielderModal, setShowFielderModal] = useState(false);
   const [playState, setPlayState] = useState("in_play");
@@ -34,10 +70,188 @@ const Scoring = () => {
   const [selectedbowler, setSelectedbowler] = useState(null);
   const [isPause, setIsPause] = useState(false);
 
-  const bowler = [
-    { label: "Bowler 1", value: "b1" },
-    { label: "Bowler 2", value: "b2" },
-  ];
+  const [bowler, setbowlers] = useState(null);
+  const isSendingRef = useRef(false);
+
+  // Fetch match on mount or matchId change
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (matchId) {
+      setLoading(true);
+      getMatch();
+      setLoading(50);
+    }
+  }, [user, matchId]);
+
+  useEffect(() => {
+    const fetchTeamsAndSetBatBall = async () => {
+      if (!Match) return;
+      // Assuming Match.playingXI has both teams
+      let teamAPlayersObj = [];
+      let teamBPlayersObj = [];
+
+      if (Match.playingXI && Match.playingXI.length === 2) {
+        setLoading(75);
+        setTeamA_full(Match.playingXI[0].players);
+        setTeamB_full(Match.playingXI[1].players);
+
+        // Team A
+        teamAPlayersObj = Match.playingXI[0].players.map((player) => ({
+          _id: player._id,
+          player: player.isCaptain ? `${player.name} (C)` : player.name,
+        }));
+
+        // Team B
+        teamBPlayersObj = Match.playingXI[1].players.map((player) => ({
+          _id: player._id,
+          player: player.isCaptain ? `${player.name} (C)` : player.name,
+        }));
+
+        // console.log("Team A player" + teamAPlayersObj);
+        // console.log("Team A player" + teamBPlayersObj);
+      }
+
+      setTeamA(teamAPlayersObj);
+      setTeamB(teamBPlayersObj);
+      setLoading(80);
+
+      // now teams exist, call setBatBall with data
+      await setBatBall(teamAPlayersObj, teamBPlayersObj);
+    };
+    fetchTeamsAndSetBatBall();
+  }, [Match]);
+
+  //to send each ball update to server
+  useEffect(() => {
+    if (isSendingRef.current) {
+      isSendingRef.current = false;
+      return;
+    }
+    if (ballByBallPayload.ball > 0 || ballByBallPayload.event !== "") {
+      sendBallToServer();
+    }
+  }, [ballByBallPayload]);
+
+  //to fetch match from database
+  const getMatch = async () => {
+    const response = await fetch(`${host}/api/cricscore/match/id/${matchId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setLoading(30);
+      // console.log("Fetching Match is:", data.Match);
+
+      //storing the Match full details
+      setMatch(data.Match);
+
+      // setTeamA(data.Match.teamA);
+      // setTeamB(data.Match.teamB);
+      localStorage.setItem("Match", data.Match);
+    } else {
+      alert("Unable to Fetch Match");
+    }
+  };
+
+  // to fetch team from database
+  const getTeam = async (id) => {
+    const response = await fetch(`${host}/api/cricscore/tournament/${id}/get`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // console.log("The team is ", data.team);
+      // console.log("The team namei s", data.team.teamName);
+      return data.team;
+    }
+  };
+
+  const setBatBall = async (TeamA, TeamB) => {
+    const tossWinner = Match.toss.wonBy;
+    const descision = Match.toss.descision;
+    let ballingId, battingId;
+    setLoading(90);
+    const TeamA_squadArray = TeamA.map((player) => ({
+      value: player._id,
+      label: player.player,
+    }));
+
+    const TeamB_squadArray = TeamB.map((player) => ({
+      value: player._id,
+      label: player.player,
+    }));
+
+    if (tossWinner === Match.teamA) {
+      if (descision === "bat") {
+        battingId = Match.teamA_id;
+        ballingId = Match.teamB_id;
+        setBattingoptions(TeamA_squadArray);
+        setbowlers(TeamB_squadArray);
+      } else {
+        battingId = Match.teamB_id;
+        ballingId = Match.teamA_id;
+        setbowlers(TeamA_squadArray);
+        setBattingoptions(TeamB_squadArray);
+      }
+    } else {
+      if (descision === "bat") {
+        battingId = Match.teamB_id;
+        ballingId = Match.teamA_id;
+        setBattingoptions(TeamB_squadArray);
+        setbowlers(TeamA_squadArray);
+      } else {
+        battingId = Match.teamA_id;
+        ballingId = Match.teamB_id;
+        setBattingoptions(TeamA_squadArray);
+        setbowlers(TeamB_squadArray);
+      }
+    }
+
+    setfieldingTeam_id(ballingId);
+    setbatting_team_id(battingId);
+
+    // await CreateInning(battingId, ballingId);
+
+    let batting_team = await getTeam(battingId);
+    setbattingTeam(batting_team);
+
+    let balling_team = await getTeam(ballingId);
+    setballingTeam(balling_team);
+
+    setLoading(100);
+    setLoading(false);
+
+    // console.log("Bowlers" + TeamA_squadArray);
+    // console.log(TeamB_squadArray);
+  };
+
+  // Swap function
+  const handleSwap = () => {
+    setSelectedBastman1((prev1) => {
+      const newStriker = selectedBastman2;
+      setSelectedBastman2(prev1); // swap values
+      return newStriker;
+    });
+
+    setSelectedBastman1_Name((prevName) => {
+      const newStrikerName = selectedBastman2_Name;
+      setSelectedBastman2_Name(prevName);
+      return newStrikerName;
+    });
+  };
 
   const handleMatchStateChange = (selectedOption) => {
     const selectedValue = selectedOption?.value || "live";
@@ -45,9 +259,39 @@ const Scoring = () => {
     setIsPause(selectedValue !== "live");
   };
 
-  const handleResumeState = () => {
-    setIsPause(false);
-    setMatchState("live");
+  const sendBallToServer = async () => {
+    const reqOptions = {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...ballByBallPayload,
+        inningNumber: inningNumber,
+        striker: selectedBastman1,
+        non_striker: selectedBastman2,
+        bowler: selectedbowler,
+      }),
+    };
+    const response = await fetch(
+      `${host}/api/cricscore/ballByball/${matchId}`,
+      reqOptions
+    );
+    const r = await response.json();
+
+    if (response.ok) {
+      isSendingRef.current = true;
+      //reset initialballfields
+      setBallByBallPayload((payload) => {
+        const reset = {
+          ...payload,
+          ...initialBallFields,
+        };
+        return reset;
+      });
+    }
   };
 
   return (
@@ -55,7 +299,7 @@ const Scoring = () => {
       <div className="login" style={{ height: "auto" }}>
         <div className="form-container">
           <h1 style={{ alignItems: "center", textAlign: "center" }}>
-            Tournament name
+            {Match ? Match.tournament_name : "Tournament Name"}
           </h1>
           <div>
             {/* scoring header  */}
@@ -81,9 +325,10 @@ const Scoring = () => {
                       gap: "0.1rem",
                     }}
                   >
-                    <span>Team A</span>
+                    <span>{Match ? Match.teamA : "Team A"}</span>
+
                     <span> vs </span>
-                    <span>Team B</span>
+                    <span>{Match ? Match.teamB : "Team B"}</span>
                   </div>
                 </div>
               </div>
@@ -108,7 +353,9 @@ const Scoring = () => {
               >
                 <div id="team_Batting">
                   <span style={{ fontSize: "20px", fontWeight: "650" }}>
-                    Team A
+                    {battingTeam
+                      ? battingTeam?.teamName
+                      : Match?.teamA || "Team A"}
                   </span>
                   <span style={{ fontSize: "20px", fontWeight: "500" }}>
                     Current Runs: {ballByBallPayload.bat_run}
@@ -122,7 +369,9 @@ const Scoring = () => {
                 </div>
                 <div id="team_Bowling">
                   <span style={{ fontSize: "17px", fontWeight: "550" }}>
-                    Team B
+                    {ballingTeam
+                      ? ballingTeam?.teamName
+                      : Match?.teamB || "Team B"}
                   </span>
                   <span style={{ fontSize: "17px", fontWeight: "550" }}>
                     0/0
@@ -130,8 +379,8 @@ const Scoring = () => {
                   </span>
                 </div>
 
-                <div> </div>
-                <div>England Win By 9 wicket</div>
+                <div>Run rate </div>
+                <div>Result</div>
               </div>
 
               <div id="summary_right">
@@ -147,9 +396,9 @@ const Scoring = () => {
                   </div>
                   <div id="col1_value" style={{ fontWeight: "600" }}>
                     <div></div>
-                    <div className=""></div>
-                    <div className=""></div>
-                    <div className=""></div>
+                    <div className="">0</div>
+                    <div className="">0</div>
+                    <div className="">0</div>
                   </div>
                 </div>
               </div>
@@ -200,6 +449,19 @@ const Scoring = () => {
                     className="premium-select"
                     id="batsman1"
                     name="batsman1"
+                    options={Battingoptions ? Battingoptions : null}
+                    value={
+                      Battingoptions
+                        ? Battingoptions.find(
+                            (opt) => opt.value === selectedBastman1
+                          ) || null
+                        : null
+                    }
+                    onChange={(opt) => {
+                      setSelectedBastman1(opt?.value);
+                      setSelectedBastman1_Name(opt?.label);
+                    }}
+                    isDisabled={isPause}
                     isClearable
                     placeholder="Striker"
                     styles={{
@@ -229,6 +491,19 @@ const Scoring = () => {
                     className="premium-select"
                     id="batsman2"
                     name="batsman2"
+                    options={Battingoptions ? Battingoptions : null}
+                    value={
+                      Battingoptions
+                        ? Battingoptions.find(
+                            (opt) => opt.value === selectedBastman2
+                          ) || null
+                        : null
+                    }
+                    onChange={(opt) => {
+                      setSelectedBastman2(opt?.value);
+                      setSelectedBastman2_Name(opt?.label);
+                    }}
+                    isDisabled={isPause}
                     isClearable
                     placeholder="Non Striker"
                     styles={{
@@ -244,6 +519,11 @@ const Scoring = () => {
                   {/* Swap Button */}
                   <button
                     type="button"
+                    disabled={isPause}
+                    onClick={() => {
+                      handleSwap();
+                      // setevents("run");
+                    }}
                     style={{
                       width: "auto",
                       alignSelf: "center",
@@ -553,31 +833,32 @@ const Scoring = () => {
                   btnClass="btn-success"
                   icon={<WicketIcon />}
                   options={how_outOptions}
-                  onSelect={(how_out) => {
-                    setHowOut(how_out);
+                  onSelect={(howout) => {
+                    setBallByBallPayload((payload) => {
+                      const ballCount = isBallCounted(howout)
+                        ? payload.ball + 1
+                        : payload.ball;
 
-                    // base payload for any wicket
-                    setBallByBallPayload((payload) => ({
-                      ...payload,
-                      event: "wicket",
-                      is_out: true,
-                      howOut,
-                      batsman_out:
-                        how_out === "run_out_non_striker"
-                          ? payload.non_striker
-                          : payload.striker,
-                      fielders: [],
-                    }));
+                      return {
+                        ...payload,
+                        event: "wicket",
+                        is_out: true,
+                        how_out: howout,
+                        batsman_out:
+                          howout === "run_out_non_striker"
+                            ? selectedBastman2
+                            : selectedBastman1,
+                        fielders: [],
+                        ball: ballCount,
+                      };
+                    });
 
-                    // open fielder modal if needed
                     if (
-                      how_out === "caught" ||
-                      how_out === "run_out_striker" ||
-                      how_out === "run_out_non_striker"
+                      howout === "caught" ||
+                      howout === "run_out_striker" ||
+                      howout === "run_out_non_striker"
                     ) {
                       setShowFielderModal(true);
-                    } else {
-                      //send payload here
                     }
                   }}
                 />
@@ -636,8 +917,6 @@ const Scoring = () => {
                           ...update,
                           ball: ballCount,
                         };
-
-                        console.log("New Payload: ", ballByBallPayload);
 
                         return newPayload;
                       });

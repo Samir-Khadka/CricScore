@@ -5,19 +5,15 @@ async function handleCreateInnings(req, res) {
   try {
     const { tournament_id, toss, matchId, playingXI } = req.body;
 
-    var batting_team = "";
-    var fielding_team = "";
+    let batting_team = "";
+    let fielding_team = "";
 
     if (toss.decision === "bat") {
       batting_team = toss.wonBy;
-      fielding_team = playingXI.find(
-        (team) => team.teamId !== toss.wonBy
-      ).teamId;
+      fielding_team = playingXI.find(team => team.teamId !== toss.wonBy).teamId;
     } else {
       fielding_team = toss.wonBy;
-      batting_team = playingXI.find(
-        (team) => team.teamId !== toss.wonBy
-      ).teamId;
+      batting_team = playingXI.find(team => team.teamId !== toss.wonBy).teamId;
     }
 
     const existingInning = await Innings.findOne({
@@ -27,17 +23,15 @@ async function handleCreateInnings(req, res) {
     });
 
     if (existingInning) {
-      return 0;
+      return res.status(200).json({ message: "Inning already exists" });
     }
 
-    //first inning
-
-    const created = await Innings.create({
+    await Innings.create({
       tournament: tournament_id,
       matchId: matchId,
       inningNumber: 1,
-      batting_team: batting_team,
-      fielding_team: fielding_team,
+      batting_team,
+      fielding_team,
       runs: 0,
       wickets: 0,
       balls: 0,
@@ -47,11 +41,11 @@ async function handleCreateInnings(req, res) {
       batsmen: [],
       bowlers: [],
     });
-    console.log(created);
-    return 1;
+
+    return res.status(200).json({ message: "Inning created" });
   } catch (error) {
-    console.log("Error at create Innings: ", error);
-    return 0;
+    console.error("Error at create Innings: ", error);
+    return res.status(500).json({ message: "Error creating inning" });
   }
 }
 

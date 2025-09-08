@@ -321,6 +321,8 @@ const ballsNotCounted = new Set([
   "legbye",
   "wide",
   "noball_run",
+  "run_out_striker",
+  "run_out_non_striker"
 ]);
 
 export function isBallCounted(event) {
