@@ -3,7 +3,7 @@ const PlayerScoreCard = (props) => {
     <div>
       <div
         className={`${
-          props.onStrike === true ? `bg-blue-100` : ``
+          props.onStrike === true ? `bg-[#a9abaf]` : ``
         } rounded-2xl p-4`}
       >
         <p className="font-semibold">

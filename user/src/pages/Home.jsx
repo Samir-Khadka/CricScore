@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import ScoreSummaryCard from "../components/ScoreSummaryCard";
 import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
+import '../css/Home.css';
 
 const Home = () => {
   const [tournaments, setTournaments] = useState(null);
@@ -31,11 +32,11 @@ const Home = () => {
   };
 
   return (
-    <section className="p-6 bg-[#f8f9fa]">
+    <section className="p-6 bg-[#f8f9fa] mt-8">
       {/* Live Matches */}
 
-      <div>
-        <div className="flex flex-row justify-between mt-5">
+      <div className="mt-8">
+        <div className="flex flex-row justify-between mt-8">
           <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">Live Matches</p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
@@ -63,15 +64,28 @@ const Home = () => {
       </div>
 
       {/* hero section  */}
-      <div className="w-full bg-blue-500 mt-10 py-6 shadow-lg rounded-xl flex flex-col items-center justify-center space-y-4">
+      {/* <div className="w-full bg-blue-500 mt-10 py-6 shadow-lg rounded-xl flex flex-col items-center justify-center space-y-4">
         <p className="text-2xl text-white">Are you an organizer?</p>
         <p className="text-4xl text-white font-bold px-6">
           Try CricScore for real-time scoring.
         </p>
-        <button className="w-50 p-2 bg-white rounded-2xl font-semibold text-xl">
+        <button className="w-50 p-2 bg-white rounded-2xl font-semibold text-xl hover:scale-105">
           Get Started
         </button>
-      </div>
+      </div> */}
+      <div className="w-full bg-blue-500 mt-10 py-6 shadow-lg rounded-xl flex flex-col items-center justify-center space-y-4">
+  <p className="text-2xl text-white">Are you an organizer?</p>
+  <p className="text-4xl text-white font-bold px-6">
+    Try CricScore for real-time scoring.
+  </p>
+
+  <button className="relative w-50 p-2 bg-white rounded-2xl font-semibold text-xl transition-transform duration-300 hover:scale-105 overflow-hidden group">
+    <span className="relative z-10">Get Started</span>
+    {/* Glowing circular border */}
+    <span className="absolute inset-0 rounded-2xl border-2 border-blue-400 opacity-0 group-hover:opacity-100 animate-glow"></span>
+  </button>
+</div>
+
 
       {/* recently completed */}
 

@@ -5,6 +5,8 @@ import PlayerScoreCard from "../components/PlayerScoreCard";
 import Scorecard from "../components/Scorecard";
 import MatchDetails from "../components/MatchDetails";
 import PointsTable from "../components/PointsTable";
+import sp from '../logos/Sudurpaschim Royals.webp';
+import janakpur from '../logos/Janakpur Bolts.webp';
 
 const Match = () => {
   const [selectedTab, setSelectedTab] = useState("com");
@@ -462,41 +464,59 @@ const Match = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa]">
+    <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa] mt-5">
       {/* live scorecard */}
 
-      <div className="w-fit lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white">
+      {/* <div className="w-fit lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white"> */}
+      <div className="w-[70vw] lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-gradient-to-r from-[#0A2E73] to-[#123B9B] text-white">
         {/* live logo and tournament name  */}
 
-        <div className=" flex flex-row justify-between flex-wrap">
+        <div className=" flex flex-col gap-[2rem] flex-wrap">
+          <div className=" flex flex-row gap-[5rem] flex-wrap">
           <div className="bg-[#dc3545] text-white font-bold px-2 rounded-xl flex flex-row items-center gap-2">
             <div className="w-[10px] h-[10px] bg-white rounded-2xl animate-pulse"></div>
             LIVE
           </div>
-          <p className="text-gray-500">Nepal Premier League</p>
+               </div>
+
+        <div className="flex flex-col items-start justify-center ml-12">
+          <div className="flex justify-center items-center gap-[1rem]"> <p className="text-2xl font-bold text-white-700">Janakpur Bolts</p>
+                    <p className="text-white-700 font-bold text-2xl text-md mt-5 md:mt-0">vs</p>
+                    <p className="text-2xl font-bold  text-white-700"> Sudurpaschim Royals </p>
+      
+                                </div>
+          <p className="font-inter text-gray-400">Nepal Premier League</p>
+                    <p className="font-inter text-gray-400 text-sm">
+            TU International Cricket Stadium
+          </p>
+                    </div>
+
+
         </div>
 
         {/* scores*/}
 
-        <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap">
-          <div className="flex flex-row md:gap-20 mt-10 md:mt-0">
-            <p className="text-2xl font-bold text-gray-700">
-              Sudurpaschim Royals
+        <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap mt-[2rem] mb-[2rem]">
+          <div className="flex flex-col md:gap-[0.5rem] mt-10 md:mt-0 font-poppins text-4xl font-bold text-white-700">
+            <p className="text-xl font-bold flex flex-row justify-evenly items-center">
+             <img className="rounded-xl mr-[0.5rem]" src={sp} height="60" width="60"/>
+              <p>Sudurpaschim Royals</p>
             </p>
-            <div>
-              <p className="text-3xl font-bold text-gray-700">204 / 9</p>
-              <p className="font-semibold mt-2 text-gray-500">
-                (19.4 / 20) overs
+              <p className="text-3xl font-bold ml-[1rem] ">204 / 9</p>
+              <p className="font-semibold mt-2 ml-[0.5rem] text-2xl text-gray-300">
+              overs: (19.4 / 20) 
               </p>
-            </div>
           </div>
-          <p className="text-gray-500 text-md mt-5 md:mt-0">vs</p>
-          <div className="flex flex-row gap-20 mt-5 md:mt-0">
-            <div>
-              <p className="text-3xl font-bold text-gray-700">0 / 0</p>
-              <p className="font-semibold mt-2 text-gray-500">(0 / 20) overs</p>
-            </div>
-            <p className="text-2xl font-bold text-gray-700">Janakpur Bolts</p>
+          <p></p>
+          <div className="flex flex-col md:gap-[0.5rem] mt-10 md:mt-0 font-poppins text-4xl font-bold text-white-700">
+            <p className="text-xl font-bold flex flex-row justify-evenly items-center">
+             <img className="rounded-xl mr-[0.5rem]" src={janakpur} height="60" width="60"/>
+              <p>Janakpur Bolts</p>
+            </p>
+              <p className="text-3xl font-bold ml-[1rem] ">Yet to Bat</p>
+              <p className="font-semibold mt-2 ml-[0.5rem] text-2xl text-gray-300">
+              Target: - 
+              </p>
           </div>
         </div>
 
@@ -575,12 +595,10 @@ const Match = () => {
 
         <div className="flex flex-row justify-between mt-10">
           <p className="text-gray-500 text-sm">
-            TU International Cricket Stadium
           </p>
           <p className="text-gray-500 text-sm">Match 30</p>
         </div>
       </div>
-
       {/* commentry, scorecard and other info  */}
       <div className="lg:w-4xl bg-[#efefef] mt-15 border-4 border-gray-100 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
         {tabs.map((t, i) => {
@@ -645,7 +663,7 @@ const Match = () => {
               </p>
               <p
                 id="teamB"
-                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-blue-400 transition-colors hover:text-white cursor-pointer ${
+                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-[#abbcd3] transition-colors hover:text-white cursor-pointer ${
                   scSelectedTab === "teamB" ? `bg-blue-400 text-white` : ``
                 }`}
                 onClick={() => setScSelectedTab("teamB")}

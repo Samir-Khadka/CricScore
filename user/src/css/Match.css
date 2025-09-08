@@ -1,0 +1,48 @@
+
+/* Base: smooth scale & shadow */
+.match_card1 {
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  will-change: transform, box-shadow;
+}
+
+/* Hover / focus */
+.match_card1:hover,
+.match_card1:focus {
+    /* background-color: #fff; */
+  outline: none;
+  /* background-color: #cbc2c2; */
+  transform: scale(1.04);  /* will transition smoothly now */
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  animation: blinkPulse 1.5s ease-in-out infinite; /* only opacity pulse */
+};
+
+/* Change the child title background when parent is hovered */
+.match_card1:hover .card_title,
+.match_card1:focus .card_title {
+  background-color: #a89b9b !important;
+}
+
+
+/* Focus ring */
+.match_card1:focus-visible {
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.18), 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Blink animation — no transform here */
+@keyframes blinkPulse {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .match_card1 {
+    transition: transform 150ms linear;
+  }
+  .match_card1:hover,
+  .match_card1:focus {
+    animation: none;
+    transform: scale(1.04);
+  }
+}
