@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import TournamentInfo from "./pages/TournamentInfo";
 import Match from "./pages/Match";
+import MatchPanels from './components/Match';
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/tournament/:tourname" element={<TournamentInfo />} />
         <Route path="/match/:mName" element={<Match />} />
+        <Route path="/match" element={<MatchPanels />} />
       </Routes>
     <Footer />
     </>
