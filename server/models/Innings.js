@@ -67,7 +67,7 @@ const InningsSchema = new Schema(
 
     batsmen: [
       {
-        id: {
+        batsmanId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "players",
           required: true,
@@ -97,7 +97,7 @@ const InningsSchema = new Schema(
 
     bowlers: [
       {
-        id: {
+        bowlerId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "players",
           required: true,

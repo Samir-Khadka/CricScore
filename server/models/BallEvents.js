@@ -11,8 +11,7 @@ const BallEventsSchema = new Schema(
 
     sequence: {
       type: Number,
-      // required: true,
-      default:0,
+      default: 0,
     },
 
     over: {
@@ -41,7 +40,7 @@ const BallEventsSchema = new Schema(
         no_ball: { type: Number, default: 0 },
         bye: { type: Number, default: 0 },
         leg_bye: { type: Number, default: 0 },
-        penalties: { type: Number, default: 0 },
+        penalty: { type: Number, default: 0 }, 
       },
       total: {
         type: Number,
@@ -70,10 +69,7 @@ const BallEventsSchema = new Schema(
 
     wicket: {
       is_out: { type: Boolean, default: false },
-      how_out: {
-        type: String,
-        default: null,
-      },
+      how_out: { type: String, default: null },
       batsman_out: {
         type: Schema.Types.ObjectId,
         ref: "players",
@@ -90,5 +86,4 @@ const BallEventsSchema = new Schema(
 );
 
 const BallEvents = model("ballEvents", BallEventsSchema);
-
 module.exports = BallEvents;
