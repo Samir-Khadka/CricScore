@@ -1,5 +1,5 @@
-const Match = require("../models/Match");
 const Innings = require("../models/Innings");
+const Match = require("../models/Match");
 
 async function handleCreateInnings(req, res) {
   try {
@@ -10,10 +10,14 @@ async function handleCreateInnings(req, res) {
 
     if (toss.decision === "bat") {
       batting_team = toss.wonBy;
-      fielding_team = playingXI.find(team => team.teamId !== toss.wonBy).teamId;
+      fielding_team = playingXI.find(
+        (team) => team.teamId !== toss.wonBy
+      ).teamId;
     } else {
       fielding_team = toss.wonBy;
-      batting_team = playingXI.find(team => team.teamId !== toss.wonBy).teamId;
+      batting_team = playingXI.find(
+        (team) => team.teamId !== toss.wonBy
+      ).teamId;
     }
 
     const existingInning = await Innings.findOne({
@@ -26,7 +30,7 @@ async function handleCreateInnings(req, res) {
       return res.status(200).json({ message: "Inning already exists" });
     }
 
-    await Innings.create({
+    const createdInning = await Innings.create({
       tournament: tournament_id,
       matchId: matchId,
       inningNumber: 1,
@@ -42,10 +46,14 @@ async function handleCreateInnings(req, res) {
       bowlers: [],
     });
 
-    return res.status(200).json({ message: "Inning created" });
+    await Match.findByIdAndUpdate(matchId, {
+      $push: { innings: createdInning._id },
+    });
+
+    // Success response
+    return res.status(201).json({ message: "Inning created", createdInning });
   } catch (error) {
     console.error("Error at create Innings: ", error);
-    return res.status(500).json({ message: "Error creating inning" });
   }
 }
 

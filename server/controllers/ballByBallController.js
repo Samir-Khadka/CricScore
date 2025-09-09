@@ -8,7 +8,7 @@ async function handleBallByBall(req, res) {
     const match_id = req.params.matchId;
     const inning = req.body.inningNumber;
 
-    console.log("Request Received: ", req.body);
+    // console.log("Request Received: ", req.body);
 
     const Inning = await Innings.findOne({
       // tournament: tournament_id,
@@ -26,15 +26,15 @@ async function handleBallByBall(req, res) {
       ...req.body,
     });
 
-    console.log("Updated Inning: ", updatedInning);
-    console.log("Ball Event = ", ballEvent);
+    // console.log("Updated Inning: ", updatedInning);
+    // console.log("Ball Event = ", ballEvent);
 
     // send data through websocket(updateInning)
     // if(req.body.event === "end_of_inning"){
     // endOfInning(inningNumber)
     // }
 
-    return res.status(200).json({ message: "Received" });
+    return res.status(200).json({ message: "Updated", data:updatedInning });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }

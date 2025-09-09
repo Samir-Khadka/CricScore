@@ -190,7 +190,7 @@ const PreMatchSetup = () => {
       if (!response.ok)
         return alert(data.message || "Failed to save Playing XI");
 
-      console.log("Both teams saved:", data.updatedMatch);
+      // console.log("Both teams saved:", data.updatedMatch);
       navigate(`/scoring/${MatchId}`, { state: { matchId: MatchId } });
     } catch (error) {
       console.error("Error saving Playing XI:", error);

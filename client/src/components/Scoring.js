@@ -72,6 +72,7 @@ const Scoring = () => {
 
   const [bowler, setbowlers] = useState(null);
   const isSendingRef = useRef(false);
+  const [updatedInning, setUpdatedInning] = useState(null);
 
   // Fetch match on mount or matchId change
   useEffect(() => {
@@ -283,6 +284,8 @@ const Scoring = () => {
 
     if (response.ok) {
       isSendingRef.current = true;
+      setUpdatedInning(r.data);
+      console.log("Response: ", r);
       //reset initialballfields
       setBallByBallPayload((payload) => {
         const reset = {

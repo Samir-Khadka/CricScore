@@ -53,9 +53,9 @@ const MatchSchema = new Schema(
     matchState: {
       type: String,
     },
-    session:{
-      type:String,
-      default:"Afternoon"
+    session: {
+      type: String,
+      default: "Afternoon",
     },
     umpires: {
       onField: [String],
@@ -102,6 +102,11 @@ const MatchSchema = new Schema(
           ],
         },
       ],
+      default: [],
+    },
+    innings: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "innings",
       default: [],
     },
   },

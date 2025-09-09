@@ -201,8 +201,7 @@ async function savePlayingXI(req, res, next) {
     req.body.matchId = matchId;
     req.body.refered_from = "savePlayingXI";
     next();
-    
-    res.json({ message: "Match setup complete", updatedMatch: match });
+  
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
