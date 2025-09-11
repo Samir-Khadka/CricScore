@@ -15,9 +15,13 @@ async function createBallEvent(data) {
     is_out,
     how_out,
     batsman_out,
+    batsman_out_name,
     fielders,
   } = data;
 
+const safeObjectId = (id) => {
+  return id && mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null;
+};
   try {
     // sequence = next ball
     const sequence = (ball || 0) + 1;
@@ -38,26 +42,38 @@ async function createBallEvent(data) {
       total: (bat_run || 0) + totalExtraRuns(extras || {}),
     };
 
+console.log({
+  inningID,
+  striker,
+  non_striker,
+  bowler,
+  batsman_out,
+  fielders
+});
+
+
+
     // create ball event
     const ballEvent = await BallEvents.create({
-      inning: new mongoose.Types.ObjectId(inningID),
+      inning: safeObjectId(inningID),
       sequence,
       over,
       ball: ballInOver,
       event,
       runs,
       players: {
-        batsman: new mongoose.Types.ObjectId(striker),
-        non_striker: new mongoose.Types.ObjectId(non_striker),
-        bowler: new mongoose.Types.ObjectId(bowler),
+        batsman: safeObjectId(striker),
+        non_striker: safeObjectId(non_striker),
+        bowler: safeObjectId(bowler),
       },
       wicket: {
         is_out: is_out || false,
         how_out: how_out || null,
-        batsman_out: batsman_out ? new mongoose.Types.ObjectId(batsman_out) : null,
-        fielders: fielders?.map((f) => ({
-          id: new mongoose.Types.ObjectId(f),
-        })),
+        batsman_out: batsman_out ? safeObjectId(batsman_out) : null,
+        batsman_out_name:batsman_out_name,
+        fielders: Array.isArray(fielders)
+      ? fielders.map(f => ({ id: safeObjectId(f) }))
+      : [],
       },
     });
 

@@ -1,0 +1,190 @@
+/* Premium look for cricket score tables */
+.premium-card {
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.premium-header {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+}
+
+.table {
+  margin: 0;
+}
+
+.table thead th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+      background: #198754 !important;
+        color: white;
+
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f5ff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+td,
+th {
+  padding: 0.6rem 0.75rem;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+.batsment_head{
+
+}
+.table-head-green {
+  background-color: #198754 !important;
+  color: #fff !important;
+}
+
+
+
+/* Make tables responsive on smaller screens */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+      margin-top: 1.5rem;
+}
+
+@media (min-width: '993px'){
+
+  .table thead {
+    display: table-header-group !important;
+  }
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(25, 135, 84, 0.1); /* subtle green hover */
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* Hide table head */
+  }
+
+  .table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border: none;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 0.9rem;
+  }
+
+  .table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #198754; /* Premium green */
+    flex-basis: 40%;
+    text-align: left;
+  }
+}
+
+
+/* CSS FOR PLAYER STATS TABLE */
+/* Premium Card Styling */
+.premium-card {
+  border-radius: 1rem;
+  border: none;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.premium-header {
+  background: linear-gradient(90deg, #198754, #28a745);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 1rem;
+}
+
+.table-head-green {
+  background-color: #198754 !important;
+  color: #fff;
+}
+
+/* Smooth scrolling for table responsive */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+
+@media (max-width: 980px){
+  
+
+}
+@media (max-width: '992px'){
+  .table-head-green{
+    display: none !important;
+  }
+  .table-responsive table tbody{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+.col-12 .premium-card .card-body {
+    padding: 1.5rem !important;
+    display: inline !important;
+}
+#Batman_tbody{
+      display: grid  !important;
+    grid-template-columns: 1fr 1fr !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+
+
+
+}
+@media (max-width: 992px) {
+  .table-head-green {
+    display: none !important;
+  }
+
+  #Bowler_tbody,
+  #Batman_tbody {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+#Bowler_tbody tr,
+  #Batman_tbody tr {
+    display: block !important; /* allows grid items to align properly */
+  }
+}

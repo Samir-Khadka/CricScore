@@ -72,6 +72,10 @@ const InningsSchema = new Schema(
           ref: "players",
           required: true,
         },
+        name:{
+         type: String,
+         default:"NA",
+        },
         runs: {
           type: Number,
           default: 0,
@@ -101,6 +105,10 @@ const InningsSchema = new Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "players",
           required: true,
+        },
+        name:{
+          type: String,
+          default:"NA",
         },
         balls: {
           type: Number,

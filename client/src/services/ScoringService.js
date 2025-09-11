@@ -12,6 +12,7 @@ export const initialBallFields = {
   is_out: false,
   how_out: null,
   batsman_out: null,
+  batsman_out_name:"",
   fielders: [],
 };
 

@@ -13,6 +13,7 @@ import DropdownButton from "./ScoringComponents/DropdownButton";
 import { ReactComponent as WicketIcon } from "../assets/wicket.svg";
 import FielderSelector from "./ScoringComponents/FielderSelector";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ScoreTables from './ScoringComponents/ScoreTables';
 
 const Scoring = () => {
   const storedUser = localStorage.getItem("user");
@@ -39,6 +40,7 @@ const Scoring = () => {
   const [selectedBastman1, setSelectedBastman1] = useState(null);
   const [selectedBastman1_Name, setSelectedBastman1_Name] = useState(null);
 
+  const [selectedbowler_Name,setSelectedbowler_Name]=useState(null);
   const [selectedBastman2, setSelectedBastman2] = useState(null);
   const [selectedBastman2_Name, setSelectedBastman2_Name] = useState(null);
 
@@ -49,6 +51,7 @@ const Scoring = () => {
   const [battingTeam, setbattingTeam] = useState(null);
   const [ballingTeam, setballingTeam] = useState(null);
 
+
   //payload state - only initialBallFields are reset after each ball
   const [ballByBallPayload, setBallByBallPayload] = useState({
     inningNumber: 1,
@@ -57,6 +60,8 @@ const Scoring = () => {
     ball: 0,
     target: 0,
     striker: "",
+    batsman_Name:"",
+    bowler_Name:"",
     non_striker: "",
     bowler: "",
     ...initialBallFields,
@@ -73,6 +78,7 @@ const Scoring = () => {
   const [bowler, setbowlers] = useState(null);
   const isSendingRef = useRef(false);
   const [updatedInning, setUpdatedInning] = useState(null);
+  const [ballEvent,set_ballEvent]=useState(null);
 
   // Fetch match on mount or matchId change
   useEffect(() => {
@@ -123,16 +129,23 @@ const Scoring = () => {
     fetchTeamsAndSetBatBall();
   }, [Match]);
 
-  //to send each ball update to server
   useEffect(() => {
-    if (isSendingRef.current) {
-      isSendingRef.current = false;
-      return;
-    }
-    if (ballByBallPayload.ball > 0 || ballByBallPayload.event !== "") {
-      sendBallToServer();
-    }
-  }, [ballByBallPayload]);
+  if (isSendingRef.current) {
+    isSendingRef.current = false;
+    return;
+  }
+
+  // Only send if event exists AND players are selected
+  if (
+    ballByBallPayload.event &&
+    selectedBastman1 &&
+    selectedBastman2 &&
+    selectedbowler
+  ) {
+
+    sendBallToServer();
+  }
+}, [ballByBallPayload]);
 
   //to fetch match from database
   const getMatch = async () => {
@@ -182,7 +195,7 @@ const Scoring = () => {
 
   const setBatBall = async (TeamA, TeamB) => {
     const tossWinner = Match.toss.wonBy;
-    const descision = Match.toss.descision;
+    const descision = Match.toss.decision;
     let ballingId, battingId;
     setLoading(90);
     const TeamA_squadArray = TeamA.map((player) => ({
@@ -195,7 +208,7 @@ const Scoring = () => {
       label: player.player,
     }));
 
-    if (tossWinner === Match.teamA) {
+    if (tossWinner===Match.teamA_id) {
       if (descision === "bat") {
         battingId = Match.teamA_id;
         ballingId = Match.teamB_id;
@@ -274,6 +287,9 @@ const Scoring = () => {
         striker: selectedBastman1,
         non_striker: selectedBastman2,
         bowler: selectedbowler,
+        batsman_out_name:selectedBastman1_Name,
+          batsman_Name:selectedBastman1_Name,
+    bowler_Name:selectedbowler_Name,
       }),
     };
     const response = await fetch(
@@ -286,6 +302,10 @@ const Scoring = () => {
       isSendingRef.current = true;
       setUpdatedInning(r.data);
       console.log("Response: ", r);
+
+      console.log("Ball Event"+r.ballEvent);
+      set_ballEvent(r.ballEvent);
+ 
       //reset initialballfields
       setBallByBallPayload((payload) => {
         const reset = {
@@ -296,6 +316,102 @@ const Scoring = () => {
       });
     }
   };
+
+
+const handleScoringUpdate = (update) => {
+  if (!selectedBastman1 || !selectedBastman2 || !selectedbowler) {
+    alert("Please select two batsmen and a bowler before scoring!");
+    return;
+  }
+
+  setBallByBallPayload((payload) => {
+    const ballCount = isBallCounted(update.event)
+      ? payload.ball + 1
+      : payload.ball;
+
+    return {
+      ...payload,
+      ...update,
+      striker: selectedBastman1,
+      non_striker: selectedBastman2,
+      bowler: selectedbowler,
+      ball: ballCount,
+    };
+  });
+};
+
+const balls_run = updatedInning?.balls ?? 0;
+const over_run = updatedInning?.over ?? 0;
+const overs_run = `${over_run}.${balls_run % 6}`;
+const [lastWicket,set_lastWicket]=useState(null);
+const [currentOverBalls ,set_currentOverBalls]=useState();
+const[ballEvents,setBallEvents]=useState([]);
+
+function getLastWicket(ballEvent) {
+ if (!ballEvent || !ballEvent.wicket) return false;
+  // Find the last ball where a wicket fell
+
+  if (!ballEvent.wicket.is_out) return false;
+
+  // const { batsman_out, batsman_out_name, how_out } = ballEvent?.wicket || {};
+  const { batsman_out, batsman_out_name, how_out } = ballEvent.wicket || {};
+
+  let batsmanName = batsman_out_name || "";
+    console.log("Out Batsman data: " + batsmanName);
+  
+
+  return batsmanName
+    ? `${batsmanName} - ${how_out || "out"}`
+    : false;
+}
+
+useEffect(() => {
+  if(updatedInning && ballEvent){
+    const last_wicket=getLastWicket(ballEvent);
+    if(last_wicket){
+      set_lastWicket(last_wicket);
+    }
+    // Compute new ballEvents array
+    const newBallEvents = [...ballEvents, ballEvent];
+    setBallEvents(newBallEvents);
+
+    // Compute current over balls
+    const currentOverBall = getBallsThisOver(newBallEvents, updatedInning?.over ?? 0);
+    set_currentOverBalls(currentOverBall);
+  }
+}, [ballEvent]);
+
+function getBallsThisOver(ballEvents = [], currentOver = 0) {
+  if (!Array.isArray(ballEvents)) return ["NA","NA","NA","NA","NA","NA"];
+
+  const balls = ballEvents.filter(b => (b?.over ?? -1) === currentOver);
+
+  const ballTexts = balls.map(b => {
+    if (b?.wicket?.is_out) return "W";
+    switch (b?.event) {
+      case "wide": return "Wd";
+      case "no_ball": return "Nb";
+      case "bye": return "Bye";
+      case "legbye": return "Lb";
+      case "noball_bye":
+      case "noball_legbye":
+      case "noball_run":
+        return "Nb";
+      default:
+        return b?.runs?.total?.toString() ?? "0";
+    }
+  });
+
+  while (ballTexts.length < 6) ballTexts.push("NA");
+
+  return ballTexts;
+}
+
+
+
+
+
+
 
   return (
     <>
@@ -350,7 +466,7 @@ const Scoring = () => {
                 id="summary_left"
                 style={{
                   display: "grid",
-                  gridTemplateRows: "1fr 1fr 1fr 1fr",
+                  gridTemplateRows: "1fr 1fr",
                   alignItems: "center",
                 }}
               >
@@ -361,7 +477,7 @@ const Scoring = () => {
                       : Match?.teamA || "Team A"}
                   </span>
                   <span style={{ fontSize: "20px", fontWeight: "500" }}>
-                    Current Runs: {ballByBallPayload.bat_run}
+                    Current Runs: {updatedInning ? updatedInning.runs:"run"}
                     <span style={{ marginLeft: "0.3rem" }}>
                       {" "}
                       Current ball: ({ballByBallPayload.ball})
@@ -381,9 +497,9 @@ const Scoring = () => {
                     <span style={{ marginLeft: "0.3rem" }}>(0)</span>
                   </span>
                 </div>
-
+{/* 
                 <div>Run rate </div>
-                <div>Result</div>
+                <div>Result</div> */}
               </div>
 
               <div id="summary_right">
@@ -398,10 +514,10 @@ const Scoring = () => {
                     <div className="">Run Rate</div>
                   </div>
                   <div id="col1_value" style={{ fontWeight: "600" }}>
-                    <div></div>
-                    <div className="">0</div>
-                    <div className="">0</div>
-                    <div className="">0</div>
+                    <div className="">{overs_run}</div>
+                    <div className="">{lastWicket ? lastWicket:"No Out Yet"}/{updatedInning?.wickets}</div>
+                   <div className="">{Match?.session ?? "Day"}</div>
+                    <div className="">{updatedInning? Math.round(updatedInning.current_run_rate):0}</div>
                   </div>
                 </div>
               </div>
@@ -546,7 +662,7 @@ const Scoring = () => {
                 </div>
 
                 {/* this over  */}
-                <div
+                {/* <div
                   id="this_over"
                   style={{
                     display: "grid",
@@ -556,36 +672,60 @@ const Scoring = () => {
                   }}
                 >
                   <label htmlFor="over">This Over:</label>
-                  <table id="over"></table>
-                </div>
+                  <table id="over">
+                    <tbody>
+                      <tr style={{display:'flex', alignItems:'center',flexDirection:"row",justifyContent:'center'}}>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> */}
+<div
+  id="this_over"
+  style={{
+    display: "grid",
+    alignItems: "center",
+    justifyContent: "center",
+    gridTemplateColumns: "2fr 4fr",
+  }}
+>
+  <label htmlFor="over">This Over:</label>
+  <table id="over">
+    <tbody>
+      <tr
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        {(Array.isArray(currentOverBalls) ? currentOverBalls : ["NA","NA","NA","NA","NA","NA"])
+          .map((val, idx) => (
+            <td
+              key={idx}
+              style={{
+                padding: "0.5rem",
+                minWidth: "2rem",
+                textAlign: "center",
+                border: "1px solid #ccc", // optional styling
+              }}
+            >
+              {val ?? "NA"}
+            </td>
+        ))}
+      </tr>
+    </tbody>
+  </table>
+</div>
+
               </div>
-              {/* central panel for scorecard table  */}
-              <div
-                id="center_scoring"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  position: "relative",
-                }}
-              >
-                <table>
-                  <thead>
-                    <tr>
-                      <th>R</th>
-                      <th>B</th>
-                      <th>4</th>
-                      <th>6</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr></tr>
-                  </tbody>
-                </table>
-              </div>
+              <div></div>
               {/* right panel for bowler  */}
               <div
                 id="right_scoring"
@@ -634,6 +774,7 @@ const Scoring = () => {
                     }
                     onChange={(opt) => {
                       setSelectedbowler(opt?.value);
+                      setSelectedbowler_Name(opt?.label);
                     }}
                     isDisabled={isPause}
                     required
@@ -761,6 +902,18 @@ const Scoring = () => {
                 </div>
               </div>
             </div>
+                        <div className="section-title">Player Statistics</div>
+            {/* border  */}
+            <div
+              style={{
+                width: "auto",
+                borderBottom: "2px solid gray",
+                borderWidth: "medium",
+              }}
+            ></div>
+              <div></div>
+              <ScoreTables updatedInning={updatedInning} />
+
 
             {/* scoring  */}
             <div className="section-title">Scoring</div>
@@ -772,111 +925,62 @@ const Scoring = () => {
               }}
             ></div>
 
-            {/* scring panel header  */}
-            <div className="header-table">
-              <div></div>
-              <div
-                className="header-cell"
-                colSpan="3"
-                style={{ background: "#7ce293" }}
-              >
-                Runs
-              </div>
-              <div
-                className="header-cell"
-                colSpan="3"
-                style={{ background: "#71abf1" }}
-              >
-                Wides
-              </div>
-              <div
-                className="header-cell"
-                colSpan="2"
-                style={{ background: "#d75a5a", color: "white" }}
-              >
-                Byes
-              </div>
-              <div
-                className="header-cell"
-                colSpan="2"
-                style={{ background: "#eddb76" }}
-              >
-                Leg Byes
-              </div>
-              <div
-                className="header-cell"
-                colSpan="2"
-                style={{ background: "#7ba8a3" }}
-              >
-                No Ball (b)
-              </div>
-              <div
-                className="header-cell"
-                colSpan="2"
-                style={{ background: "#44d7e1" }}
-              >
-                No Ball (lb)
-              </div>
-              <div
-                className="header-cell"
-                colSpan="3"
-                style={{ background: "#c43138", color: "whitesmoke" }}
-              >
-                No Ball (Runs)
-              </div>
-            </div>
-
             {/* scoring panel buttons  */}
             <div className="scoring-panel">
               <div className="wick-pen">
                 {/* wicket button  */}
-
                 <DropdownButton
-                  disabled={isPause}
-                  btnClass="btn-success"
-                  icon={<WicketIcon />}
-                  options={how_outOptions}
-                  onSelect={(howout) => {
-                    setBallByBallPayload((payload) => {
-                      const ballCount = isBallCounted(howout)
-                        ? payload.ball + 1
-                        : payload.ball;
+  disabled={isPause}
+  btnClass="btn-danger"
+  icon={<WicketIcon />}
+  options={how_outOptions}
+  onSelect={(howout) => {
+    if (!selectedBastman1 || !selectedBastman2 || !selectedbowler) {
+      alert("Please select two batsmen and a bowler before scoring!");
+      return;
+    }
 
-                      return {
-                        ...payload,
-                        event: "wicket",
-                        is_out: true,
-                        how_out: howout,
-                        batsman_out:
-                          howout === "run_out_non_striker"
-                            ? selectedBastman2
-                            : selectedBastman1,
-                        fielders: [],
-                        ball: ballCount,
-                      };
-                    });
+    setBallByBallPayload((payload) => {
+      const ballCount = isBallCounted(howout) ? payload.ball + 1 : payload.ball;
 
-                    if (
-                      howout === "caught" ||
-                      howout === "run_out_striker" ||
-                      howout === "run_out_non_striker"
-                    ) {
-                      setShowFielderModal(true);
-                    }
-                  }}
-                />
+      return {
+        ...payload,
+        event: "wicket",
+        is_out: true,
+        how_out: howout,
+        batsman_out:
+          howout === "run_out_non_striker"
+            ? selectedBastman2
+            : selectedBastman1,
+            batsman_out_name:
+            howout === "run_out_non_striker"
+            ? selectedBastman2_Name
+            : selectedBastman1_Name,
+        fielders: [],
+        striker: selectedBastman1,
+        non_striker: selectedBastman2,
+        bowler: selectedbowler,
+        ball: ballCount,
+      };
+    });
+
+    if (
+      howout === "caught" ||
+      howout === "run_out_striker" ||
+      howout === "run_out_non_striker"
+    ) {
+      setShowFielderModal(true);
+    }
+  }}
+/>
+
+
 
                 <FielderSelector
                   key={""}
                   show={showFielderModal}
                   onClose={() => setShowFielderModal(false)}
-                  options={[
-                    { label: "Fielder1", value: "F1" },
-                    { label: "Fielder2", value: "F2" },
-                    { label: "Fielder3", value: "F3" },
-                    { label: "Fielder4", value: "F4" },
-                    { label: "Fielder5", value: "F5" },
-                  ]}
+                  options={bowler? bowler:null}
                   onConfirm={(ids) => {
                     setBallByBallPayload((payload) => {
                       const newPayload = {
@@ -908,22 +1012,7 @@ const Scoring = () => {
                     key={i}
                     disabled={isPause}
                     data={buttonGroup}
-                    onButtonClick={(update) => {
-                      console.log("Latest Update is: ", update);
-                      setBallByBallPayload((payload) => {
-                        const ballCount = isBallCounted(update.event)
-                          ? payload.ball + 1
-                          : payload.ball;
-
-                        const newPayload = {
-                          ...payload,
-                          ...update,
-                          ball: ballCount,
-                        };
-
-                        return newPayload;
-                      });
-                    }}
+                    onButtonClick={handleScoringUpdate}
                   />
                 );
               })}

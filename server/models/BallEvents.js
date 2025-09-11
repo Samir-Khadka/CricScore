@@ -75,6 +75,7 @@ const BallEventsSchema = new Schema(
         ref: "players",
         default: null,
       },
+      batsman_out_name:{ type: String, default: 'Not Out'},
       fielders: [
         {
           id: { type: Schema.Types.ObjectId, ref: "players" },
