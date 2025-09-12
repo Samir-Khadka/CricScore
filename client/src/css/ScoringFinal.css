@@ -32,11 +32,12 @@
   margin-bottom: .2rem;
 }
 
-#summary_left {
+#summary_left{
   flex: 1;
   min-width: 250px;
   font-size: 0.95rem;
   color: #374151;
+  height: fit-content;
 }
 
 #summary_left span {
@@ -58,6 +59,7 @@
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  height: fit-content;
 }
 
 #summary_right div div {
@@ -79,6 +81,7 @@
 
 #left_scoring,
 #right_scoring {
+      width: fit-content;
   flex: 1;
   background: #f3f4f6;
   border-radius: 12px;
@@ -364,10 +367,10 @@ color:#efecd0
 }
 
 .runs,.wides,.bytes,.legbytes,.noball_b,.noball_lb,.noball_run{
-
+/* 
       display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 5px;
+    gap: 5px; */
 }
 
 
@@ -412,14 +415,204 @@ color:#efecd0
 }
 
 .scoring-panel {
-  position: sticky;
+  /* position: sticky; */
   bottom: 0;
   background: #fff;
   padding: 10px;
-  z-index: 100;
+  z-index: 2;
 }
 
 #current_over{
       display: grid !important;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr !important;
 }
+
+
+/* CSS FOR SCORING SECTION */
+/* ===== Scoring Section ===== */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #198754;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Divider line under title */
+.section-title + div {
+  margin-bottom: 1.2rem;
+}
+
+/* ===== Header Table (Runs, Wides, etc.) ===== */
+.header-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  text-align: center;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.header-cell {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem;
+    border: 1px solid #dee2e6;
+    color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 31px;
+    border-radius: 8px;
+}
+
+/* ===== Scoring Panel (Buttons) ===== */
+.scoring-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+@media (max-width:769px){
+.scoring-panel{
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr;
+  gap: 0.8rem;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+}
+
+
+
+/* Wicket + Penalty buttons row */
+.wick-pen {
+  display: flex;
+  flex-wrap: wrap;
+      flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 956px){
+  .wick-pen {
+    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+}
+
+/* Penalty button styling */
+.pen-btn {
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.pen-btn:hover {
+  background-color: #ffc107 !important;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Dropdown button styling */
+.btn-danger {
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 602px){
+
+  .scoring-panel {
+    display: grid;
+    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 0.4rem;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
+}
+}
+
+@media (max-width: 698px){
+  #play_control{
+        display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .scoring-panel {
+      display: flex;
+    flex-wrap: wrap;}
+
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+  .header-table {
+    grid-template-columns: repeat(6, 1fr);
+    font-size: 0.8rem;
+  }
+      .card-body {
+        flex-direction: column;
+        align-items:normal !important;
+        gap: 1rem;
+    }
+
+
+  .header-cell {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .wick-pen {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-danger, 
+  .pen-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+@media (max-width: 498px) {
+    .scoring-panel {
+        display: grid;
+        grid-template-columns: 0.5fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+  .header-table {
+    grid-template-columns: 1fr;
+  }
+
+  .header-cell {
+    font-size: 0.75rem;
+    padding: 0.3rem;
+  }
+}
+
+@media (max-width: 409px) {
+    .scoring-panel {
+        display: grid;
+        grid-template-columns: 0.5fr 1fr;
+    }
+  }
+

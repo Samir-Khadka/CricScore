@@ -34,7 +34,7 @@ async function handleBallByBall(req, res) {
     // endOfInning(inningNumber)
     // }
 
-    return res.status(200).json({ message: "Updated", data:updatedInning });
+    return res.status(200).json({ message: "Updated", data:updatedInning, ballEvent:ballEvent});
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
