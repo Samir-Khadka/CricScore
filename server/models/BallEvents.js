@@ -40,7 +40,7 @@ const BallEventsSchema = new Schema(
         no_ball: { type: Number, default: 0 },
         bye: { type: Number, default: 0 },
         leg_bye: { type: Number, default: 0 },
-        penalty: { type: Number, default: 0 }, 
+        penalty: { type: Number, default: 0 },
       },
       total: {
         type: Number,
@@ -75,7 +75,7 @@ const BallEventsSchema = new Schema(
         ref: "players",
         default: null,
       },
-      batsman_out_name:{ type: String, default: 'Not Out'},
+      batsman_out_name: { type: String, default: "Not Out" },
       fielders: [
         {
           id: { type: Schema.Types.ObjectId, ref: "players" },
