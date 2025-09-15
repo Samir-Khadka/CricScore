@@ -8,6 +8,8 @@ async function getLiveMatches(req, res) {
       .populate("innings")
       .populate("tournament_id", "format");
 
+      
+
     return res
       .status(200)
       .json({ message: "Fetched live matches", data: liveMatches });

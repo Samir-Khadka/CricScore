@@ -3,18 +3,40 @@ import ScoreSummaryCard from "../components/ScoreSummaryCard";
 import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
 import "../css/Home.css";
+import { io } from "socket.io-client";
 
 const Home = () => {
   const [tournaments, setTournaments] = useState(null);
   const [liveMatches, setLiveMatches] = useState(null);
   const [matchInfo, setMatchInfo] = useState(null);
 
+  const host = "http://localhost:5000";
+
+  //make socket connection
+  useEffect(() => {
+    const socket = io(host, {
+      query: {
+        module: "home",
+      },
+    });
+
+    socket.on("connection", () => console.log("Connected to server"));
+    socket.on("liveMatches", (matches) => {
+      setLiveMatches(matches);
+    });
+
+    return () => {
+      socket.off("liveMatches");
+      socket.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     fetchTournaments();
     fetchLiveMatches();
   }, []);
 
-  //store match info in local storage
+  //store match info
   useEffect(() => {
     const matches = {};
     liveMatches?.forEach((match) => {
@@ -33,8 +55,6 @@ const Home = () => {
     });
     setMatchInfo(matches);
   }, [liveMatches]);
-
-  const host = "http://localhost:5000";
 
   const fetchTournaments = async () => {
     const response = await fetch(`${host}/api/cricscore/view/tournaments`, {
@@ -85,7 +105,9 @@ const Home = () => {
         <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
           {liveMatches &&
             liveMatches.map((match, i) => {
-              return <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />;
+              return (
+                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
+              );
             })}
         </div>
       </div>
@@ -99,9 +121,7 @@ const Home = () => {
           </p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
-          
-        </div>
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5"></div>
       </div>
 
       {/* hero section  */}
@@ -128,9 +148,7 @@ const Home = () => {
           </p>
           <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
-         
-        </div>
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5"></div>
       </div>
 
       {/* Tournaments */}

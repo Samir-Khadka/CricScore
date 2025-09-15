@@ -63,7 +63,12 @@ const MatchSchema = new Schema(
     },
 
     result: {
-      type: String,
+      type:String,
+    },
+
+    winner: {
+      type: Schema.Types.ObjectId,
+      ref:"teams",
     },
 
     points: {

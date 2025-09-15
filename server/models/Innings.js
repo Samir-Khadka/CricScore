@@ -64,7 +64,10 @@ const InningsSchema = new Schema(
       type: Number,
       default: 0,
     },
-
+    status: {
+      type: String,
+      default: "scheduled",
+    },
     batsmen: [
       {
         batsmanId: {
@@ -72,9 +75,9 @@ const InningsSchema = new Schema(
           ref: "players",
           required: true,
         },
-        name:{
-         type: String,
-         default:"NA",
+        name: {
+          type: String,
+          default: "NA",
         },
         runs: {
           type: Number,
@@ -96,6 +99,10 @@ const InningsSchema = new Schema(
           type: Number,
           default: 0,
         },
+        status: {
+          type: String,
+          default: "notOut",
+        }
       },
     ],
 
@@ -106,9 +113,9 @@ const InningsSchema = new Schema(
           ref: "players",
           required: true,
         },
-        name:{
+        name: {
           type: String,
-          default:"NA",
+          default: "NA",
         },
         balls: {
           type: Number,

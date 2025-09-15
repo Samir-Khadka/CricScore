@@ -29,17 +29,8 @@ async function updateInnings(data) {
     batsman_out,
     fielders,
     inningID,
+    totalOvers,
   } = data;
-
-  console.log("Update Inning:");
-  console.log("Batsman Name:" + batsman_Name);
-  console.log("Batsmanid:" + striker);
-
-  console.log("Bowler Name:" + bowler_Name);
-  console.log("BowlerID:" + bowler_id);
-
-  console.log("Bat run:" + bat_run);
-  console.log("Ball:" + ball);
 
   const ballNotCounted = ["wide", "no_ball", "penalty"];
   const bowlerValidWkts = ["bowled", "caught", "run_out", "stumped", "lbw"];
@@ -50,15 +41,17 @@ async function updateInnings(data) {
     );
     if (!Inning) return;
 
-    const totalOvers = await Tournament.findOne({
-      _id: new mongoose.Types.ObjectId(Inning.tournament),
-    }).select("format");
+    //set inning is in progress
+    if (Inning.status === "scheduled") {
+      Inning.status = "inProgress";
+    }
+    
+    
 
     const totalRuns = totalExtraRuns(extras) + bat_run;
     //total runs
-    const total_target = Inning.runs + totalRuns;
+
     Inning.runs += totalRuns;
-    Inning.target = total_target;
 
     //wickets
     if (is_out) Inning.wickets += 1;
@@ -79,12 +72,7 @@ async function updateInnings(data) {
     Inning.current_run_rate = getCurrentRunRate(Inning.runs, overString);
 
     //batsman stats
-    // var batsmanStats = Inning.batsmen.find((b) => b.id.equals(batsman_id));
     var batsmanStats = Inning.batsmen.find((b) => b.batsmanId.equals(striker));
-    // batsman
-    // var batsmanStats = Inning.batsmen.find(
-    //   (b) => String(b.batsmanId) === String(striker)
-    // );
 
     if (!batsmanStats) {
       //batsmen doesn't exits
@@ -101,8 +89,8 @@ async function updateInnings(data) {
 
       Inning.batsmen.push(batsmanStats);
     }
-    //batsmen exists - update
 
+    //batsmen exists - update
     batsmanStats.runs += bat_run;
 
     batsmanStats.balls =
@@ -178,7 +166,7 @@ async function updateInnings(data) {
     const updated = await Inning.save();
     return updated;
   } catch (error) {
-    console.log("The error is:" + error);
+    console.log("The error on the UpdateInning is:" + error);
   }
 }
 

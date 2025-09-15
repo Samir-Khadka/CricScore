@@ -6,6 +6,7 @@ import Scorecard from "../components/Scorecard";
 import MatchDetails from "../components/MatchDetails";
 import PointsTable from "../components/PointsTable";
 import { useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 
 const Match = () => {
   const host = "http://localhost:5000";
@@ -18,6 +19,27 @@ const Match = () => {
   const [teamBinn, setTeamBinn] = useState(null);
   const [activeInning, setActiveInning] = useState(null);
   const { matchId } = useParams();
+
+  //make socket connection
+  useEffect(() => {
+    const socket = io(host, {
+      query: {
+        module: "match",
+        matchId: matchId,
+      },
+    });
+
+    socket.on("matchLiveUpdate", (data) => {
+      setInnings(data.inn);
+      setBallEvent((prev) => [data.ballEvent, ...prev]);
+      console.log("LIve Update", data);
+    });
+
+    return () => {
+      socket.off("matchLiveUpdate");
+      socket.disconnect();
+    };
+  }, []);
 
   const tabs = [
     { id: "com", label: "Commentary" },
@@ -56,9 +78,9 @@ const Match = () => {
 
   //extract information
   useEffect(() => {
-    console.log("Match: ", match);
-    console.log("Innings: ", innings);
-    console.log("Ball Events: ", ballEvent);
+    console.log("Match from http: ", match);
+    console.log("Innings from http: ", innings);
+    console.log("Ball Events from http: ", ballEvent);
 
     setTeamAinn(() =>
       innings?.find((inn) => inn.batting_team === match?.teamA_id)

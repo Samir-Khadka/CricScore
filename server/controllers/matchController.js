@@ -54,7 +54,7 @@ async function handleGetMatches(req, res) {
 
 async function handleGetMatch(req, res) {
   const { matchId } = req.params;
-  console.log("Match id is:" + matchId);
+  // console.log("Match id is:" + matchId);
 
   try {
     // Validate if matchId is a valid MongoDB ObjectId
