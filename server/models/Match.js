@@ -53,10 +53,6 @@ const MatchSchema = new Schema(
     matchState: {
       type: String,
     },
-    session: {
-      type: String,
-      default: "Afternoon",
-    },
     umpires: {
       onField: [String],
       third: String,
@@ -67,7 +63,12 @@ const MatchSchema = new Schema(
     },
 
     result: {
-      type: String,
+      type:String,
+    },
+
+    winner: {
+      type: Schema.Types.ObjectId,
+      ref:"teams",
     },
 
     points: {
@@ -108,6 +109,10 @@ const MatchSchema = new Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "innings",
       default: [],
+    },
+    inning_in_progress: {
+      type: Number,
+      default: 1,
     },
   },
   { timestamps: true }

@@ -112,7 +112,7 @@ const handleCaptainSelect = (captainPlayer) => {
     <div className="team-card">
       <div className="section">
         <label htmlFor="squad" className="section-title">
-          Select Playing Squad
+          Select Playing XI
         </label>
         <Select
           id="squad"

@@ -1,30 +1,42 @@
-
 /* Base: smooth scale & shadow */
 .match_card {
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
   will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Hover / focus */
 .match_card:hover,
 .match_card:focus {
-   background-color: #fff;
+  background-color: #fff;
   outline: none;
-  transform: scale(1.04);  /* will transition smoothly now */
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-  animation: blinkPulse 1.5s ease-in-out infinite; /* only opacity pulse */
+  transform: scale(1.04) translateZ(0);
+  /* will transition smoothly now */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  animation: blinkPulse 1.5s ease-in-out infinite;
+  /* only opacity pulse */
 }
 
 /* Focus ring */
 .match_card:focus-visible {
-  box-shadow: 0 0 0 4px rgba(59,130,246,0.18), 0 12px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18), 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Blink animation — no transform here */
 @keyframes blinkPulse {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.85; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Accessibility */
@@ -32,6 +44,7 @@
   .match_card {
     transition: transform 150ms linear;
   }
+
   .match_card:hover,
   .match_card:focus {
     animation: none;

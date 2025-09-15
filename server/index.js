@@ -16,21 +16,24 @@ const ballByballRoute = require("./routes/ballByBallRoute.js");
 
 const app = express();
 const httpServer = createServer(app);
-const { Server } = require("socket.io")
+const { Server } = require("socket.io");
+const validate = require("./middlewares/validateInnings.js");
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173","http://localhost:3000"]
-  }
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+  },
 });
 
-app.set("io", io);
-
 // const PORT = process.env.PORT || 5000;
-const PORT=5000;
+const PORT = 5000;
 
 //for cors permission
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:5173","http://localhost:5000"], // Allow frontend origin
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5000",
+  ], // Allow frontend origin
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // allow cookies
   allowedHeaders: ["Content-Type"], // don't put 'credentials' here
@@ -58,7 +61,21 @@ app.use("/api/cricscore/tournament", tournamentRoute);
 app.use("/api/cricscore/players", playersRoute);
 app.use("/api/cricscore/match", matchRoute);
 
-app.use("/api/cricscore/teams",playersRoute);
+app.use("/api/cricscore/teams", playersRoute);
+
+//socket
+
+app.set("io", io);
+io.on("connection", (socket) => {
+  const module = socket.handshake.query.module;
+  const matchId = socket.handshake.query.matchId;
+
+  if (module === "home") {
+    socket.join("homeRoom");
+  } else if (module === "match" && matchId) {
+    socket.join(`match/${matchId}`);
+  }
+});
 
 httpServer.listen(PORT, () => {
   console.log(`Server started at port ${PORT}`);

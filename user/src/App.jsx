@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tournament/:tourname" element={<TournamentInfo />} />
-        <Route path="/match/:mName" element={<Match />} />
+        <Route path="/match/:tourName/:matchName/:matchId" element={<Match />} />
         <Route path="/match" element={<MatchPanels />} />
       </Routes>
     <Footer />

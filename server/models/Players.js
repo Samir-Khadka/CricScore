@@ -12,7 +12,14 @@ const PlayerSchema = new Schema(
       required: true,
     },
     players: {
-      type: Schema.Types.Array,
+      type: [
+        {
+          _id: { type: Schema.Types.ObjectId, auto: true },
+          name: String,
+          role: String,
+          isCaptain: Boolean,
+        },
+      ],
       required: true,
     },
   },

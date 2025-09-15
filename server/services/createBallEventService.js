@@ -42,14 +42,14 @@ const safeObjectId = (id) => {
       total: (bat_run || 0) + totalExtraRuns(extras || {}),
     };
 
-console.log({
-  inningID,
-  striker,
-  non_striker,
-  bowler,
-  batsman_out,
-  fielders
-});
+// console.log({
+//   inningID,
+//   striker,
+//   non_striker,
+//   bowler,
+//   batsman_out,
+//   fielders
+// });
 
 
 
@@ -77,7 +77,7 @@ console.log({
       },
     });
 
-    console.log("BallEvent created:", ballEvent._id);
+    // console.log("BallEvent created:", ballEvent._id);
     return ballEvent;
   } catch (error) {
     console.error(" Error creating BallEvent:", error);

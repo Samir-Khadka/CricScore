@@ -1,6 +1,6 @@
 const MatchSummaryCard=()=>{
     return(
-    <div className=" bg-white w-90 flex flex-col rounded-lg shadow-md overflow-hidden border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors match_card1 w-[90vw] ml-16 " onClick={() => {handleClick()}}>
+    <div className=" bg-white flex flex-col rounded-lg shadow-md overflow-hidden border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors match_card1 w-[90vw] ml-16 " onClick={() => {handleClick()}}>
       <div className="bg-[#cbc2c2] text-sm font-semibold px-3 py-2 border-b-2 border-gray-200 card_title text-center">
         LIVE - Nepal Premier League
       </div>

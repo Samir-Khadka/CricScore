@@ -16,11 +16,11 @@
 }
 
 function getCurrentRunRate(runs, overs){
-  return (runs/overs);
+  return (runs/overs).toFixed(2);
 }
 
 function getRequiredRunRate(target, totalRuns, oversRemaining){
-  return (target-totalRuns)/oversRemaining;
+  return ((target-totalRuns)/oversRemaining).toFixed(2);
 }
 
 module.exports = {
