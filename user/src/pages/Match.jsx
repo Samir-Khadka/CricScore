@@ -123,7 +123,7 @@ const Match = () => {
   // }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-[#f8f9fa] mt-20">
+    <div className="w-full flex flex-col items-center justify-center mt-20">
       {/* live scorecard */}
 
       <div className="w-fit lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white">

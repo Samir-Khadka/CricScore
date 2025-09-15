@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import ScoreSummaryCard from "../components/ScoreSummaryCard";
 import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
-import "../css/Home.css";
 import { io } from "socket.io-client";
+import { Calendar, ClockFading, MoveRight, Trophy } from "lucide-react";
 
 const Home = () => {
   const [tournaments, setTournaments] = useState(null);
@@ -85,22 +85,26 @@ const Home = () => {
     });
 
     const r = await response.json();
-    console.log(r.data);
+    console.log("Live",r.data);
     if (response.ok) {
       setLiveMatches(r.data);
     }
   };
 
   return (
-    <section className="p-6 bg-[#f8f9fa] mt-8">
+    <section className="pl-10 py-6 mr-20 min-h-screen">
       {/* Live Matches */}
 
-      <div className="mt-8">
-        <div className="flex flex-row justify-between mt-8">
-          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">
+      <div className="mt-10">
+        <div className="flex flex-row justify-between">
+          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <div className="inline-block animate-pulse w-4 h-4 bg-rose-500 rounded-full mr-2"></div>{" "}
             Live Matches
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Happenning now in CricScore.</p>
+          </div>
+          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+            View All <MoveRight className="inline-block" />{" "}
           </p>
-          <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
         <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
           {liveMatches &&
@@ -114,53 +118,72 @@ const Home = () => {
 
       {/* upcoming */}
 
-      <div>
-        <div className="flex flex-row justify-between mt-10">
-          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">
-            Upcoming Matches
+      <div className="mt-20">
+        <div className="flex flex-row justify-between items-center">
+          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <Calendar
+              size={20}
+              className="inline-block mr-2 text-amber-300/70"
+            />
+            <span className="mt-2">Upcoming Matches</span>
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Don't miss the exciting cricketing action ahead.</p>
+
+          </div>
+          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+            View All <MoveRight className="inline-block" />{" "}
           </p>
-          <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5"></div>
-      </div>
-
-      {/* hero section  */}
-
-      <div className="w-full bg-blue-500 mt-10 py-6 shadow-lg rounded-xl flex flex-col items-center justify-center space-y-4">
-        <p className="text-2xl text-white">Are you an organizer?</p>
-        <p className="text-4xl text-white font-bold px-6">
-          Try CricScore for real-time scoring.
-        </p>
-
-        <button className="relative w-50 p-2 bg-white rounded-2xl font-semibold text-xl transition-transform duration-300 hover:scale-105 overflow-hidden group">
-          <span className="relative z-10">Get Started</span>
-          {/* Glowing circular border */}
-          <span className="absolute inset-0 rounded-2xl border-2 border-blue-400 opacity-0 group-hover:opacity-100 animate-glow"></span>
-        </button>
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
+          {liveMatches &&
+            liveMatches.map((match, i) => {
+              return (
+                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
+              );
+            })}
+        </div>
       </div>
 
       {/* recently completed */}
+      <div className="mt-20">
+        <div className="flex flex-row justify-between items-center">
+          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <ClockFading
+              size={20}
+              className="inline-block mr-2 text-cyan-300"
+            />
+            <span className="mt-2">Recently Concluded</span>
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Have a look at the recent thrillers.</p>
 
-      <div>
-        <div className="flex flex-row justify-between mt-10">
-          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">
-            Recent Matches
+          </div>
+          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+            View All <MoveRight className="inline-block" />{" "}
           </p>
-          <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5"></div>
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
+          {liveMatches &&
+            liveMatches.map((match, i) => {
+              return (
+                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
+              );
+            })}
+        </div>
       </div>
 
       {/* Tournaments */}
 
-      <div>
-        <div className="flex flex-row justify-between p-3 mt-10">
-          <p className="text-xl font-semibold border-l-4 border-blue-400 px-4">
-            Tournaments
+      <div className="mt-20">
+        <div className="flex flex-row justify-between items-center">
+          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <Trophy size={20} className="inline-block mr-2 text-emerald-300" />
+            <span className="mt-2">Tournaments</span>
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Follow your favorite.</p>
+
+          </div>
+          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+            View All <MoveRight className="inline-block" />{" "}
           </p>
-          <p className="text-sm font-semibold text-gray-500">View All</p>
         </div>
-        <div className="flex flex-row justify-evenly flex-wrap gap-7 mt-5">
+        <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
           {tournaments &&
             tournaments.map((t, i) => {
               return (
