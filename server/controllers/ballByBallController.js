@@ -1,5 +1,6 @@
 const Innings = require("../models/Innings");
 const Match = require("../models/Match");
+const { isInningEnd } = require("../services/CheckInningEnd");
 const checkWinner = require("../services/CheckWinner");
 const createBallEvent = require("../services/createBallEventService");
 const updateInnings = require("../services/updateInningsService");
@@ -7,8 +8,7 @@ const updateInnings = require("../services/updateInningsService");
 async function handleBallByBall(req, res) {
   try {
     const match_id = req.params.matchId;
-    const inningNum = req.body.inningNumber;
-    var isInningEnd = false;
+    const inningNum = Number(req.body.inningNumber);
     const io = req.app.get("io");
 
     //find inning
@@ -51,50 +51,41 @@ async function handleBallByBall(req, res) {
       );
 
     //check if inning end
-    if (updatedInning.over === req.totalOvers || updatedInning.wickets === 10) {
-      isInningEnd = true;
 
+    if (isInningEnd(inningNum, req.totalOvers, updatedInning)) {
       //set status complete
       await Innings.findOneAndUpdate(
         { matchId: match_id, inningNumber: inningNum },
         { $set: { status: "completed" } }
       );
-    }
 
-    // console.log("isInningEnd: ",isInningEnd);
-
-    //if first inning has been ended
-    if (inningNum === 1 && isInningEnd) {
-      //set target to second inning
-      await Innings.findOneAndUpdate(
-        { matchId: match_id, inningNumber: 2 },
-        { $set: { target: updatedInning.runs + 1 } }
-      );
-    }
-
-    var matchresult = null;
-
-    //if second inning has been ended
-    if (inningNum === 2 && isInningEnd) {
-      console.log("Inning 2 complete");
-      //decide winner
-      const { rslt, win } = await checkWinner(match_id);
-
-      //update match
-      matchresult = await Match.findByIdAndUpdate(
-        match_id,
-        {
-          $set: { result: rslt, winner: win, matchState: "completed" },
-        },
-        { new: true }
-      );
+      switch (inningNum) {
+        case 1:
+          //set target to second inning
+          await Innings.findOneAndUpdate(
+            { matchId: match_id, inningNumber: 2 },
+            { $set: { target: updatedInning.runs + 1 } }
+          );
+          break;
+        case 2:
+          const { result, winner } = await checkWinner(match_id);
+          await Match.findByIdAndUpdate(
+            match_id,
+            {
+              $set: { result: result, winner: winner, matchState: "completed" },
+            },
+            { new: true }
+          );
+          break;
+        default:
+          break;
+      }
     }
 
     return res.status(200).json({
       message: "Updated",
       data: updatedInning,
       ballEvent: ballEvent,
-      result: matchresult,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });

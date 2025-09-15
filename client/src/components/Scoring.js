@@ -345,9 +345,9 @@ const Scoring = () => {
     if (response.ok) {
       isSendingRef.current = true;
       setUpdatedInning(r.data);
-      console.log("Response: ", r);
+      // console.log("Response: ", r);
 
-      console.log("Ball Event" + r.ballEvent);
+      // console.log("Ball Event" + r.ballEvent);
       set_ballEvent(r.ballEvent);
 
       //reset initialballfields
@@ -358,6 +358,8 @@ const Scoring = () => {
         };
         return reset;
       });
+    } else {
+      alert(r.message);
     }
   };
 
