@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#121317] mt-10 p-6 flex flex-row gap-20 pl-10">
+    <footer className="w-full bg-[#1c1f25] mt-10 p-6 flex flex-row gap-20 pl-10">
       <div>
         <header className="text-xl text-slate-100 font-space">CricScore</header>
         <p className="text-sm text-slate-200 font-inter mt-2">

@@ -2,7 +2,7 @@ import { MapPin } from "lucide-react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-const ScoreSummaryCard = (props) => {
+const LiveCard = (props) => {
   const [teamAinn, setTeamAinn] = useState(null);
   const [teamBinn, setTeamBinn] = useState(null);
 
@@ -29,29 +29,29 @@ const ScoreSummaryCard = (props) => {
 
   return (
     <div
-      className=" bg-[#15161b] w-full md:w-100 lg:w-72 h-72 flex flex-col justify-evenly  rounded-lg shadow-md overflow-hidden cursor-pointer border-2 border-[#cc66ff]/40 hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300 px-4"
+      className="bg-card w-full md:w-100 lg:w-72 h-72 flex flex-col justify-evenly  rounded-lg shadow-md overflow-hidden cursor-pointer border-2 border-[#cc66ff]/40 hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300 px-4"
       onClick={() => {
         handleClick();
       }}
     >
       <div>
-        <p className="text-md font-semibold font-space capitalize text-slate-300">
+        <p className="text-lg font-semibold font-space capitalize text-heading">
           {props.data?.tournament_name}
         </p>
-        <MapPin size={16} className="inline text-slate-400" />{" "}
-        <span className="text-slate-400 text-xs font-normal mt-2">
+        <MapPin size={16} className="inline text-subheading" />{" "}
+        <span className="text-subheading text-sm font-normal mt-2">
           {props.data?.venue}
         </span>
       </div>
 
       <div className="space-y-8 ">
         <div className="flex justify-between items-center ">
-          <div className="text-slate-100 font-bold text-xl">
+          <div className="text-heading font-bold text-xl">
             {props.data?.teamA}
           </div>
-          <div className="font-bold font-space text-xl text-slate-100">
+          <div className="font-bold font-space text-xl text-heading">
             {teamAinn?.runs}/{teamAinn?.wickets}
-            <span className="text-slate-400 text-sm font-semibold font-inter mx-2">
+            <span className="text-subheading text-sm font-semibold font-inter mx-2">
               ({teamAinn?.over}.{teamAinn?.balls}/
               {props.data?.tournament_id.format})
             </span>
@@ -59,21 +59,19 @@ const ScoreSummaryCard = (props) => {
         </div>
 
         <div className="flex justify-between items-center">
-          <div className="text-slate-100 font-bold text-xl">
+          <div className="text-heading font-bold text-xl">
             {props.data?.teamB}
           </div>
-          <div className="font-bold font-space text-xl text-slate-100">
+          <div className="font-bold font-space text-xl text-heading">
             {teamBinn?.runs}/{teamBinn?.wickets}
-            <span className="text-slate-400 text-sm font-semibold font-inter mx-2">
+            <span className="text-subheading text-sm font-semibold font-inter mx-2">
               ({teamBinn?.over}.{teamBinn?.balls}/
               {props.data?.tournament_id.format})
             </span>
           </div>
         </div>
-        <div className="flex flex-row justify-between text-sm font-normal text-slate-400 capitalize">
-          <div>
-            CRR: 11.23
-          </div>
+        <div className="flex flex-row justify-between text-sm font-semibold text-subheading capitalize">
+          <div>CRR: 11.23</div>
           <div>
             {props.data?.toss.wonBy === props.data?.teamA_id
               ? props.data?.teamA
@@ -89,4 +87,4 @@ const ScoreSummaryCard = (props) => {
   );
 };
 
-export default ScoreSummaryCard;
+export default LiveCard;

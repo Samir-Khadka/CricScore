@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import ScoreSummaryCard from "../components/ScoreSummaryCard";
 import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
 import { io } from "socket.io-client";
 import { Calendar, ClockFading, MoveRight, Trophy } from "lucide-react";
 import HeroSection from "../components/HeroSection";
 import Features from "../components/Features";
+import LiveCard from "../components/ScoreSummaryCard";
+import UpcomingCard from "../components/Upcoming";
+import Recent from "../components/Recent";
 
 const Home = () => {
   const [tournaments, setTournaments] = useState(null);
@@ -99,14 +101,14 @@ const Home = () => {
 
       <div className="mt-10">
         <div className="flex flex-row justify-between">
-          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+          <div className="text-2xl text-heading font-space font-semibold px-4 tracking-wide">
             <div className="inline-block animate-pulse w-4 h-4 bg-rose-500 rounded-full mr-2"></div>{" "}
             Live Matches
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+            <p className="text-sm text-subheading ml-8 mt-1 font-normal font-inter">
               Happenning now in CricScore.
             </p>
           </div>
-          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+          <p className="text-sm font-semibold text-secondary cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
           </p>
         </div>
@@ -114,7 +116,7 @@ const Home = () => {
           {liveMatches &&
             liveMatches.map((match, i) => {
               return (
-                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
+                <LiveCard matchInfo={matchInfo} data={match} key={i} />
               );
             })}
         </div>
@@ -129,37 +131,35 @@ const Home = () => {
 
       <div className="mt-20">
         <div className="flex flex-row justify-between items-center">
-          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+          <div className="text-2xl text-heading font-space font-semibold px-4">
             <Calendar
               size={20}
               className="inline-block mr-2 text-amber-300/70"
             />
-            <span className="mt-2">Upcoming Matches</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+            <span className="mt-2 tracking-wide">Upcoming Matches</span>
+            <p className="text-sm text-subheading ml-8 mt-1 font-normal font-inter">
               Don't miss the exciting cricketing action ahead.
             </p>
           </div>
-          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+          <p className="text-sm font-semibold text-secondary cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
           </p>
         </div>
         <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
-          {liveMatches &&
-            liveMatches.map((match, i) => {
-              return (
-                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
-              );
-            })}
+         <UpcomingCard />
+         <UpcomingCard />
+         <UpcomingCard />
+         <UpcomingCard />
         </div>
       </div>
 
 
       {/* features  */}
       <div className="mt-20">
-        <p className="text-3xl font-space text-center text-slate-200 font-bold">
+        <p className="text-3xl font-space text-center text-heading font-bold tracking-wide">
           Powerful Features
         </p>
-        <p className="text-sm font-semibold text-center text-slate-400 mt-1 font-inter">
+        <p className="text-sm text-center text-subheading font-normal mt-1 font-inter">
           Your Local Cricket Tournament. Digitized.
         </p>
         <Features />
@@ -169,27 +169,25 @@ const Home = () => {
       {/* recently completed */}
       <div className="mt-20">
         <div className="flex flex-row justify-between items-center">
-          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+          <div className="text-2xl text-heading font-space font-semibold px-4">
             <ClockFading
               size={20}
               className="inline-block mr-2 text-cyan-300"
             />
-            <span className="mt-2">Recently Concluded</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+            <span className="mt-2 tracking-wide">Recently Concluded</span>
+            <p className="text-sm text-subheading ml-8 mt-1 font-normal font-inter">
               Have a look at the recent thrillers.
             </p>
           </div>
-          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+          <p className="text-sm font-semibold text-subheading cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
           </p>
         </div>
         <div className="flex flex-row flex-wrap gap-6 justify-evenly items-center mt-5">
-          {liveMatches &&
-            liveMatches.map((match, i) => {
-              return (
-                <ScoreSummaryCard matchInfo={matchInfo} data={match} key={i} />
-              );
-            })}
+          <Recent />
+          <Recent />
+          <Recent />
+          <Recent />
         </div>
       </div>
 
@@ -197,14 +195,14 @@ const Home = () => {
 
       <div className="mt-20">
         <div className="flex flex-row justify-between items-center">
-          <div className="text-2xl text-gray-200 font-space font-semibold px-4">
-            <Trophy size={20} className="inline-block mr-2 text-emerald-300" />
-            <span className="mt-2">Tournaments</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+          <div className="text-2xl text-heading font-space font-semibold px-4">
+            <Trophy size={20} className="inline-block mr-2 text-[#cc66ff]" />
+            <span className="mt-2 tracking-wide">Tournaments</span>
+            <p className="text-sm text-subheading  ml-8 mt-1 font-normal font-inter">
               Follow your favorite.
             </p>
           </div>
-          <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
+          <p className="text-sm font-semibold text-subheading cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
           </p>
         </div>

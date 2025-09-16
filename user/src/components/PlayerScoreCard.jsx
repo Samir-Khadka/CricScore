@@ -1,17 +1,17 @@
 const PlayerScoreCard = (props) => {
   return (
-    <div className=" bg-slate-800 w-[250px] p-3 flex flex-col justify-evenly  rounded-lg shadow-md overflow-hidden">
+    <div className=" bg-secondary w-[250px] p-3 flex flex-col justify-evenly  rounded-lg shadow-md overflow-hidden">
       {/* players name and score  */}
       <div className="flex flex-row">
-        <p className=" w-[60%] truncate text-sm text-slate-100 font-semibold">
+        <p className=" w-[60%] truncate text-sm text-heading font-semibold">
           {props.name}
         </p>
-        <p className="w-[40%] text-slate-100 text-center font-bold font-space">
+        <p className="w-[40%] text-heading text-center font-bold font-space">
           {props.score}
         </p>
       </div>
       {/* players stats  */}
-      <div className="text-slate-300 text-sm font-semibold text-center mt-2">
+      <div className="text-subheading text-sm font-semibold text-center mt-2">
         {props.isBatsmen === true ? (
           <p>
             {props.fours} fours • {props.sixes} sixes • SR: {props.sr}

@@ -1,6 +1,6 @@
 const PointsTable = (props) => {
   return (
-    <div className="mt-2 p-6 text-slate-300">
+    <div className="mt-2 p-6 text-heading">
       <p>Not Available</p>
     </div>
   );

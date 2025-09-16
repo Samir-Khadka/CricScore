@@ -7,7 +7,7 @@ import MatchDetails from "../components/MatchDetails";
 import PointsTable from "../components/PointsTable";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
-import { Award, Clipboard, ClockFading, List, MessageCircle, Zap } from "lucide-react";
+import { Award, Clipboard, List, MessageCircle, Zap } from "lucide-react";
 
 const Match = () => {
   const host = "http://localhost:5000";
@@ -127,7 +127,7 @@ const Match = () => {
     <div className="w-full min-h-screen flex flex-col items-center justify-center mt-10">
       {/* live scorecard */}
 
-      <div className="w-fit lg:w-7xl mx-3 p-4 rounded-xl border-2 border-[#cc66ff]/40 bg-[#15161b] hover:scale-101 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300">
+      <div className="w-fit lg:w-7xl mx-3 p-4 rounded-xl border-2 border-[#cc66ff]/50 bg-card hover:scale-101 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300">
         {/* live logo and tournament name  */}
 
         <div className=" flex flex-row justify-between flex-wrap">
@@ -135,7 +135,7 @@ const Match = () => {
             <div className="w-[10px] h-[10px] bg-rose-500 rounded-2xl animate-pulse"></div>
             {match && match?.matchState}
           </div>
-          <p className="text-md font-semibold font-space capitalize text-slate-300">
+          <p className="text-md font-semibold font-space capitalize text-subheading">
             {match && match?.tournament_name}
           </p>
         </div>
@@ -144,34 +144,32 @@ const Match = () => {
 
         <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap">
           <div className="flex flex-row items-center md:gap-20 mt-10 md:mt-0">
-            <p className="text-slate-100 font-bold text-3xl">
+            <p className="text-heading font-bold text-3xl">
               {match && match?.teamA}
             </p>
             <div>
-              <p className="font-bold font-space text-4xl text-slate-100">
+              <p className="font-bold font-space text-4xl text-heading">
                 {teamAinn?.runs}/{teamAinn?.wickets}
               </p>
-              <p className="text-slate-400 text-xm font-semibold font-inter mt-2">
-                ({teamAinn?.over}.{teamAinn?.balls} /{" "}
-                {match?.tournament_id.format})
+              <p className="text-subheading text-xm text-center font-semibold font-inter mt-2">
+                ({teamAinn?.over}.{teamAinn?.balls}/{match?.tournament_id.format})
               </p>
             </div>
           </div>
-          <p className="text-gray-500 text-md mt-5 md:mt-0">
+          <p className="text-secondary text-md mt-5 md:mt-0">
             <Zap size={30} strokeWidth={1} />
           </p>
           <div className="flex flex-row items-center gap-20 mt-5 md:mt-0">
             <div>
-              <p className="font-bold font-space text-4xl text-slate-100">
+              <p className="font-bold font-space text-4xl text-heading">
                 {teamBinn?.runs}/{teamBinn?.wickets}
               </p>
-              <p className="text-slate-400 text-xm font-semibold font-inter mt-2">
-                ({teamBinn?.over}.{teamBinn?.balls} /{" "}
-                {match?.tournament_id.format}) overs
+              <p className="text-subheading text-xm text-center font-semibold font-inter mt-2">
+                ({teamBinn?.over}.{teamBinn?.balls}/{match?.tournament_id.format})
               </p>
             </div>
 
-            <p className="text-slate-100 font-bold text-3xl">
+            <p className="text-heading font-bold text-3xl">
               {match && match?.teamB}
             </p>
           </div>
@@ -204,8 +202,8 @@ const Match = () => {
               sr="280"
             />
           </div>
-          <div className="bg-slate-700 p-3 w-[300px] rounded-lg">
-            <div className="flex flex-row justify-between text-sm font-semibold text-slate-100">
+          <div className="bg-secondary p-3 w-[300px] rounded-lg">
+            <div className="flex flex-row justify-between text-sm font-semibold text-heading">
               <p>
                 CRR:{" "}
                 <span className="font-space">
@@ -219,7 +217,7 @@ const Match = () => {
                 Target: <span className="font-space">305</span>
               </p>
             </div>
-            <p className="text-sm text-slate-200 font-semibold text-center mt-2">
+            <p className="text-sm text-heading font-semibold text-center mt-2">
               Projected Score:{" "}
               <span className="font-space">
                 {(
@@ -268,7 +266,7 @@ const Match = () => {
 
         {/* other info */}
 
-        <div className="flex flex-row justify-between mt-10 text-slate-300 font-semibold text-sm">
+        <div className="flex flex-row justify-between mt-10 text-secondary font-medium text-sm">
           <p>{match?.venue}</p>
           <p>Last Wicket: Brendon McMullen 41 (12)</p>
           <p>
@@ -283,7 +281,7 @@ const Match = () => {
       </div>
 
       {/* tabs for commentry, scorecard and other info  */}
-      <div className="lg:w-4xl bg-slate-100 mt-15 border-2 border-[#cc66ff] flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
+      <div className="lg:w-4xl bg-card mt-15 border-2 border-[#cc66ff]/50 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
         {tabs.map((t, i) => {
           return (
             <div
@@ -311,7 +309,7 @@ const Match = () => {
       >
         {selectedTab === "com" ? (
           <div>
-            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <div className="text-2xl text-heading font-space font-semibold px-4">
               <MessageCircle
                 size={20}
                 className="inline-block mr-2 text-cyan-300"
@@ -339,14 +337,14 @@ const Match = () => {
           </div>
         ) : selectedTab === "sc" ? (
           <div>
-            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <div className="text-2xl text-heading font-space font-semibold px-4">
               <Clipboard
                 size={20}
                 className="inline-block mr-2 text-cyan-300"
               />
               <span className="mt-2">Scorecard</span>
             </div>
-            <div className="flex flex-row flex-wrap gap-5 mt-2 p-6 text-slate-200">
+            <div className="flex flex-row flex-wrap gap-5 mt-2 p-6 text-heading">
               <p
                 id="teamA"
                 className={`cursor-pointer ${
@@ -376,7 +374,7 @@ const Match = () => {
           </div>
         ) : selectedTab === "det" ? (
           <div>
-            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <div className="text-2xl text-heading font-space font-semibold px-4">
               <List size={20} className="inline-block mr-2 text-cyan-300" />
               <span className="mt-2">Match Details</span>
             </div>
@@ -385,7 +383,7 @@ const Match = () => {
           </div>
         ) : (
           <div>
-            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+            <div className="text-2xl text-heading font-space font-semibold px-4">
               <Award 
                 size={20}
                 className="inline-block mr-2 text-cyan-300"
