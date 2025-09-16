@@ -1,11 +1,19 @@
 const Commentary = (props) => {
-    return(
-        <div className="w-full h-12 bg-gray-200 border-2 border-gray-400 rounded-2xl flex flex-row items-center mb-6">
-            <div className="w-[20%] h-full bg-blue-400 rounded-2xl text-center leading-12 font-semibold">{props.over}</div>
-            <div className="w-[60%] px-6 text-sm md:text-xm">{props.bowler} to {props.batsmen}</div>
-            <div className="w-[20%] h-full border-l-2 border-gray-300 text-center leading-12 font-semibold">{props.result}</div>
-        </div>
-    );
-}
+  return (
+    <div className="w-full bg-[#15161b] p-2 flex flex-col border-2 rounded-lg border-green-500/40 mb-8 hover:scale-102 duration-300 transition-all">
+      <div className="flex flex-row justify-between gap-3">
+        <p className="bg-blue-400/50 px-4 py-1 rounded-lg font-space font-semibold text-slate-200">
+          {props.over}
+        </p>
+        <p className="px-4 py-1 text-slate-200">
+          {props.bowler} to {props.batsmen}
+        </p>
+        <p className="border-2 border-blue-400/50 px-4 py-1 rounded-lg font-space font-semibold text-slate-200">
+          {props.result}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default Commentary;

@@ -1,6 +1,6 @@
 const MatchDetails = (props) => {
     return (
-        <div>
+        <div className="mt-2 p-6 text-slate-200 font-semibold">
             <p>Umpires: {props.match.umpires.onField}</p>
             <p>Third Umpire: {props.match.umpires.third}</p>
             <p>TV Umpire: {props.match.umpires.tv}</p>

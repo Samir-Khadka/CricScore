@@ -7,11 +7,12 @@ import MatchDetails from "../components/MatchDetails";
 import PointsTable from "../components/PointsTable";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { Award, Clipboard, ClockFading, List, MessageCircle, Zap } from "lucide-react";
 
 const Match = () => {
   const host = "http://localhost:5000";
   const [selectedTab, setSelectedTab] = useState("com");
-  const [scSelectedTab, setScSelectedTab] = useState("tabA");
+  const [scSelectedTab, setScSelectedTab] = useState("teamA");
   const [innings, setInnings] = useState([]);
   const [ballEvent, setBallEvent] = useState([]);
   const [match, setMatch] = useState(null);
@@ -123,18 +124,18 @@ const Match = () => {
   // }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center mt-20">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center mt-10">
       {/* live scorecard */}
 
-      <div className="w-fit lg:w-7xl mx-3 p-4 border-2 border-gray-300 rounded-2xl shadow-md mt-15 bg-white">
+      <div className="w-fit lg:w-7xl mx-3 p-4 rounded-xl border-2 border-[#cc66ff]/40 bg-[#15161b] hover:scale-101 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300">
         {/* live logo and tournament name  */}
 
         <div className=" flex flex-row justify-between flex-wrap">
-          <div className="bg-[#dc3545] text-white font-bold px-2 rounded-xl flex flex-row items-center gap-2 uppercase">
-            <div className="w-[10px] h-[10px] bg-white rounded-2xl animate-pulse"></div>
+          <div className="text-rose-500 font-bold px-2 rounded-xl flex flex-row items-center gap-2 uppercase">
+            <div className="w-[10px] h-[10px] bg-rose-500 rounded-2xl animate-pulse"></div>
             {match && match?.matchState}
           </div>
-          <p className="text-gray-500 font-semibold">
+          <p className="text-md font-semibold font-space capitalize text-slate-300">
             {match && match?.tournament_name}
           </p>
         </div>
@@ -142,42 +143,35 @@ const Match = () => {
         {/* scores*/}
 
         <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap">
-          <div className="flex flex-row md:gap-20 mt-10 md:mt-0">
-            <p className="text-2xl font-bold text-gray-700">
+          <div className="flex flex-row items-center md:gap-20 mt-10 md:mt-0">
+            <p className="text-slate-100 font-bold text-3xl">
               {match && match?.teamA}
             </p>
             <div>
-              {/* {teamAinn?.over >= 0 && teamAinn?.balls > 0 ? ( */}
-              <>
-                <p className="text-3xl font-bold text-gray-700">
-                  {teamAinn?.runs}/{teamAinn?.wickets}
-                </p>
-                <p className="font-semibold mt-2 text-gray-500">
-                  ({teamAinn?.over}.{teamAinn?.balls} /{" "}
-                  {match?.tournament_id.format}) overs
-                </p>
-              </>
-              {/* // ) : (
-              //   <p className="font-semibold text-gray-500">Yet to bat</p>
-              // )} */}
+              <p className="font-bold font-space text-4xl text-slate-100">
+                {teamAinn?.runs}/{teamAinn?.wickets}
+              </p>
+              <p className="text-slate-400 text-xm font-semibold font-inter mt-2">
+                ({teamAinn?.over}.{teamAinn?.balls} /{" "}
+                {match?.tournament_id.format})
+              </p>
             </div>
           </div>
-          <p className="text-gray-500 text-md mt-5 md:mt-0">vs</p>
-          <div className="flex flex-row gap-20 mt-5 md:mt-0">
-            {/* {teamBinn?.over >= 0 && teamBinn?.balls > 0 ? ( */}
+          <p className="text-gray-500 text-md mt-5 md:mt-0">
+            <Zap size={30} strokeWidth={1} />
+          </p>
+          <div className="flex flex-row items-center gap-20 mt-5 md:mt-0">
             <div>
-              <p className="text-3xl font-bold text-gray-700">
+              <p className="font-bold font-space text-4xl text-slate-100">
                 {teamBinn?.runs}/{teamBinn?.wickets}
               </p>
-              <p className="font-semibold mt-2 text-gray-500">
+              <p className="text-slate-400 text-xm font-semibold font-inter mt-2">
                 ({teamBinn?.over}.{teamBinn?.balls} /{" "}
                 {match?.tournament_id.format}) overs
               </p>
             </div>
-            {/* ) : (
-              <p className="font-semibold text-gray-500">Yet to bat</p>
-            )} */}
-            <p className="text-2xl font-bold text-gray-700">
+
+            <p className="text-slate-100 font-bold text-3xl">
               {match && match?.teamB}
             </p>
           </div>
@@ -185,51 +179,57 @@ const Match = () => {
 
         {/* match stats */}
 
-        <div className=" border-2 border-gray-200 rounded-2xl mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center">
+        <div className="mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center">
           {/* use flag to indicate not out player  */}
 
-          {/* <div>
-                <PlayerScoreCard
-                  isBatsmen={true}
-                  name="Binod Bhandari"
-                  score="35(13)"
-                  onStrike={false}
-                  fours="5"
-                  sixes="2"
-                  sr="230"
-                />
-              </div>
-              <div className="">
-                <PlayerScoreCard
-                  isBatsmen={true}
-                  name="Ishan Pandey"
-                  score="45(16)"
-                  onStrike={false}
-                  fours="5"
-                  sixes="3"
-                  sr="280"
-                />
-              </div> */}
-          <div className="p-4">
-            <p>Current Run Rate: {activeInning?.current_run_rate} </p>
-            <p>
-              Projected Score:{" "}
-              {(
-                activeInning?.current_run_rate * match?.tournament_id.format
-              ).toFixed(0)}
-            </p>
+          <div>
+            <PlayerScoreCard
+              isBatsmen={true}
+              name="Binod Bhandari"
+              score="35 (13)"
+              onStrike={false}
+              fours="5"
+              sixes="2"
+              sr="230"
+            />
           </div>
           <div className="">
-            <p>
-              {match?.toss.wonBy === match?.teamA_id
-                ? match?.teamA
-                : match?.teamB}{" "}
-              choose to{" "}
-              {match?.toss.decision === "ball" ? "field" : match?.toss.decision}
-            </p>
-            {/* <p>Partnership: 45(12)</p> */}
+            <PlayerScoreCard
+              isBatsmen={true}
+              name="Dipendra Singh Airee"
+              score="45 (16)"
+              onStrike={false}
+              fours="5"
+              sixes="3"
+              sr="280"
+            />
           </div>
-          {/* <div className="">
+          <div className="bg-slate-700 p-3 w-[300px] rounded-lg">
+            <div className="flex flex-row justify-between text-sm font-semibold text-slate-100">
+              <p>
+                CRR:{" "}
+                <span className="font-space">
+                  {activeInning?.current_run_rate}
+                </span>
+              </p>
+              <p>
+                RRR: <span className="font-space">3.5</span>
+              </p>
+              <p>
+                Target: <span className="font-space">305</span>
+              </p>
+            </div>
+            <p className="text-sm text-slate-200 font-semibold text-center mt-2">
+              Projected Score:{" "}
+              <span className="font-space">
+                {(
+                  activeInning?.current_run_rate * match?.tournament_id.format
+                ).toFixed(0)}
+              </span>
+            </p>
+          </div>
+
+          <div className="">
             <PlayerScoreCard
               isBatsmen={false}
               name="Kishor Mahato"
@@ -239,7 +239,7 @@ const Match = () => {
               maiden="0"
               econ="5.60"
             />
-          </div> */}
+          </div>
         </div>
 
         {/* timeline  */}
@@ -268,21 +268,31 @@ const Match = () => {
 
         {/* other info */}
 
-        <div className="flex flex-row justify-between mt-10">
-          <p className="text-gray-500 text-sm">{match?.venue}</p>
-          <p className="text-gray-500 text-sm"></p>
+        <div className="flex flex-row justify-between mt-10 text-slate-300 font-semibold text-sm">
+          <p>{match?.venue}</p>
+          <p>Last Wicket: Brendon McMullen 41 (12)</p>
+          <p>
+            {" "}
+            {match?.toss.wonBy === match?.teamA_id
+              ? match?.teamA
+              : match?.teamB}{" "}
+            choose to{" "}
+            {match?.toss.decision === "ball" ? "field" : match?.toss.decision}
+          </p>
         </div>
       </div>
 
       {/* tabs for commentry, scorecard and other info  */}
-      <div className="lg:w-4xl bg-[#efefef] mt-15 border-4 border-gray-100 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
+      <div className="lg:w-4xl bg-slate-100 mt-15 border-2 border-[#cc66ff] flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
         {tabs.map((t, i) => {
           return (
             <div
               key={i}
               id={t.id}
-              className={`w-xs p-2 text-center rounded-xl text-xm ${
-                selectedTab === t.id ? `tab-bg` : ``
+              className={`w-xs p-2 text-center rounded-xl  ${
+                selectedTab === t.id
+                  ? `bg-[#af14fd] text-slate-100 font-semibold`
+                  : ``
               }`}
               onClick={() => {
                 setSelectedTab(t.id);
@@ -296,16 +306,20 @@ const Match = () => {
 
       {/* show corresponding info for selected tab  */}
       <div
-        className="lg:w-7xl mt-15 border-2 border-gray-200 p-6 rounded-xl  mx-3 md:mx-0"
+        className="lg:w-7xl mt-15  p-6 rounded-xl  mx-3 md:mx-0"
         style={{ scrollbarWidth: "none" }}
       >
         {selectedTab === "com" ? (
           <div>
-            <p className="text-lg font-bold text-gray-700 mb-6">
-              Live Commentary
-            </p>
+            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+              <MessageCircle
+                size={20}
+                className="inline-block mr-2 text-cyan-300"
+              />
+              <span className="mt-2">Live Commentary</span>
+            </div>
             <div
-              className="h-[800px] overflow-y-scroll"
+              className="h-[800px] overflow-y-scroll mt-2 p-6"
               style={{ scrollbarWidth: "none" }}
             >
               {ballEvent?.map((be, i) => {
@@ -325,14 +339,18 @@ const Match = () => {
           </div>
         ) : selectedTab === "sc" ? (
           <div>
-            <p className="block text-lg font-bold text-gray-700 mb-6">
-              Scorecard
-            </p>
-            <div className="flex flex-row flex-wrap gap-5 px-6 mb-10">
+            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+              <Clipboard
+                size={20}
+                className="inline-block mr-2 text-cyan-300"
+              />
+              <span className="mt-2">Scorecard</span>
+            </div>
+            <div className="flex flex-row flex-wrap gap-5 mt-2 p-6 text-slate-200">
               <p
                 id="teamA"
-                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-blue-400 transition-colors hover:text-white cursor-pointer ${
-                  scSelectedTab === "teamA" ? `bg-blue-400 text-white` : ``
+                className={`cursor-pointer ${
+                  scSelectedTab === "teamA" ? `text-[#cc66ff]` : ``
                 }`}
                 onClick={() => setScSelectedTab("teamA")}
               >
@@ -340,8 +358,8 @@ const Match = () => {
               </p>
               <p
                 id="teamB"
-                className={`border-2 border-blue-400 rounded-2xl p-2 hover:bg-blue-400 transition-colors hover:text-white cursor-pointer ${
-                  scSelectedTab === "teamB" ? `bg-blue-400 text-white` : ``
+                className={`cursor-pointer ${
+                  scSelectedTab === "teamB" ? `text-[#cc66ff]` : ``
                 }`}
                 onClick={() => setScSelectedTab("teamB")}
               >
@@ -357,9 +375,25 @@ const Match = () => {
             )}
           </div>
         ) : selectedTab === "det" ? (
-          <MatchDetails match={match} />
+          <div>
+            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+              <List size={20} className="inline-block mr-2 text-cyan-300" />
+              <span className="mt-2">Match Details</span>
+            </div>
+
+            <MatchDetails match={match} />
+          </div>
         ) : (
-          <PointsTable />
+          <div>
+            <div className="text-2xl text-gray-200 font-space font-semibold px-4">
+              <Award 
+                size={20}
+                className="inline-block mr-2 text-cyan-300"
+              />
+              <span className="mt-2">Points Table</span>
+            </div>
+            <PointsTable />
+          </div>
         )}
       </div>
 

@@ -4,6 +4,8 @@ import Tournaments from "../components/TournamentsCard";
 import { useState } from "react";
 import { io } from "socket.io-client";
 import { Calendar, ClockFading, MoveRight, Trophy } from "lucide-react";
+import HeroSection from "../components/HeroSection";
+import Features from "../components/Features";
 
 const Home = () => {
   const [tournaments, setTournaments] = useState(null);
@@ -85,7 +87,7 @@ const Home = () => {
     });
 
     const r = await response.json();
-    console.log("Live",r.data);
+    console.log("Live", r.data);
     if (response.ok) {
       setLiveMatches(r.data);
     }
@@ -100,7 +102,9 @@ const Home = () => {
           <div className="text-2xl text-gray-200 font-space font-semibold px-4">
             <div className="inline-block animate-pulse w-4 h-4 bg-rose-500 rounded-full mr-2"></div>{" "}
             Live Matches
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Happenning now in CricScore.</p>
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+              Happenning now in CricScore.
+            </p>
           </div>
           <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
@@ -114,6 +118,11 @@ const Home = () => {
               );
             })}
         </div>
+      </div>
+
+      {/* hero section  */}
+      <div className="mt-20">
+        <HeroSection />
       </div>
 
       {/* upcoming */}
@@ -126,8 +135,9 @@ const Home = () => {
               className="inline-block mr-2 text-amber-300/70"
             />
             <span className="mt-2">Upcoming Matches</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Don't miss the exciting cricketing action ahead.</p>
-
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+              Don't miss the exciting cricketing action ahead.
+            </p>
           </div>
           <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
@@ -143,6 +153,19 @@ const Home = () => {
         </div>
       </div>
 
+
+      {/* features  */}
+      <div className="mt-20">
+        <p className="text-3xl font-space text-center text-slate-200 font-bold">
+          Powerful Features
+        </p>
+        <p className="text-sm font-semibold text-center text-slate-400 mt-1 font-inter">
+          Your Local Cricket Tournament. Digitized.
+        </p>
+        <Features />
+      </div>
+
+
       {/* recently completed */}
       <div className="mt-20">
         <div className="flex flex-row justify-between items-center">
@@ -152,8 +175,9 @@ const Home = () => {
               className="inline-block mr-2 text-cyan-300"
             />
             <span className="mt-2">Recently Concluded</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Have a look at the recent thrillers.</p>
-
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+              Have a look at the recent thrillers.
+            </p>
           </div>
           <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
@@ -176,8 +200,9 @@ const Home = () => {
           <div className="text-2xl text-gray-200 font-space font-semibold px-4">
             <Trophy size={20} className="inline-block mr-2 text-emerald-300" />
             <span className="mt-2">Tournaments</span>
-            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">Follow your favorite.</p>
-
+            <p className="text-sm text-slate-400 ml-8 mt-1 font-inter">
+              Follow your favorite.
+            </p>
           </div>
           <p className="text-sm font-semibold text-gray-500 cursor-pointer p-2 rounded-xl hover:text-[#cc66ff] hover:scale-98 transition-all">
             View All <MoveRight className="inline-block" />{" "}
