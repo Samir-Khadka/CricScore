@@ -1,6 +1,20 @@
-import { MapPin, Trophy } from "lucide-react";
+import { Calendar, Clock, MapPin, Trophy } from "lucide-react";
+import { useEffect } from "react";
+import { useState } from "react";
 
-const Recent = () => {
+const Recent = ({ data }) => {
+  const [teamAInning, setTeamAInning] = useState();
+  const [teamBInning, setTeamBInning] = useState();
+
+  useEffect(() => {
+    setTeamAInning(() =>
+      data?.innings.find((inn) => inn.batting_team === data?.teamA_id)
+    );
+    setTeamBInning(() =>
+      data?.innings.find((inn) => inn.batting_team === data?.teamB_id)
+    );
+  }, [data]);
+
   const handleClick = () => {
     // navigate(
     //   `match/${tourname_for_url}/${props.data?.teamA}-vs-${props.data?.teamB}/${props.data?.innings[0].matchId}`
@@ -15,39 +29,52 @@ const Recent = () => {
     >
       <div>
         <p className="text-lg font-semibold font-space capitalize text-heading">
-          Asia Cup 2025
+          {data.tournament_name}
         </p>
         <MapPin size={16} className="inline text-subheading" />{" "}
         <span className="text-subheading text-sm font-normal mt-2">
-          Dubai Sports Complex
+          {data.venue}
         </span>
       </div>
 
-      <div className="space-y-8 ">
+      <div className="space-y-5">
         <div className="flex justify-between items-center ">
-          <div className="text-heading font-bold text-xl">India</div>
+          <div className="text-heading font-bold text-xl">{data?.teamA}</div>
           <div className="font-bold font-space text-xl text-heading">
-            125/3
+            {teamAInning?.runs}/{teamAInning?.wickets}
             <span className="text-subheading text-sm font-semibold font-inter mx-2">
-              (15/20)
+              ({teamAInning?.over}.{teamAInning?.balls}/
+              {data?.tournament_id.format})
             </span>
           </div>
         </div>
 
         <div className="flex justify-between items-center">
-          <div className="text-heading font-bold text-xl">Pakistan</div>
+          <div className="text-heading font-bold text-xl">{data?.teamB}</div>
           <div className="font-bold font-space text-xl text-heading">
-            120/10
+            {teamBInning?.runs}/{teamBInning?.wickets}
             <span className="text-subheading text-sm font-semibold font-inter mx-2">
-              (20/20)
+              ({teamAInning?.over}.{teamAInning?.balls}/
+              {data?.tournament_id.format})
             </span>
           </div>
         </div>
 
         <div className="bg-emerald-400/20 text-emerald-600 font-medium text-sm rounded-lg p-3">
           <Trophy className="inline" size={18} strokeWidth={2.5} /> &nbsp;
-          <span>India won by 7 wickets.</span>
+          <span>{data?.result}</span>
         </div>
+
+        <div className="flex flex-row justify-between text-xs font-semibold text-secondary capitalize">
+        <div>
+          <Calendar size={15} className="inline" /> &nbsp;
+          <span>{new Date(data.match_date).toDateString()}</span>
+        </div>
+        <div>
+          <Clock size={16} className="inline" /> &nbsp;
+          <span>{data.match_time}</span>
+        </div>
+      </div>
       </div>
     </div>
   );

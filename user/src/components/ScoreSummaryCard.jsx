@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const LiveCard = (props) => {
   const [teamAinn, setTeamAinn] = useState(null);
   const [teamBinn, setTeamBinn] = useState(null);
-
+  // console.log(props);
   useEffect(() => {
     setTeamAinn(() =>
       props.data?.innings.find(
@@ -71,15 +71,20 @@ const LiveCard = (props) => {
           </div>
         </div>
         <div className="flex flex-row justify-between text-sm font-semibold text-subheading capitalize">
-          <div>CRR: 11.23</div>
           <div>
-            {props.data?.toss.wonBy === props.data?.teamA_id
+            CRR:
+            {props.data?.inning_in_progress === 1
+              ? props.data?.innings[0]?.current_run_rate
+              : props.data?.innings[1]?.current_run_rate}{" "}
+          </div>
+          <div>
+            {props.data?.toss?.wonBy === props.data?.teamA_id
               ? props.data?.teamA
               : props.data?.teamB}{" "}
             choose to{" "}
-            {props.data?.toss.decision === "ball"
+            {props.data?.toss?.decision === "ball"
               ? "field"
-              : props.data?.toss.decision}
+              : props.data?.toss?.decision}
           </div>
         </div>
       </div>
