@@ -17,6 +17,9 @@ export const initialBallFields = {
 };
 
 export const play_states_options = [
+  { value: "live", label: "Live" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "completed", label: "Completed" },
   { value: "in_play", label: "In Play" },
   { value: "over_end", label: "Over End" },
   { value: "innings_end", label: "Innings End" },
@@ -29,11 +32,11 @@ export const match_states_options = [
   { value: "live", label: "Live" },
   { value: "scheduled", label: "Scheduled" },
   { value: "completed", label: "Completed" },
-  { value: "drinks", label: "Drinks Break" },
-  { value: "rain_delay", label: "Rain Delay" },
-  { value: "stumps", label: "Stumps (Day End)" },
-  { value: "abandoned", label: "Abandoned" },
-  { value: "no_result", label: "No Result" },
+  { value: "pause", label: "Pause" },
+  // { value: "rain_delay", label: "Rain Delay" },
+  // { value: "stumps", label: "Stumps (Day End)" },
+  // { value: "abandoned", label: "Abandoned" },
+  // { value: "no_result", label: "No Result" },
 ];
 
 

@@ -470,18 +470,19 @@ color:#efecd0
 
 /* ===== Scoring Panel (Buttons) ===== */
 .scoring-panel {
+      z-index: 1000;
+    position: sticky;
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
   justify-content: flex-start;
-  margin-bottom: 2rem;
 }
 
 @media (max-width:769px){
 .scoring-panel{
   display: grid;
   grid-template-columns: 0.5fr 1fr 1fr 1fr;
-  gap: 0.8rem;
+  gap: 0.5rem;
   justify-content: flex-start;
   margin-bottom: 2rem;
 }
@@ -496,7 +497,9 @@ color:#efecd0
   flex-wrap: wrap;
       flex-direction: column;
   gap: 0.8rem;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
+      justify-content: flex-start;
+    margin-top: 3rem;
 }
 
 @media (max-width: 956px){

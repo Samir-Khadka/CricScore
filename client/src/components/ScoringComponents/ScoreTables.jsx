@@ -14,7 +14,7 @@ function ScoreTables({ updatedInning }) {
   };
 
   return (
-    <div className="row g-4 mb-6" style={{marginBottom:'2.5rem !important'}}>
+    <div className="row g-4" style={{marginBottom:"3rem"}}>
       {/* 🏏 Batsmen Table */}
       <div className="col-12 col-md-6">
         <div className="card shadow-sm premium-card h-100">
@@ -34,20 +34,22 @@ function ScoreTables({ updatedInning }) {
                     <th className="text-center">SR</th>
                   </tr>
                 </thead>
-                <tbody id="Batman_tbody">
-                  {batsmen.map((b) => (
-                    <tr key={b._id}>
-                      <td data-label="Name">{b.name || "Unknown"}</td>
-                      <td data-label="R" className="text-center fw-bold">{b.runs}</td>
-                      <td data-label="B" className="text-center">{b.balls}</td>
-                      <td data-label="4s" className="text-center">{b.fours}</td>
-                      <td data-label="6s" className="text-center">{b.sixes}</td>
-                      <td data-label="SR" className="text-center">
-                        {b.strike_rate ? b.strike_rate.toFixed(2) : "0.00"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+<tbody id="Batman_tbody">
+  {batsmen.map((b) => (
+    b.status !== "Out" && (
+      <tr key={b._id}>
+        <td data-label="Name">{b.name || "Unknown"}</td>
+        <td data-label="R" className="text-center fw-bold">{b.runs}</td>
+        <td data-label="B" className="text-center">{b.balls}</td>
+        <td data-label="4s" className="text-center">{b.fours}</td>
+        <td data-label="6s" className="text-center">{b.sixes}</td>
+        <td data-label="SR" className="text-center">
+          {b.strike_rate ? b.strike_rate.toFixed(2) : "0.00"}
+        </td>
+      </tr>
+    )
+  ))}
+</tbody>
               </table>
             </div>
           </div>

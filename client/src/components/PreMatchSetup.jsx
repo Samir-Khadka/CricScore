@@ -46,11 +46,29 @@ const PreMatchSetup = () => {
 
   // const [matchId, setMatchId] = useState(null);
 
+  const[FirstInn,setFirstInn]=useState(null);
+
   //set teams from previous page
+  // useEffect(async () => {
+  //    getFirstInning();
+  //   setLoading(true);
+  //   setProgress(30);
+  //   getMatch(matchId); // fetch match first
+
+  //   if (location.state) {
+  //     setTeams(location.state?.teams || []);
+  //     setMatchId(matchId);
+  //   } else {
+  //     console.warn("No state received in navigation!");
+  //   }
+  // }, [location.state, matchId]);
+
   useEffect(() => {
+  const fetchData = async () => {
+    await getFirstInning();
     setLoading(true);
     setProgress(30);
-    getMatch(matchId); // fetch match first
+    getMatch(matchId);
 
     if (location.state) {
       setTeams(location.state?.teams || []);
@@ -58,7 +76,11 @@ const PreMatchSetup = () => {
     } else {
       console.warn("No state received in navigation!");
     }
-  }, [location.state, matchId]);
+  };
+
+  fetchData();
+}, [location.state, matchId]);
+
 
   //once match is fetched, get players from backend
   useEffect(() => {
@@ -93,9 +115,9 @@ const PreMatchSetup = () => {
   }, [playerA_Data, playerB_Data, loading]);
 
   //populate teams name for toss
-  useEffect(() => {
-    populateSelectTeam();
-  }, [teams]);
+  // useEffect(() => {
+  //   populateSelectTeam();
+  // }, [teams]);
 
   const populateSelectTeam = () => {
     if (teams != null) {
@@ -231,6 +253,26 @@ const PreMatchSetup = () => {
     setLoading(false);
   };
 
+
+  //to fetch the inning if presented or not 
+    const getFirstInning = async () => {
+    const response = await fetch(
+      `${host}/api/cricscore/ballByball/${matchId}/firstInning`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const r = await response.json();
+      setFirstInn(r.data);
+      console.log(r.data);
+    }
+  };
   return (
     <div className="tournament-container tournament-container-pre">
       {loading && (
@@ -243,12 +285,22 @@ const PreMatchSetup = () => {
       )}
       <div className="form-container" id="form_prematch">
         <h2 className="prematch-title">Pre-Match Setup</h2>
-        <form onSubmit={handleSubmit} className="prematch-grid">
+
+        { !FirstInn && <form onSubmit={handleSubmit} className="prematch-grid">
           {/* LEFT SIDE FORM */}
           <div id="left" className="prematch-left">
             <div className="form-group">
               <label htmlFor="tosswonby">Toss won by:</label>
-              <select id="tosswonby" required></select>
+              {/* <select id="tosswonby" required></select> */}
+              <select id="tosswonby" required>
+  {teams &&
+    teams.map((team) => (
+      <option key={team.id} value={team.id}>
+        {team.name}
+      </option>
+    ))}
+</select>
+
             </div>
 
             <div className="form-group">
@@ -315,7 +367,24 @@ const PreMatchSetup = () => {
               )}
             </div>
           </div>
-        </form>
+        </form>}
+{FirstInn && (
+  <div className="form-group">
+    <label htmlFor="goexist" className="section-title">
+      Inning already exists
+    </label>
+    <button
+      type="button"
+      id="goexist"
+      className="submit btn_success"
+      onClick={() =>    navigate(`/scoring/${MatchId}`, { state: { matchId: MatchId } })}
+      style={{marginBottom:"2rem",background:'#c83e4c',color:"#ffffff"}}
+    >
+      Go Live
+    </button>
+  </div>
+)}
+    
       </div>
     </div>
   );

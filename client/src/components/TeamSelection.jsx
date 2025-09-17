@@ -111,6 +111,7 @@ const handleCaptainSelect = (captainPlayer) => {
   return (
     <div className="team-card">
       <div className="section">
+      <p className="note">Selected: {selectedPlayers.length} / 11</p>
         <label htmlFor="squad" className="section-title">
           Select Playing XI
         </label>
@@ -126,7 +127,7 @@ const handleCaptainSelect = (captainPlayer) => {
           closeMenuOnSelect={false}
           required
         />
-        <p className="note">Selected: {selectedPlayers.length} / 11</p>
+
       </div>
 
       <div className="section">

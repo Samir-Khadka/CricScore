@@ -65,6 +65,21 @@ const BallEventsSchema = new Schema(
         ref: "players",
         required: true,
       },
+      Bastman1_Name:{
+        type: String,
+        ref: "players",
+        required: true
+      },
+      Bastman2_Name:{
+        type: String,
+        ref: "players",
+        required: true
+      },
+      bowler_Name:{
+        type: String,
+        ref: "players",
+        required: true
+      }
     },
 
     wicket: {

@@ -3,8 +3,20 @@ const Match = require("../models/Match");
 
 async function validateBall(req, res, next) {
   try {
-    const { ball, inningNumber } = req.body;
+    const { ball, inningNumber,event } = req.body;
     const matchId = req.params.matchId;
+
+
+    // ⚠️ If there's no event, it's not a ball update — skip validation
+ const validBallEvents = [
+  "dot", "run", "triple", "four", "six",
+  "wide", "no_ball", "wicket", "bye", "legbye", 
+  "noball_run", "noball_bye", "noball_legbye"
+];
+
+if (!validBallEvents.includes(event)) {
+  return next(); // Not a real ball, skip validation
+}
 
     //select total overs of match
     const tournamentFormat = await Match.findById(matchId)

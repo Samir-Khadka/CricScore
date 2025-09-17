@@ -80,7 +80,7 @@ export const Welcome = () => {
               Create Tournament
             </button>
           </Link>
-          <Link to="/match" style={{ textDecoration: "none" }}>
+          <Link to="/viewmatch" style={{ textDecoration: "none" }}>
             {" "}
             <button type="button" id="create_match" className="btn btn-success">
               <svg
