@@ -66,6 +66,11 @@ async function handleBallByBall(req, res) {
             { matchId: match_id, inningNumber: 2 },
             { $set: { target: updatedInning.runs + 1 } }
           );
+
+          //set inning_in_progress == 2
+          await Match.findByIdAndUpdate(match_id, {
+            $set: { inning_in_progress: 2 },
+          });
           break;
         case 2:
           const { result, winner } = await checkWinner(match_id);

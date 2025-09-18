@@ -4,11 +4,12 @@ const Match = require("../models/Match");
 
 async function getLiveMatches(req, res) {
   try {
+    const count = req.params.count;
+
     const liveMatches = await Match.find({ matchState: "Live" })
+      .limit(count)
       .populate("innings")
       .populate("tournament_id", "format");
-
-      
 
     return res
       .status(200)
@@ -44,7 +45,45 @@ async function getMatch(req, res) {
     return res.status(500).json({ message: "Failed to fetch" });
   }
 }
+
+async function getScheduledMatches(req, res) {
+  try {
+    const count = req.params.count;
+
+    const Matches = await Match.find({ matchState: "upcoming" }).limit(count);
+
+    return res
+      .status(200)
+      .json({ message: "Fetched upcoming matches", data: Matches });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to fetch" });
+  }
+}
+
+async function getRecentMatches(req, res) {
+  try {
+    const count = req.params.count;
+
+    const liveMatches = await Match.find({ matchState: "completed" })
+      .sort({updatedAt: -1})
+      .limit(count)
+      .select("-umpires -playingXI -matchRefree")
+      .populate("innings","-batsmen -bowlers")
+      .populate("tournament_id", "format");
+
+    return res
+      .status(200)
+      .json({ message: "Fetched completed matches", data: liveMatches });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Failed to fetch" });
+  }
+}
+
 module.exports = {
   getLiveMatches,
   getMatch,
+  getScheduledMatches,
+  getRecentMatches,
 };

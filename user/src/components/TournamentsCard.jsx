@@ -13,7 +13,7 @@ const Tournaments = (props) => {
 
   return (
     <div
-      className="w-fit p-3 border-2 border-gray-400 rounded-2xl hover:bg-blue-400 transition-colors hover:text-white cursor-pointer"
+      className="w-fit p-3 bg-[#cc66ff] rounded-2xl hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)] transition-all duration-300 cursor-pointer "
       onClick={() => {
         handleNavigate(props.name);
       }}

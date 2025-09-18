@@ -1,7 +1,7 @@
 const PointsTable = (props) => {
   return (
-    <div>
-      <p>That's a good point😊</p>
+    <div className="mt-2 p-6 text-heading">
+      <p>Not Available</p>
     </div>
   );
 };

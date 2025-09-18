@@ -52,6 +52,8 @@ const MatchSchema = new Schema(
     },
     matchState: {
       type: String,
+      default:"upcoming",
+      required:true,
     },
     umpires: {
       onField: [String],
