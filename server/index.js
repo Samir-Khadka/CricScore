@@ -34,7 +34,7 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:5000",
   ], // Allow frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT",'PATCH', "DELETE"],
   credentials: true, // allow cookies
   allowedHeaders: ["Content-Type"], // don't put 'credentials' here
 };

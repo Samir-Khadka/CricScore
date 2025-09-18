@@ -207,6 +207,28 @@ async function savePlayingXI(req, res, next) {
   }
 }
 
+async function handleUpdateMatchState(req,res){
+  const { match_state } = req.body;
+  const { matchId } = req.params;
+
+  if (!["live","scheduled", "pause", "completed"].includes(match_state)) {
+    return res.status(400).json({ message: "Invalid match state" });
+  }
+
+      if (!mongoose.Types.ObjectId.isValid(matchId)) {
+      return res.status(400).json({ message: "Invalid match ID format." });
+    }
+  
+
+  const match = await Match.findById(matchId);
+  if (!match) return res.status(404).json({ message: "Match not found" });
+
+  match.matchState = match_state;
+  await match.save();
+
+  res.json({ message: "Match state updated", match });
+}
+
 module.exports = {
   handleCreateMatch,
   handleGetMatches,
@@ -215,4 +237,5 @@ module.exports = {
   handleDeleteMatch,
   handlePreMatch,
   savePlayingXI,
+  handleUpdateMatchState,
 };

@@ -12,6 +12,9 @@ async function createBallEvent(data) {
     striker,
     non_striker,
     bowler,
+   batsman_Name,
+  non_batsman_Name,
+  bowler_Name,
     is_out,
     how_out,
     batsman_out,
@@ -42,14 +45,17 @@ const safeObjectId = (id) => {
       total: (bat_run || 0) + totalExtraRuns(extras || {}),
     };
 
-// console.log({
-//   inningID,
-//   striker,
-//   non_striker,
-//   bowler,
-//   batsman_out,
-//   fielders
-// });
+console.log({
+  inningID,
+  striker,
+  non_striker,
+  bowler,
+  batsman_out,
+  fielders,
+   batsman_Name,
+  non_batsman_Name,
+  bowler_Name,
+});
 
 
 
@@ -65,6 +71,9 @@ const safeObjectId = (id) => {
         batsman: safeObjectId(striker),
         non_striker: safeObjectId(non_striker),
         bowler: safeObjectId(bowler),
+        Bastman1_Name:batsman_Name,
+        Bastman2_Name:non_batsman_Name,
+        bowler_Name:bowler_Name,
       },
       wicket: {
         is_out: is_out || false,

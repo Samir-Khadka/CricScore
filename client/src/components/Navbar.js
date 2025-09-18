@@ -3,26 +3,29 @@ import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import cricContext from "../context/CricContext";
+import useConfirmNavigation from "./useConfirmNavigation.jsx";
 export const Navbar = () => {
   //navigate to navigate the path of the clicked icon
   //location to check the stored path
   const navigate = useNavigate();
   const location = useLocation();
 
+ const confirmNavigate = useConfirmNavigation();
   //function to show  logout button only after login
   const { isLoggedIn, logout } = useContext(cricContext);
 
   //function to store the path of clicked nav icon in navigate
-  const handleNavClick = (path) => {
-    navigate(path);
-  };
+const handleNavClick = (e, path) => {
+  e.preventDefault(); // ⛔ stop Link's default navigation
+  confirmNavigate(path);
+};
 
   //to handle logout
   const handleLogout = (e) => {
     e.preventDefault(); // prevent page reload
     logout();
     //calling islogin function to update login state
-    navigate("/login", { replace: true });
+    confirmNavigate("/login", { replace: true });
   };
 
   return (
@@ -36,7 +39,7 @@ export const Navbar = () => {
           <Link
             className="navbar-brand"
             to="/"
-            onClick={() => handleNavClick("/")}
+            onClick={(e) => handleNavClick(e, "/")}
           >
             CricScore
           </Link>
@@ -62,7 +65,7 @@ export const Navbar = () => {
                   className={`nav-link ${
                     location.pathname === "/" ? "active" : ""
                   }`}
-                  onClick={() => handleNavClick("/")}
+                  onClick={(e) => handleNavClick(e, "/")}
                   aria-current="page"
                   to="/"
                 >
@@ -74,7 +77,7 @@ export const Navbar = () => {
                   className={`nav-link ${
                     location.pathname === "/tournament" ? "active" : ""
                   }`}
-                  onClick={() => handleNavClick("/tournament")}
+                  onClick={(e) => handleNavClick(e,"/tournament")}
                   to="/tournament"
                 >
                   Tournaments
@@ -86,24 +89,24 @@ export const Navbar = () => {
                   className={`nav-link ${
                     location.pathname === "/viewmatch" ? "active" : ""
                   }`}
-                  onClick={() => handleNavClick("/viewmatch")}
+                  onClick={(e) => handleNavClick(e,"/viewmatch")}
                   to="/viewmatch"
                 >
                   Fixtures
                 </Link>
               </li>
 
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className={`nav-link ${
                     location.pathname === "/profile" ? "active" : ""
                   }`}
-                  onClick={() => handleNavClick("/profile")}
+                  onClick={(e) => handleNavClick(e,"/profile")}
                   to="/profile"
                 >
                   Profile
                 </Link>
-              </li>
+              </li> */}
             </ul>
 
             <div id="form_parent" className="form_parent">

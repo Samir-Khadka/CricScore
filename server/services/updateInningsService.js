@@ -104,6 +104,8 @@ async function updateInnings(data) {
     batsmanStats.sixes =
       event === "six" ? batsmanStats.sixes + 1 : batsmanStats.sixes;
 
+      batsmanStats.status=(is_out ? "Out" : "notOut");
+
     //updated value are saved in memory so we can calculate current SR
     //may give error if balls = 0
     batsmanStats.strike_rate = batsmanStats.balls

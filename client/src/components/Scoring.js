@@ -8,11 +8,12 @@ import scoring_btns, {
 import ScoringButtons from "./ScoringComponents/ScoringButtons";
 import Select from "react-select";
 import "../css/ScoringFinal.css";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import DropdownButton from "./ScoringComponents/DropdownButton";
 import { ReactComponent as WicketIcon } from "../assets/wicket.svg";
 import FielderSelector from "./ScoringComponents/FielderSelector";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ScoreTables from "./ScoringComponents/ScoreTables";
 
 const Scoring = () => {
@@ -52,24 +53,9 @@ const Scoring = () => {
   const [ballingTeam, setballingTeam] = useState(null);
   const [inningNumber, setInningNumber] = useState(1);
 
-  //payload state - only initialBallFields are reset after each ball
-  const [ballByBallPayload, setBallByBallPayload] = useState({
-    inningNumber: inningNumber,
-    play_state: "inplay",
-    match_state: "live",
-    ball: 0,
-    target: 0,
-    striker: "",
-    batsman_Name: "",
-    bowler_Name: "",
-    non_striker: "",
-    bowler: "",
-    ...initialBallFields,
-  });
-
-  const [howOut, setHowOut] = useState(null);
+    const [howOut, setHowOut] = useState(null);
   const [showFielderModal, setShowFielderModal] = useState(false);
-  const [playState, setPlayState] = useState("in_play");
+  // const [playState, setPlayState] = useState("in_play");
   const [matchState, setMatchState] = useState("live");
   const [selectedbowler, setSelectedbowler] = useState(null);
   const [isPause, setIsPause] = useState(false);
@@ -79,13 +65,99 @@ const Scoring = () => {
   const [updatedInning, setUpdatedInning] = useState(null);
   const [ballEvent, set_ballEvent] = useState(null);
   const [firstInn, setFirstInn] = useState(null);
-  //fetch first inning if it's second
-  useEffect(() => {
-    swapTeams();
-    if (inningNumber === 2) {
-      getFirstInning();
+
+  //payload state - only initialBallFields are reset after each ball
+  const [ballByBallPayload, setBallByBallPayload] = useState({
+    inningNumber: inningNumber,
+    play_state: "inplay",
+    match_state: matchState?matchState:"live",
+    ball: 0,
+    target: 0,
+    striker: "",
+    batsman_Name: "",
+    non_batsman_Name:"",
+    bowler_Name: "",
+    non_striker: "",
+    bowler: "",
+    ...initialBallFields,
+  });
+
+  //to prevent the page reloading ,navigate or going back
+
+useEffect(() => {
+  const handleBeforeUnload = (event) => {
+    event.preventDefault();
+    event.returnValue = ""; // custom text ignored, but required for dialog
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+  };
+}, []);
+
+useEffect(() => {
+  const handleBackButton = (event) => {
+    event.preventDefault();
+
+    const confirmLeave = window.confirm(
+      "Are you sure you want to quit the live Scoring?"
+    );
+
+    if (confirmLeave) {
+      // ✅ allow going back
+      window.removeEventListener("popstate", handleBackButton);
+      window.history.back();
+    } else {
+      // ❌ stay on same page
+      window.history.pushState(null, "", window.location.href);
     }
-  }, [inningNumber]);
+  };
+
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", handleBackButton);
+
+  return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
+}, []);
+
+
+  
+useEffect(() => {
+  if (inningNumber === 2) {
+    (async () => {
+      await swapTeams();       // Even if not truly async, for safety
+      await getFirstInning();  // Then fetch
+    })();
+  }
+}, [inningNumber]);
+
+useEffect(() => {
+  setUpdatedInning({
+    runs: 0,
+    wickets: 0,
+    over: 0,
+    balls: 0,
+current_run_rate:0,
+required_run_rate:0
+  });
+
+  setBallByBallPayload((payload) => ({
+    ...payload,
+    ...initialBallFields,
+    inningNumber,
+    ball: 0,
+  }));
+
+  setBallEvents([]);
+  set_lastWicket(null);
+  setSelectedBastman1(null);
+  setSelectedBastman2(null);
+  setSelectedbowler(null);
+}, [inningNumber]);
+
   // Fetch match on mount or matchId change
   useEffect(() => {
     if (!user) {
@@ -167,6 +239,7 @@ const Scoring = () => {
     if (response.ok) {
       const r = await response.json();
       setFirstInn(r.data);
+      console.log(r.data);
     }
   };
   //to fetch match from database
@@ -290,7 +363,7 @@ const Scoring = () => {
   };
 
   //swap teams in inning change
-  const swapTeams = () => {
+  const swapTeams = async () => {
     setbattingTeam((prevBatTeam) => {
       const newTeam = ballingTeam;
       setballingTeam(prevBatTeam);
@@ -311,13 +384,57 @@ const Scoring = () => {
     });
   };
 
-  const handleMatchStateChange = (selectedOption) => {
-    const selectedValue = selectedOption?.value || "live";
-    setMatchState(selectedValue);
-    setIsPause(selectedValue !== "live");
-  };
+  // const handleMatchStateChange = (selectedOption) => {
+  //   const selectedValue = selectedOption?.value || "live";
+  //   setMatchState(selectedValue);
+  //   setIsPause(selectedValue !== "live");
+  //     setBallByBallPayload((payload) => ({
+  //   ...payload,
+  //   match_state:selectedValue,
+  // }));
+  //   sendBallToServer();
+  // };
+  const handleMatchStateChange = async (selectedOption) => {
+  const selectedValue = selectedOption?.value || "live";
+  setMatchState(selectedValue);
+  setIsPause(selectedValue !== "live");
+
+  try {
+    const response = await fetch(`${host}/api/cricscore/match/${matchId}/state`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        match_state: selectedValue,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Match state updated successfully");
+      console.log("Match state updated successfully");
+    } else {
+      console.error("Failed to update match state:", data.message);
+      alert(`Error: ${data.message}`);
+    }
+  } catch (error) {
+    console.error("Error updating match state:", error);
+    alert("Something went wrong while updating match state.");
+  }
+};
+
 
   const sendBallToServer = async () => {
+
+    if(!selectedBastman1 || !selectedBastman2 || !selectedbowler){
+
+      alert("Player is not selected");
+      return false;
+    }
     const reqOptions = {
       method: "POST",
       credentials: "include",
@@ -333,6 +450,7 @@ const Scoring = () => {
         bowler: selectedbowler,
         batsman_out_name: selectedBastman1_Name,
         batsman_Name: selectedBastman1_Name,
+        non_batsman_Name: selectedBastman2_Name,
         bowler_Name: selectedbowler_Name,
       }),
     };
@@ -465,10 +583,10 @@ const Scoring = () => {
           </h1>
           {/* inning selector  */}
           <div>
-            <select
-              value={inningNumber}
-              onChange={(e) => setInningNumber(e.target.value)}
-            >
+<select
+  value={inningNumber}
+  onChange={(e) => setInningNumber(Number(e.target.value))}
+>
               <option value={1}>First Inning</option>
               <option value={2}>Second Inning</option>
             </select>
@@ -523,39 +641,48 @@ const Scoring = () => {
                   alignItems: "center",
                 }}
               >
-                <div id="team_Batting">
-                  <span style={{ fontSize: "20px", fontWeight: "650" }}>
-                    {battingTeam
-                      ? battingTeam?.teamName
-                      : Match?.teamA || "Team A"}
-                  </span>
-                  <span style={{ fontSize: "20px", fontWeight: "500" }}>
-                    {updatedInning?.runs}/{updatedInning?.wickets}
-                    <span style={{ marginLeft: "0.3rem" }}>
-                      {" "}
-                      ({updatedInning?.over}.{updatedInning?.balls})
-                    </span>
-                    <span></span>
-                    <span></span>
-                  </span>
-                </div>
-                <div id="team_Bowling">
-                  <span style={{ fontSize: "17px", fontWeight: "550" }}>
-                    {ballingTeam
-                      ? ballingTeam?.teamName
-                      : Match?.teamB || "Team B"}
-                  </span>
-                  <span style={{ fontSize: "17px", fontWeight: "550" }}>
-                    {firstInn && inningNumber === 2 ? (
-                      <span>
-                        {firstInn?.runs}/{firstInn?.wickets}
-                      </span>
-                    ) : (
-                      "Yet to bat"
-                    )}
-                    <span style={{ marginLeft: "0.3rem" }}>(0)</span>
-                  </span>
-                </div>
+{/* Batting Team Summary */}
+    <div id="team_Batting">
+      <span style={{ fontSize: "20px", fontWeight: "650" }}>
+        {battingTeam?.teamName || Match?.teamA || "Team A"}
+      </span>
+      <span style={{ fontSize: "20px", fontWeight: "500" }}>
+        {updatedInning && firstInn?.balls!==0  ? (
+          <>
+            {updatedInning.runs}/{updatedInning.wickets}{" "}
+            <span style={{ marginLeft: "0.3rem" }}>
+              ({updatedInning.over}.{updatedInning.balls})
+            </span>
+          </>
+        ) : (
+          <>
+            0/0 <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
+          </>
+        )}
+      </span>
+    </div>
+
+ {/* Bowling Team Summary */}
+    <div id="team_Bowling">
+      <span style={{ fontSize: "17px", fontWeight: "550" }}>
+        {ballingTeam?.teamName || Match?.teamB || "Team B"}
+      </span>
+      <span style={{ fontSize: "17px", fontWeight: "550" }}>
+        {inningNumber === 2 && firstInn ? (
+          <>
+            {firstInn.runs}/{firstInn.wickets}
+            <span style={{ marginLeft: "0.3rem" }}>
+              ({firstInn.over}.{firstInn.balls})
+            </span>
+          </>
+        ) : (
+          <>
+            Yet to bat
+            <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
+          </>
+        )}
+      </span>
+    </div>
                 {/* 
                 <div>Run rate </div>
                 <div>Result</div> */}
@@ -849,7 +976,7 @@ const Scoring = () => {
                 </div>
 
                 {/* play state  */}
-                <div id="play_state">
+                {/* <div id="play_state">
                   <div
                     id="state"
                     style={{
@@ -880,6 +1007,7 @@ const Scoring = () => {
                         ) || null
                       }
                       onChange={(state) => {
+                           setIsPause(state.value!=="in_play");
                         setBallByBallPayload((payload) => {
                           setPlayState(state.label);
                           const newPayload = {
@@ -890,11 +1018,10 @@ const Scoring = () => {
                           return newPayload;
                         });
                       }}
-                      isDisabled={isPause}
                       required
                     />
                   </div>
-                </div>
+                </div> */}
                 {/* match state  */}
                 <div id="play_state">
                   <div
@@ -932,8 +1059,9 @@ const Scoring = () => {
                   </div>
                 </div>
 
+
                 {/* undo ball  */}
-                <div style={{ display: "flex", justifyContent: "end" }}>
+                {/* <div style={{ display: "flex", justifyContent: "end" }}>
                   <button
                     type="button"
                     id="undo_ball"
@@ -966,7 +1094,9 @@ const Scoring = () => {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
+
+
               </div>
             </div>
             <div className="section-title">Player Statistics</div>
@@ -1066,7 +1196,7 @@ const Scoring = () => {
                 />
 
                 {/* penalty button  */}
-                <div className="btn-group">
+                {/* <div className="btn-group">
                   <ul className="dropdown-menu"></ul>
                   <button
                     type="button"
@@ -1075,7 +1205,8 @@ const Scoring = () => {
                   >
                     Penalty
                   </button>
-                </div>
+                </div> */}
+
               </div>
 
               {scoring_btns.map((buttonGroup, i) => {

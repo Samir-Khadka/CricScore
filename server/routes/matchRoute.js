@@ -8,6 +8,7 @@ const {
     handlePreMatch,
     handleGetMatch,
     savePlayingXI,
+    handleUpdateMatchState,
 } = require("../controllers/matchController");
 const { handleCreateInnings } = require("../controllers/inningController");
 const { startInning }= require("../services/CreateInning");
@@ -22,7 +23,9 @@ router.delete("/:matchId", handleDeleteMatch);
 router.put("/:matchId/selectXI",savePlayingXI, handleCreateInnings);
 // router.put("/:matchId/selectXI",savePlayingXI);
 
-// router.put("/prematch/:matchId", handlePreMatch);
+router.patch("/:matchId/state",handleUpdateMatchState);
 
+// router.put("/prematch/:matchId", handlePreMatch);
+// }/${matchId}/state`,
 
 module.exports = router;

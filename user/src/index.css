@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@tailwind utilities;
+@tailwind base;
+@tailwind components;
+
+
 body {
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
     background-color: var(--color-body);
