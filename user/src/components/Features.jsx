@@ -2,7 +2,7 @@ import { Tally5, TrendingUp, Trophy } from "lucide-react";
 
 const Features = () => {
   return (
-    <div className="pl-10 w-full flex flex-row justify-between gap-6 mt-15">
+    <div className="pl-10 w-full flex flex-row flex-wrap md:flex-nowrap justify-between gap-6 mt-15">
       {/* feature 1 */}
       <div className="w-[400px] bg-card p-5 rounded-xl flex flex-col items-center border-2 border-emerald-500/50 shadow-md hover:scale-105 transition-all duration-300 cursor-pointer hover:drop-shadow-[0_0_12px_rgba(52,211,153,0.5)]">
         <Tally5 className="text-emerald-400" size={40} />

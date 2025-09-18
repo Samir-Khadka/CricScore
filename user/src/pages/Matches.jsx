@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import LiveCard from "../components/ScoreSummaryCard";
 import UpcomingCard from "../components/Upcoming";
+import Recent from "../components/Recent";
 
 const Matches = () => {
   const params = useParams();
@@ -81,7 +82,7 @@ const Matches = () => {
             })) ||
           (type === "recent" &&
             matches.map((match, i) => {
-              return <LiveCard matchInfo={matchInfo} data={match} key={i} />;
+              return <Recent matchInfo={matchInfo} data={match} key={i} />;
             }))
         )}
       </div>

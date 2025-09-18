@@ -1,6 +1,7 @@
 import { Calendar, Clock, MapPin, Trophy } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Recent = ({ data }) => {
   const [teamAInning, setTeamAInning] = useState();
@@ -15,10 +16,12 @@ const Recent = ({ data }) => {
     );
   }, [data]);
 
+  const navigate = useNavigate();
+  const tourname_for_url = data?.tournament_name.split(" ").join("-");
   const handleClick = () => {
-    // navigate(
-    //   `match/${tourname_for_url}/${props.data?.teamA}-vs-${props.data?.teamB}/${props.data?.innings[0].matchId}`
-    // );
+    navigate(
+      `match/${tourname_for_url}/${data?.teamA}-vs-${data?.teamB}/${data?.innings[0].matchId}`
+    );
   };
   return (
     <div
@@ -60,7 +63,7 @@ const Recent = ({ data }) => {
           </div>
         </div>
 
-        <div className="bg-emerald-400/20 text-emerald-600 font-medium text-sm rounded-lg p-3">
+        <div className="bg-emerald-400/20 text-heading font-medium text-sm rounded-lg p-3">
           <Trophy className="inline" size={18} strokeWidth={2.5} /> &nbsp;
           <span>{data?.result}</span>
         </div>

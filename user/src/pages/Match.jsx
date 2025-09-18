@@ -7,7 +7,14 @@ import MatchDetails from "../components/MatchDetails";
 import PointsTable from "../components/PointsTable";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
-import { Award, Clipboard, List, MessageCircle, Zap } from "lucide-react";
+import {
+  Award,
+  Clipboard,
+  List,
+  MessageCircle,
+  Trophy,
+  Zap,
+} from "lucide-react";
 
 const Match = () => {
   const host = "http://localhost:5000";
@@ -19,6 +26,7 @@ const Match = () => {
   const [teamAinn, setTeamAinn] = useState(null);
   const [teamBinn, setTeamBinn] = useState(null);
   const [activeInning, setActiveInning] = useState(null);
+  const [activeBowler, setActiveBowler] = useState({});
   const { matchId } = useParams();
 
   //make socket connection
@@ -79,20 +87,24 @@ const Match = () => {
 
   //extract information
   useEffect(() => {
-    console.log("Match from http: ", match);
-    console.log("Innings from http: ", innings);
-    console.log("Ball Events from http: ", ballEvent);
-
     setTeamAinn(() =>
       innings?.find((inn) => inn.batting_team === match?.teamA_id)
     );
+
     setTeamBinn(() =>
       innings?.find((inn) => inn.batting_team === match?.teamB_id)
     );
 
-    setActiveInning(() =>
-      innings?.find((inn) => inn.inningNumber === match?.inning_in_progress)
+    const activeInn = innings?.find((inn) => inn.status === "inProgress");
+    console.log("Active Inning: ", activeInn);
+    setActiveInning(activeInn);
+
+    const activeBlr = activeInn?.bowlers?.find(
+      (b) => b.bowlerId === ballEvent[0]?.players?.bowler
     );
+    console.log("Active Bowler: ", activeBlr);
+
+    setActiveBowler(activeBlr);
   }, [match, innings, ballEvent]);
 
   //fetch match
@@ -127,45 +139,59 @@ const Match = () => {
     <div className="w-full min-h-screen flex flex-col items-center justify-center mt-10">
       {/* live scorecard */}
 
-      <div className="w-fit lg:w-7xl mx-3 p-4 rounded-xl border-2 border-[#cc66ff]/50 bg-card hover:scale-101 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300">
+      <div className="w-fit md:w-2xl lg:w-4xl xl:w-7xl mx-3 p-4 rounded-xl border-2 border-[#cc66ff]/50 bg-card hover:scale-101 hover:drop-shadow-[0_0_12px_rgba(204,102,255,0.5)]  transition-all duration-300">
         {/* live logo and tournament name  */}
 
         <div className=" flex flex-row justify-between flex-wrap">
-          <div className="text-rose-500 font-bold px-2 rounded-xl flex flex-row items-center gap-2 uppercase">
-            <div className="w-[10px] h-[10px] bg-rose-500 rounded-2xl animate-pulse"></div>
+          <div
+            className={`${
+              match?.matchState === "Live"
+                ? `text-rose-500`
+                : `text-emerald-500`
+            } font-bold px-2 rounded-xl flex flex-row items-center gap-2 uppercase text-sm md:text-md`}
+          >
+            {match && match?.matchState === "Live" ? (
+              <div className="w-[10px] h-[10px] bg-rose-500 rounded-2xl animate-pulse"></div>
+            ) : (
+              <></>
+            )}
             {match && match?.matchState}
           </div>
-          <p className="text-md font-semibold font-space capitalize text-subheading">
+          <p className="font-semibold font-space capitalize text-subheading">
             {match && match?.tournament_name}
           </p>
         </div>
 
         {/* scores*/}
 
-        <div className="h-fit lg:h-[250px] flex flex-row justify-evenly items-center flex-wrap">
-          <div className="flex flex-row items-center md:gap-20 mt-10 md:mt-0">
+        <div className="h-fit md:h-[250px] flex flex-col md:flex-row justify-evenly items-center flex-wrap">
+          <div className="flex flex-col md:flex-row items-center md:gap-20 mt-10 md:mt-0">
             <p className="text-heading font-bold text-3xl">
               {match && match?.teamA}
             </p>
             <div>
-              <p className="font-bold font-space text-4xl text-heading">
+              <p className="font-bold font-space text-4xl text-heading mt-3 md:mt-0">
                 {teamAinn?.runs}/{teamAinn?.wickets}
               </p>
               <p className="text-subheading text-xm text-center font-semibold font-inter mt-2">
-                ({teamAinn?.over}.{teamAinn?.balls}/{match?.tournament_id.format})
+                ({teamAinn?.over}.{teamAinn?.balls}/
+                {match?.tournament_id.format})
               </p>
             </div>
           </div>
+
           <p className="text-secondary text-md mt-5 md:mt-0">
             <Zap size={30} strokeWidth={1} />
           </p>
-          <div className="flex flex-row items-center gap-20 mt-5 md:mt-0">
+
+          <div className="flex flex-col md:flex-row items-center md:gap-20 mt-5 md:mt-0">
             <div>
               <p className="font-bold font-space text-4xl text-heading">
                 {teamBinn?.runs}/{teamBinn?.wickets}
               </p>
-              <p className="text-subheading text-xm text-center font-semibold font-inter mt-2">
-                ({teamBinn?.over}.{teamBinn?.balls}/{match?.tournament_id.format})
+              <p className="text-subheading text-xm text-center font-semibold font-inter mt-2 mb-3 md:mb-0">
+                ({teamBinn?.over}.{teamBinn?.balls}/
+                {match?.tournament_id.format})
               </p>
             </div>
 
@@ -177,68 +203,76 @@ const Match = () => {
 
         {/* match stats */}
 
-        <div className="mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center">
-          {/* use flag to indicate not out player  */}
+        {match?.matchState === "Live" ? (
+          <div className="mt-10 md:mt-0 flex flex-col md:flex-row justify-evenly items-center gap-y-5">
+            {/* use flag to indicate not out player  */}
+            {activeInning?.batsmen?.map((batter, i) => {
+              return batter.status === "notOut" ? (
+                <PlayerScoreCard
+                  key={i}
+                  isBatsmen={true}
+                  name={batter.name}
+                  score={`${batter.runs} (${batter.balls})`}
+                  onStrike={false}
+                  fours={batter.fours}
+                  sixes={batter.sixes}
+                  sr={batter.strike_rate}
+                />
+              ) : (
+                <></>
+              );
+            })}
 
-          <div>
-            <PlayerScoreCard
-              isBatsmen={true}
-              name="Binod Bhandari"
-              score="35 (13)"
-              onStrike={false}
-              fours="5"
-              sixes="2"
-              sr="230"
-            />
-          </div>
-          <div className="">
-            <PlayerScoreCard
-              isBatsmen={true}
-              name="Dipendra Singh Airee"
-              score="45 (16)"
-              onStrike={false}
-              fours="5"
-              sixes="3"
-              sr="280"
-            />
-          </div>
-          <div className="bg-secondary p-3 w-[300px] rounded-lg">
-            <div className="flex flex-row justify-between text-sm font-semibold text-heading">
-              <p>
-                CRR:{" "}
+            <div className="bg-secondary p-3 md:w-[200px] lg:w-[250px] xl:w-[300px] rounded-lg">
+              <div className="flex xl:flex-row flex-col gap-y-3 justify-between text-sm font-semibold text-heading text-center">
+                <p>
+                  CRR:{" "}
+                  <span className="font-space">
+                    {activeInning?.current_run_rate}
+                  </span>
+                </p>
+                <p>
+                  RRR:{" "}
+                  <span className="font-space">
+                    {activeInning?.required_run_rate}
+                  </span>
+                </p>
+                <p>
+                  Target: <span className="font-space">305</span>
+                </p>
+              </div>
+              <p className="text-sm text-heading font-semibold text-center mt-2">
+                Projected Score:{" "}
                 <span className="font-space">
-                  {activeInning?.current_run_rate}
+                  {(
+                    activeInning?.current_run_rate * match?.tournament_id.format
+                  ).toFixed(0)}
                 </span>
               </p>
-              <p>
-                RRR: <span className="font-space">3.5</span>
-              </p>
-              <p>
-                Target: <span className="font-space">305</span>
-              </p>
             </div>
-            <p className="text-sm text-heading font-semibold text-center mt-2">
-              Projected Score:{" "}
-              <span className="font-space">
-                {(
-                  activeInning?.current_run_rate * match?.tournament_id.format
-                ).toFixed(0)}
-              </span>
-            </p>
-          </div>
 
-          <div className="">
-            <PlayerScoreCard
-              isBatsmen={false}
-              name="Kishor Mahato"
-              score="4 - 25"
-              onStrike={false}
-              overs="3.2"
-              maiden="0"
-              econ="5.60"
-            />
+            <div className="">
+              <PlayerScoreCard
+                isBatsmen={false}
+                name={activeBowler?.name}
+                score={`${activeBowler?.wickets} - ${activeBowler?.runs_conceded}`}
+                onStrike={false}
+                overs={`${Math.floor(activeBowler?.balls / 6)}.${
+                  activeBowler?.balls % 6
+                }`}
+                maiden={activeBowler?.maidens}
+                econ={activeBowler?.economy}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-full flex justify-center mt-5 md:mt-0">
+            <div className="text-heading bg-emerald-500/20 dark:text-emerald-400 font-medium text-lg rounded-lg p-3">
+              <Trophy className="inline" size={18} strokeWidth={2.5} /> &nbsp;
+              <span>{match?.result}</span>
+            </div>
+          </div>
+        )}
 
         {/* timeline  */}
         {/* <div
@@ -268,7 +302,9 @@ const Match = () => {
 
         <div className="flex flex-row justify-between mt-10 text-secondary font-medium text-sm">
           <p>{match?.venue}</p>
-          <p>Last Wicket: Brendon McMullen 41 (12)</p>
+          <p className="hidden lg:block">
+            Last Wicket: Brendon McMullen 41 (12)
+          </p>
           <p>
             {" "}
             {match?.toss.wonBy === match?.teamA_id
@@ -281,7 +317,7 @@ const Match = () => {
       </div>
 
       {/* tabs for commentry, scorecard and other info  */}
-      <div className="lg:w-4xl bg-card mt-15 border-2 border-[#cc66ff]/50 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
+      <div className="w-fit lg:w-4xl bg-card mt-15 border-2 border-[#cc66ff]/50 flex flex-col lg:flex-row justify-evenly items-center rounded-xl shadow-md cursor-pointer">
         {tabs.map((t, i) => {
           return (
             <div
@@ -304,7 +340,7 @@ const Match = () => {
 
       {/* show corresponding info for selected tab  */}
       <div
-        className="lg:w-7xl mt-15  p-6 rounded-xl  mx-3 md:mx-0"
+        className="w-fit md:w-2xl lg:w-4xl xl:w-7xl mt-15  p-6 rounded-xl  mx-3 md:mx-0"
         style={{ scrollbarWidth: "none" }}
       >
         {selectedTab === "com" ? (
@@ -365,7 +401,6 @@ const Match = () => {
               </p>
             </div>
 
-            {/* now show scorecard according to selected tab and make background as blue for selected tab  */}
             {scSelectedTab === "teamA" ? (
               <Scorecard teamName={match?.teamA} scorecard={teamAinn} />
             ) : (
@@ -384,21 +419,13 @@ const Match = () => {
         ) : (
           <div>
             <div className="text-2xl text-heading font-space font-semibold px-4">
-              <Award 
-                size={20}
-                className="inline-block mr-2 text-cyan-300"
-              />
+              <Award size={20} className="inline-block mr-2 text-cyan-300" />
               <span className="mt-2">Points Table</span>
             </div>
             <PointsTable />
           </div>
         )}
       </div>
-
-      {/* match stats  */}
-      {/* <div className="lg:w-7xl h-[200px] mt-15 border-2 border-gray-200 rounded-xl">
-        Match Statistics
-      </div> */}
     </div>
   );
 };
