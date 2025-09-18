@@ -1,5 +1,5 @@
 import MatchSummaryCard from "./MatchSummaryCard";
-import "../css/Match.css";
+
 const Match = () => {
   return (
     <>

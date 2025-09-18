@@ -20,6 +20,7 @@ async function handleCreateMatch(req, res) {
       teamB_id: req.body.teamB_id,
       match_date: req.body.match_date,
       match_time: req.body.match_time,
+      matchState: "upcoming",
       venue: req.body.venue,
       createdBy: req.scorer._id,
     });
@@ -121,16 +122,15 @@ async function handlePreMatch(req, res) {
     }
     await Match.findByIdAndUpdate(matchId, {
       toss: { wonBy: req.body.tossWinner, decision: req.body.decision },
-      umpires:{
-      onField: Array.isArray(req.body.onField)
-        ? req.body.onField
-        : req.body.onField
-        ? req.body.onField.split(",").map(u => u.trim())
-        : [],
-      third: req.body.third || null,
-      tv: req.body.tv || null,
-    },
-    session:req.body.session,
+      umpires: {
+        onField: Array.isArray(req.body.onField)
+          ? req.body.onField
+          : req.body.onField
+          ? req.body.onField.split(",").map((u) => u.trim())
+          : [],
+        third: req.body.third || null,
+        tv: req.body.tv || null,
+      },
       matchRefree: req.body.r,
     });
     return res.status(200).json({ message: "Prematch updated successfully" });
@@ -177,7 +177,7 @@ async function handlePreMatch(req, res) {
 // }
 async function savePlayingXI(req, res, next) {
   const { matchId } = req.params;
-  const { playingXI, toss, umpires, matchRefree,session } = req.body;
+  const { playingXI, toss, umpires, matchRefree, session } = req.body;
 
   if (!playingXI || !Array.isArray(playingXI) || playingXI.length !== 2)
     return res.status(400).json({ message: "Both teams must be included" });
@@ -190,7 +190,7 @@ async function savePlayingXI(req, res, next) {
     if (toss) match.toss = toss;
     if (umpires) match.umpires = umpires;
     if (matchRefree) match.matchRefree = matchRefree;
-    if(session) match.session=session;
+    if (session) match.session = session;
 
     // Save playing XI
     match.playingXI = playingXI;
@@ -201,7 +201,6 @@ async function savePlayingXI(req, res, next) {
     req.body.matchId = matchId;
     req.body.refered_from = "savePlayingXI";
     next();
-  
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

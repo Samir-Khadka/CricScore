@@ -1,25 +1,29 @@
 const PlayerScoreCard = (props) => {
   return (
-    <div>
-      <div
-        className={`${
-          props.onStrike === true ? `bg-[#a9abaf]` : ``
-        } rounded-2xl p-4`}
-      >
-        <p className="font-semibold">
-          {props.name} <span className="mx-2">{props.score}</span>
+    <div className=" bg-secondary md:w-[120px] lg:w-[180px] xl:w-[250px] p-3 flex flex-col justify-evenly rounded-lg shadow-md overflow-hidden">
+      <div className="flex xl:flex-row flex-col">
+        <p className="xl:w-[60%] lg:truncate xl:text-left text-center text-sm text-heading font-semibold">
+          {props.name}
         </p>
-        <div className="text-[14px] text-gray-500 font-semibold">
-          {props.isBatsmen === true ? (
-            <p>
-              {props.fours} fours • {props.sixes} sixes • SR: {props.sr}
-            </p>
-          ) : (
-            <p>
-              {props.overs} overs • {props.maiden} maiden • Econ: {props.econ}
-            </p>
-          )}
-        </div>
+        <p className="xl:w-[40%] text-heading text-center font-bold font-space">
+          {props.score}
+        </p>
+      </div>
+      {/* players stats  */}
+      <div className="text-subheading text-sm font-semibold text-center mt-2">
+        {props.isBatsmen === true ? (
+          <ul className="flex flex-col xl:flex-row justify-evenly gap-y-2">
+            <li>{props.fours} fours</li>
+            <li className="xl:list-disc">{props.sixes} sixes</li>
+            <li className="xl:list-disc">SR: {props.sr}</li>
+          </ul>
+        ) : (
+          <ul className="flex flex-col xl:flex-row justify-evenly gap-y-2">
+            <li>{props.overs} ov</li>
+            <li className="xl:list-disc">{props.maiden} m</li>
+            <li className="xl:list-disc">Econ: {props.econ}</li>
+          </ul>
+        )}
       </div>
     </div>
   );
