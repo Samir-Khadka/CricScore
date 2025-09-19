@@ -52,7 +52,7 @@ async function handleBallByBall(req, res) {
 
     //check if inning end
 
-    if (isInningEnd(inningNum, req.totalOvers, updatedInning)) {
+    if (isInningEnd(inningNum, req.totalOvers, updatedInning)){
       //set status complete
       await Innings.findOneAndUpdate(
         { matchId: match_id, inningNumber: inningNum },
@@ -62,6 +62,8 @@ async function handleBallByBall(req, res) {
       switch (inningNum) {
         case 1:
           //set target to second inning
+            console.log("First inning completed, setting target:", updatedInning.runs + 1);
+            
           await Innings.findOneAndUpdate(
             { matchId: match_id, inningNumber: 2 },
             { $set: { target: updatedInning.runs + 1 } }
@@ -81,6 +83,7 @@ async function handleBallByBall(req, res) {
           break;
       }
     }
+
 
     return res.status(200).json({
       message: "Updated",

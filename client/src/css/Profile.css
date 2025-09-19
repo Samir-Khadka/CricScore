@@ -1,0 +1,119 @@
+/* Profile Page Styling */
+body {
+  background-color: #98cd97;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #2c3e50;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+h2 {
+  font-weight: 700;
+  color: #1b4332;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Card sections */
+#personal_info, #address {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border: none !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#personal_info:hover, #address:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Section headers */
+#personal_info h3, #address h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1b4332;
+}
+
+/* Info grid */
+#personal_info .d-flex.flex-row, 
+#address .d-flex.flex-row {
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+#personal_info span, 
+#address span {
+  font-size: 0.95rem;
+}
+
+#personal_info span:first-child,
+#address span:first-child {
+  font-weight: 600;
+  color: #444;
+}
+
+/* Buttons */
+.btn-success {
+  background-color: #1b4332 !important; 
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-success:hover {
+  background-color: #14532d !important;
+  transform: scale(1.05);
+}
+
+/* Profile header section */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.profile-header img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1b4332;
+}
+
+.profile-header .d-flex.flex-column span:first-child {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  #personal_info .d-flex.flex-row, 
+  #address .d-flex.flex-row {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-header img {
+    margin-bottom: 0.5rem;
+  }
+}
