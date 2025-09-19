@@ -46,7 +46,7 @@ export const how_outOptions = [
   { label: "Stumped", value: "stumped" },
   { label: "LBW", value: "lbw" },
   { label: "Run Out (Striker)", value: "run_out_striker" },
-  { label: "Run Out (Non-Striker)", value: "run_out_non_striker" },
+  // { label: "Run Out (Non-Striker)", value: "run_out_non_striker" },
 ];
 
 const scoring_btns = [
@@ -69,7 +69,7 @@ const scoring_btns = [
       {
         label: "WD",
         update: {
-          event: "wide",
+          event: "wd",
           bat_run: 0,
           extras: { wide: 1, no_ball: 0, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -77,7 +77,7 @@ const scoring_btns = [
       {
         label: "+1",
         update: {
-          event: "wide",
+          event: "wd+1",
           bat_run: 0,
           extras: { wide: 2, no_ball: 0, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -85,7 +85,7 @@ const scoring_btns = [
       {
         label: "+2",
         update: {
-          event: "wide",
+          event: "wd+2",
           bat_run: 0,
           extras: { wide: 3, no_ball: 0, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -93,7 +93,7 @@ const scoring_btns = [
       {
         label: "+3",
         update: {
-          event: "wide",
+          event: "wd+3",
           bat_run: 0,
           extras: { wide: 4, no_ball: 0, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -101,7 +101,7 @@ const scoring_btns = [
       {
         label: "+4",
         update: {
-          event: "wide",
+          event: "wd+4",
           bat_run: 0,
           extras: { wide: 5, no_ball: 0, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -109,13 +109,13 @@ const scoring_btns = [
     ],
   },
   {
-    type: "bytes",
+    type: "byes",
     background: "#d75a5a",
     buttons: [
       {
         label: 1,
         update: {
-          event: "bye",
+          event: "1b",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 1, leg_bye: 0, penalty: 0 },
         },
@@ -123,7 +123,7 @@ const scoring_btns = [
       {
         label: 2,
         update: {
-          event: "bye",
+          event: "2b",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 2, leg_bye: 0, penalty: 0 },
         },
@@ -131,7 +131,7 @@ const scoring_btns = [
       {
         label: 3,
         update: {
-          event: "bye",
+          event: "3b",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 3, leg_bye: 0, penalty: 0 },
         },
@@ -139,7 +139,7 @@ const scoring_btns = [
       {
         label: 4,
         update: {
-          event: "bye",
+          event: "4b",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 4, leg_bye: 0, penalty: 0 },
         },
@@ -147,13 +147,13 @@ const scoring_btns = [
     ],
   },
   {
-    type: "legbytes",
+    type: "legbyes",
     background: "#eddb76",
     buttons: [
       {
         label: 1,
         update: {
-          event: "legbye",
+          event: "1lb",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 0, leg_bye: 1, penalty: 0 },
         },
@@ -161,7 +161,7 @@ const scoring_btns = [
       {
         label: 2,
         update: {
-          event: "legbye",
+          event: "2lb",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 0, leg_bye: 2, penalty: 0 },
         },
@@ -169,7 +169,7 @@ const scoring_btns = [
       {
         label: 3,
         update: {
-          event: "legbye",
+          event: "3lb",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 0, leg_bye: 3, penalty: 0 },
         },
@@ -177,7 +177,7 @@ const scoring_btns = [
       {
         label: 4,
         update: {
-          event: "legbye",
+          event: "4lb",
           bat_run: 0,
           extras: { wide: 0, no_ball: 0, bye: 0, leg_bye: 4, penalty: 0 },
         },
@@ -191,33 +191,33 @@ const scoring_btns = [
       {
         label: 1,
         update: {
-          event: "noball_bye",
+          event: "nb+1b",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 1, leg_bye: 0, penalty: 0 },
+          extras: { wide: 0, no_ball: 2, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 2,
         update: {
-          event: "noball_bye",
+          event: "nb+2b",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 2, leg_bye: 0, penalty: 0 },
+          extras: { wide: 0, no_ball: 3, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 3,
         update: {
-          event: "noball_bye",
+          event: "nb+3b",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 3, leg_bye: 0, penalty: 0 },
+          extras: { wide: 0, no_ball: 4, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 4,
         update: {
-          event: "noball_bye",
+          event: "nb+4b",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 4, leg_bye: 0, penalty: 0 },
+          extras: { wide: 0, no_ball: 5, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
     ],
@@ -229,33 +229,33 @@ const scoring_btns = [
       {
         label: 1,
         update: {
-          event: "noball_legbye",
+          event: "nb+1lb",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 1, penalty: 0 },
+          extras: { wide: 0, no_ball: 2, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 2,
         update: {
-          event: "noball_legbye",
+          event: "nb+2lb",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 2, penalty: 0 },
+          extras: { wide: 0, no_ball: 3, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 3,
         update: {
-          event: "noball_legbye",
+          event: "nb+3lb",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 3, penalty: 0 },
+          extras: { wide: 0, no_ball: 4, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
       {
         label: 4,
         update: {
-          event: "noball_legbye",
+          event: "nb+4lb",
           bat_run: 0,
-          extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 4, penalty: 0 },
+          extras: { wide: 0, no_ball: 5, bye: 0, leg_bye: 0, penalty: 0 },
         },
       },
     ],
@@ -267,7 +267,7 @@ const scoring_btns = [
       {
         label: 0,
         update: {
-          event: "noball_run",
+          event: "nb",
           bat_run: 0,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -275,7 +275,7 @@ const scoring_btns = [
       {
         label: 1,
         update: {
-          event: "noball_run",
+          event: "nb+1",
           bat_run: 1,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -283,7 +283,7 @@ const scoring_btns = [
       {
         label: 2,
         update: {
-          event: "noball_run",
+          event: "nb+2",
           bat_run: 2,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -291,7 +291,7 @@ const scoring_btns = [
       {
         label: 3,
         update: {
-          event: "noball_run",
+          event: "nb+3",
           bat_run: 3,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -299,7 +299,7 @@ const scoring_btns = [
       {
         label: 4,
         update: {
-          event: "noball_run",
+          event: "nb+4",
           bat_run: 4,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -307,7 +307,7 @@ const scoring_btns = [
       {
         label: 6,
         update: {
-          event: "noball_run",
+          event: "nb+6",
           bat_run: 6,
           extras: { wide: 0, no_ball: 1, bye: 0, leg_bye: 0, penalty: 0 },
         },
@@ -318,19 +318,10 @@ const scoring_btns = [
 
 export default scoring_btns;
 
-const ballsNotCounted = new Set([
-  "bye",
-  "noball_legbye",
-  "noball_bye",
-  "legbye",
-  "wide",
-  "noball_run",
-  "run_out_striker",
-  "run_out_non_striker"
-]);
+const ballNotCountedRegex = /^(wd|nb)(\+\d+)?(b|lb)?$/;
 
 export function isBallCounted(event) {
-  return !ballsNotCounted.has(event);
+  return !ballNotCountedRegex.test(event);
 }
 
 export const penaltyOptions = [

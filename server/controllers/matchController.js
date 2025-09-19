@@ -55,7 +55,6 @@ async function handleGetMatches(req, res) {
 
 async function handleGetMatch(req, res) {
   const { matchId } = req.params;
-  // console.log("Match id is:" + matchId);
 
   try {
     // Validate if matchId is a valid MongoDB ObjectId
@@ -63,7 +62,6 @@ async function handleGetMatch(req, res) {
       return res.status(400).json({ message: "Invalid match ID format." });
     }
 
-    // Directly use matchId string; Mongoose will handle conversion
     const match = await Match.findById(matchId);
 
     if (!match) {
@@ -142,42 +140,9 @@ async function handlePreMatch(req, res) {
   }
 }
 
-// async function savePlayingXI(req, res) {
-//   try {
-//     const { teamId, players } = req.body;
-
-//     // Validation
-//     if (!players || players.length !== 11) {
-//       return res.status(400).json({ error: "Must select exactly 11 players" });
-//     }
-
-//     const hasCaptain = players.some(p => p.isCaptain === true);
-//     if (!hasCaptain) {
-//       return res.status(400).json({ error: "One captain must be assigned" });
-//     }
-
-//     // Overwrite the previous playing XI for the team
-//     const match = await Match.findById(req.params.matchId);
-//     if (!match) return res.status(404).json({ error: "Match not found" });
-
-//     // If playingXI already has this team, replace it
-//     const updatedPlayingXI = match.playingXI.filter(xi => xi.teamId.toString() !== teamId);
-//     updatedPlayingXI.push({ teamId, players });
-
-//     match.playingXI = updatedPlayingXI;
-
-//     const updatedMatch = await match.save();
-//       console.log("Updated Matched with playing Team:"+updatedMatch);
-//     res.status(200).json({ updatedMatch });
-
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: err.message });
-//   }
-// }
 async function savePlayingXI(req, res, next) {
   const { matchId } = req.params;
-  const { playingXI, toss, umpires, matchRefree, session } = req.body;
+  const { playingXI, toss, umpires, matchRefree } = req.body;
 
   if (!playingXI || !Array.isArray(playingXI) || playingXI.length !== 2)
     return res.status(400).json({ message: "Both teams must be included" });
@@ -190,7 +155,6 @@ async function savePlayingXI(req, res, next) {
     if (toss) match.toss = toss;
     if (umpires) match.umpires = umpires;
     if (matchRefree) match.matchRefree = matchRefree;
-    if (session) match.session = session;
 
     // Save playing XI
     match.playingXI = playingXI;
@@ -207,18 +171,17 @@ async function savePlayingXI(req, res, next) {
   }
 }
 
-async function handleUpdateMatchState(req,res){
+async function handleUpdateMatchState(req, res) {
   const { match_state } = req.body;
   const { matchId } = req.params;
 
-  if (!["live","scheduled", "pause", "completed"].includes(match_state)) {
+  if (!["live", "scheduled", "pause", "completed"].includes(match_state)) {
     return res.status(400).json({ message: "Invalid match state" });
   }
 
-      if (!mongoose.Types.ObjectId.isValid(matchId)) {
-      return res.status(400).json({ message: "Invalid match ID format." });
-    }
-  
+  if (!mongoose.Types.ObjectId.isValid(matchId)) {
+    return res.status(400).json({ message: "Invalid match ID format." });
+  }
 
   const match = await Match.findById(matchId);
   if (!match) return res.status(404).json({ message: "Match not found" });

@@ -57,7 +57,7 @@ const InningsSchema = new Schema(
       default: 0,
     },
     required_run_rate: {
-      type: Number,
+      type: String,
       default: 0,
     },
     target: {
@@ -67,6 +67,13 @@ const InningsSchema = new Schema(
     status: {
       type: String,
       default: "scheduled",
+    },
+    extras: {
+      wide: { type: Number, default: 0 },
+      no_ball: { type: Number, default: 0 },
+      bye: { type: Number, default: 0 },
+      leg_bye: { type: Number, default: 0 },
+      penalty: { type: Number, default: 0 },
     },
     batsmen: [
       {
@@ -102,7 +109,11 @@ const InningsSchema = new Schema(
         status: {
           type: String,
           default: "notOut",
-        }
+        },
+        how_out: {
+          type: String,
+          default: "",
+        },
       },
     ],
 

@@ -1,4 +1,4 @@
- function totalExtraRuns(extras) {
+function totalExtraRuns(extras) {
   const totalExtras = Object.values(extras).reduce(
     (previousValue, currentValue) => {
       return previousValue + currentValue;
@@ -8,19 +8,20 @@
   return totalExtras;
 }
 
-
- function getOversAndBalls(balls){
-  const over = Math.floor(balls/6);
+function getOversAndBalls(balls) {
+  const over = Math.floor(balls / 6);
   const ball = balls % 6;
-  return {over, ball};
+  return { over, ball };
 }
 
-function getCurrentRunRate(runs, overs){
-  return (runs/overs).toFixed(2);
+function getCurrentRunRate(runs, overs) {
+  return (runs / overs).toFixed(2);
 }
 
-function getRequiredRunRate(target, totalRuns, oversRemaining){
-  return ((target-totalRuns)/oversRemaining).toFixed(2);
+function getRequiredRunRate(target, totalRuns, remainingBalls) {
+  const runsNeeded = target - totalRuns;
+  const oversFraction = remainingBalls / 6;
+  return (runsNeeded / oversFraction).toFixed(2);
 }
 
 module.exports = {
@@ -28,4 +29,4 @@ module.exports = {
   getOversAndBalls,
   getCurrentRunRate,
   getRequiredRunRate,
-}
+};

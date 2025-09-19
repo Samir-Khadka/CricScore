@@ -50,7 +50,9 @@ async function getScheduledMatches(req, res) {
   try {
     const count = req.params.count;
 
-    const Matches = await Match.find({ matchState: "upcoming" }).limit(count);
+    const Matches = await Match.find({ matchState: "upcoming" })
+      .limit(count)
+      .sort({ createdAt: -1 });
 
     return res
       .status(200)
@@ -66,10 +68,10 @@ async function getRecentMatches(req, res) {
     const count = req.params.count;
 
     const liveMatches = await Match.find({ matchState: "completed" })
-      .sort({updatedAt: -1})
+      .sort({ updatedAt: -1 })
       .limit(count)
       .select("-umpires -playingXI -matchRefree")
-      .populate("innings","-batsmen -bowlers")
+      .populate("innings", "-batsmen -bowlers")
       .populate("tournament_id", "format");
 
     return res

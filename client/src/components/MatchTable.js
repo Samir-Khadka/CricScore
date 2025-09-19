@@ -112,8 +112,9 @@ const MatchTable = (props) => {
                       type="button"
                       className="btn btn-primary"
                       onClick={() => handleLive(item)}
+                      disabled={item.matchState !== "upcoming"}
                     >
-                      Start Match
+                      {item.matchState === "upcoming" ? `Start Match` : item.matchState === "completed" ? `Completed` : `In Progress`}
                     </button>
                   </td>
                   <td>
