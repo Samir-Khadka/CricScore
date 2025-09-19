@@ -14,8 +14,8 @@ const PlayerScoreCard = (props) => {
         {props.isBatsmen === true ? (
           <ul className="flex flex-col xl:flex-row justify-evenly gap-y-2">
             <li>{props.fours} fours</li>
-            <li className="xl:list-disc">{props.sixes} sixes</li>
-            <li className="xl:list-disc">SR: {props.sr}</li>
+            <li className="">{props.sixes} sixes</li>
+            <li className="">SR: {props.sr}</li>
           </ul>
         ) : (
           <ul className="flex flex-col xl:flex-row justify-evenly gap-y-2">

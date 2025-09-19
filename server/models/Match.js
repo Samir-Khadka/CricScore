@@ -52,8 +52,8 @@ const MatchSchema = new Schema(
     },
     matchState: {
       type: String,
-      default:"upcoming",
-      required:true,
+      default: "upcoming",
+      required: true,
     },
     umpires: {
       onField: [String],
@@ -65,12 +65,12 @@ const MatchSchema = new Schema(
     },
 
     result: {
-      type:String,
+      type: String,
     },
 
     winner: {
       type: Schema.Types.ObjectId,
-      ref:"teams",
+      ref: "teams",
     },
 
     points: {
@@ -89,6 +89,10 @@ const MatchSchema = new Schema(
           teamId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "teams",
+            required: true,
+          },
+          teamName: {
+            type: String,
             required: true,
           },
           players: [

@@ -1,20 +1,23 @@
 const BallEvents = require("../models/BallEvents");
 const mongoose = require("mongoose");
-const { totalExtraRuns, getOversAndBalls } = require("../utils/ballByBallUtility");
+const {
+  totalExtraRuns,
+  getOversAndBalls,
+} = require("../utils/ballByBallUtility");
 
 async function createBallEvent(data) {
   const {
     inningID,
-    ball,       
+    ball,
     event,
     bat_run,
     extras,
     striker,
     non_striker,
     bowler,
-   batsman_Name,
-  non_batsman_Name,
-  bowler_Name,
+    batsman_Name,
+    non_batsman_Name,
+    bowler_Name,
     is_out,
     how_out,
     batsman_out,
@@ -22,9 +25,11 @@ async function createBallEvent(data) {
     fielders,
   } = data;
 
-const safeObjectId = (id) => {
-  return id && mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null;
-};
+  const safeObjectId = (id) => {
+    return id && mongoose.Types.ObjectId.isValid(id)
+      ? new mongoose.Types.ObjectId(id)
+      : null;
+  };
   try {
     // sequence = next ball
     const sequence = (ball || 0) + 1;
@@ -45,19 +50,17 @@ const safeObjectId = (id) => {
       total: (bat_run || 0) + totalExtraRuns(extras || {}),
     };
 
-console.log({
-  inningID,
-  striker,
-  non_striker,
-  bowler,
-  batsman_out,
-  fielders,
-   batsman_Name,
-  non_batsman_Name,
-  bowler_Name,
-});
-
-
+    // console.log({
+    //   inningID,
+    //   striker,
+    //   non_striker,
+    //   bowler,
+    //   batsman_out,
+    //   fielders,
+    //   batsman_Name,
+    //   non_batsman_Name,
+    //   bowler_Name,
+    // });
 
     // create ball event
     const ballEvent = await BallEvents.create({
@@ -71,18 +74,18 @@ console.log({
         batsman: safeObjectId(striker),
         non_striker: safeObjectId(non_striker),
         bowler: safeObjectId(bowler),
-        Bastman1_Name:batsman_Name,
-        Bastman2_Name:non_batsman_Name,
-        bowler_Name:bowler_Name,
+        Bastman1_Name: batsman_Name,
+        Bastman2_Name: non_batsman_Name,
+        bowler_Name: bowler_Name,
       },
       wicket: {
         is_out: is_out || false,
         how_out: how_out || null,
         batsman_out: batsman_out ? safeObjectId(batsman_out) : null,
-        batsman_out_name:batsman_out_name,
+        batsman_out_name: batsman_out_name,
         fielders: Array.isArray(fielders)
-      ? fielders.map(f => ({ id: safeObjectId(f) }))
-      : [],
+          ? fielders.map((f) => ({ id: safeObjectId(f) }))
+          : [],
       },
     });
 

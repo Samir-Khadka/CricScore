@@ -123,6 +123,7 @@ const Match = () => {
 
     if (response.ok) {
       const r = await response.json();
+      console.log("Match is: ", r.match);
       setMatch(r.match);
       setInnings(r.inning);
       setBallEvent(r.ballEvent);
@@ -225,44 +226,75 @@ const Match = () => {
 
             <div className="bg-secondary p-3 md:w-[200px] lg:w-[250px] xl:w-[300px] rounded-lg">
               <div className="flex xl:flex-row flex-col gap-y-3 justify-between text-sm font-semibold text-heading text-center">
-                <p>
-                  CRR:{" "}
-                  <span className="font-space">
-                    {activeInning?.current_run_rate}
-                  </span>
-                </p>
-                <p>
-                  RRR:{" "}
-                  <span className="font-space">
-                    {activeInning?.required_run_rate}
-                  </span>
-                </p>
-                <p>
-                  Target: <span className="font-space">305</span>
-                </p>
+                {activeInning && activeInning.inningNumber === 1 ? (
+                  <>
+                    <p>
+                      CRR:{" "}
+                      <span className="font-space">
+                        {activeInning?.current_run_rate}
+                      </span>
+                    </p>
+
+                    <p className="text-sm text-heading font-semibold text-center mt-2">
+                      Projected Score:
+                      <span className="font-space">
+                        {(
+                          activeInning?.current_run_rate *
+                          match?.tournament_id.format
+                        ).toFixed(0)}
+                      </span>
+                    </p>
+                  </>
+                ) : activeInning?.inningNumber === 2 ? (
+                  <>
+                    <p>
+                      CRR:{" "}
+                      <span className="font-space">
+                        {activeInning?.current_run_rate}
+                      </span>
+                    </p>
+
+                    <p>
+                      RRR:{" "}
+                      <span className="font-space">
+                        {activeInning?.required_run_rate}
+                      </span>
+                    </p>
+
+                    <p>
+                      Need{" "}
+                      <span className="font-space">
+                        {activeInning?.target - activeInning?.runs}
+                      </span>{" "}
+                      runs in{" "}
+                      <span className="font-space">
+                        {match?.tournament_id.format*6 - (activeInning?.over * 6 + activeInning?.balls)}
+                      </span>{" "}
+                      balls
+                    </p>
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
-              <p className="text-sm text-heading font-semibold text-center mt-2">
-                Projected Score:{" "}
-                <span className="font-space">
-                  {(
-                    activeInning?.current_run_rate * match?.tournament_id.format
-                  ).toFixed(0)}
-                </span>
-              </p>
             </div>
 
             <div className="">
-              <PlayerScoreCard
-                isBatsmen={false}
-                name={activeBowler?.name}
-                score={`${activeBowler?.wickets} - ${activeBowler?.runs_conceded}`}
-                onStrike={false}
-                overs={`${Math.floor(activeBowler?.balls / 6)}.${
-                  activeBowler?.balls % 6
-                }`}
-                maiden={activeBowler?.maidens}
-                econ={activeBowler?.economy}
-              />
+              {activeBowler ? (
+                <PlayerScoreCard
+                  isBatsmen={false}
+                  name={activeBowler?.name}
+                  score={`${activeBowler?.wickets} - ${activeBowler?.runs_conceded}`}
+                  onStrike={false}
+                  overs={`${Math.floor(activeBowler?.balls / 6)}.${
+                    activeBowler?.balls % 6
+                  }`}
+                  maiden={activeBowler?.maidens}
+                  econ={activeBowler?.economy}
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         ) : (
@@ -302,9 +334,9 @@ const Match = () => {
 
         <div className="flex flex-row justify-between mt-10 text-secondary font-medium text-sm">
           <p>{match?.venue}</p>
-          <p className="hidden lg:block">
+          {/* <p className="hidden lg:block">
             Last Wicket: Brendon McMullen 41 (12)
-          </p>
+          </p> */}
           <p>
             {" "}
             {match?.toss.wonBy === match?.teamA_id
@@ -361,11 +393,13 @@ const Match = () => {
                   <Commentary
                     key={i}
                     over={`${be.over}.${be.ball}`}
-                    batsmen={be.players.batsman}
-                    bowler={be.players.bowler}
-                    result={`${be.runs.bat} ${
-                      be.runs.bat <= 1 ? "run" : "runs"
-                    }`}
+                    batsmen={be.players.Bastman1_Name}
+                    bowler={be.players.bowler_Name}
+                    result={
+                      be.event === "run" || be.event === "dot"
+                        ? be.runs.bat < 2 ? `${be.runs.bat} run` : `${be.runs.bat} runs`
+                        : be.event.toUpperCase()
+                    }
                   />
                 );
               })}

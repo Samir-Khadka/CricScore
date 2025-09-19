@@ -54,6 +54,7 @@ async function handleBallByBall(req, res) {
 
     if (isInningEnd(inningNum, req.totalOvers, updatedInning)) {
       //set status complete
+     
       await Innings.findOneAndUpdate(
         { matchId: match_id, inningNumber: inningNum },
         { $set: { status: "completed" } }
@@ -61,6 +62,7 @@ async function handleBallByBall(req, res) {
 
       switch (inningNum) {
         case 1:
+          console.log("Setting target for second inning")
           //set target to second inning
           await Innings.findOneAndUpdate(
             { matchId: match_id, inningNumber: 2 },
@@ -73,6 +75,7 @@ async function handleBallByBall(req, res) {
           });
           break;
         case 2:
+          
           const { result, winner } = await checkWinner(match_id);
           await Match.findByIdAndUpdate(
             match_id,
@@ -93,6 +96,7 @@ async function handleBallByBall(req, res) {
       ballEvent: ballEvent,
     });
   } catch (error) {
+    console.error("Error at HandleBall: ",error)
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }

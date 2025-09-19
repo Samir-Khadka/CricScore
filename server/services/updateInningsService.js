@@ -9,7 +9,7 @@ const {
 } = require("../utils/ballByBallUtility");
 
 async function updateInnings(data) {
-  const {
+  var {
     ball,
     event,
     over,
@@ -32,8 +32,11 @@ async function updateInnings(data) {
     totalOvers,
   } = data;
 
-  const ballNotCounted = ["wide", "no_ball", "penalty"];
+  const ballNotCountedRegex = /^(wd|nb)(\+\d+)?(b|lb)?$/;
   const bowlerValidWkts = ["bowled", "caught", "run_out", "stumped", "lbw"];
+  if (!fielders) {
+    fielders = [];
+  }
 
   try {
     const Inning = await Innings.findById(
@@ -45,8 +48,6 @@ async function updateInnings(data) {
     if (Inning.status === "scheduled") {
       Inning.status = "inProgress";
     }
-    
-    
 
     const totalRuns = totalExtraRuns(extras) + bat_run;
     //total runs
@@ -71,6 +72,30 @@ async function updateInnings(data) {
 
     Inning.current_run_rate = getCurrentRunRate(Inning.runs, overString);
 
+    if (Inning.inningNumber === 2) {
+      const remainingBalls = totalOvers * 6 - ball;
+      Inning.required_run_rate = getRequiredRunRate(
+        Inning.target,
+        totalRuns,
+        remainingBalls
+      );
+    }
+
+    //team extras
+    Inning.extras = {
+      wide: extras.wide ? Inning.extras.wide + 1 : Inning.extras.wide,
+      no_ball: extras.no_ball
+        ? Inning.extras.no_ball + 1
+        : Inning.extras.no_ball,
+      bye: extras.bye ? Inning.extras.bye + 1 : Inning.extras.bye,
+      leg_bye: extras.leg_bye
+        ? Inning.extras.leg_bye + 1
+        : Inning.extras.leg_bye,
+      penalty: extras.penalty
+        ? Inning.extras.penalty + 1
+        : Inning.extras.penalty,
+    };
+
     //batsman stats
     var batsmanStats = Inning.batsmen.find((b) => b.batsmanId.equals(striker));
 
@@ -85,6 +110,10 @@ async function updateInnings(data) {
         fours: event === "four" ? 1 : 0,
         sixes: event === "six" ? 1 : 0,
         strike_rate: ball ? ((bat_run / 1) * 100).toFixed(2) : 0,
+        status: is_out ? "Out" : "notOut",
+        how_out: is_out
+          ? `${how_out} ${fielders.join("/")} b ${bowler_Name}`
+          : "",
       };
 
       Inning.batsmen.push(batsmanStats);
@@ -93,10 +122,9 @@ async function updateInnings(data) {
     //batsmen exists - update
     batsmanStats.runs += bat_run;
 
-    batsmanStats.balls =
-      ballNotCounted.includes(event) === true
-        ? batsmanStats.balls
-        : batsmanStats.balls + 1;
+    batsmanStats.balls = ballNotCountedRegex.test(event)
+      ? batsmanStats.balls
+      : batsmanStats.balls + 1;
 
     batsmanStats.fours =
       event === "four" ? batsmanStats.fours + 1 : batsmanStats.fours;
@@ -104,7 +132,10 @@ async function updateInnings(data) {
     batsmanStats.sixes =
       event === "six" ? batsmanStats.sixes + 1 : batsmanStats.sixes;
 
-      batsmanStats.status=(is_out ? "Out" : "notOut");
+    batsmanStats.status = is_out ? "Out" : "notOut";
+    batsmanStats.how_out = is_out
+      ? `${how_out} ${fielders.join("/")} b ${bowler_Name}`
+      : "";
 
     //updated value are saved in memory so we can calculate current SR
     //may give error if balls = 0
@@ -129,16 +160,18 @@ async function updateInnings(data) {
         wickets: is_out && bowlerValidWkts.includes(how_out) ? 1 : 0,
         maidens: 0,
         economy: ball ? (bat_run / 0.1).toFixed(2) : 0,
-        extras: { wide: extras.wide, no_ball: extras.no_ball },
+        extras: { wide: 0, no_ball: 0 },
       };
       Inning.bowlers.push(bowlerStats);
     }
 
+    console.log("Event is: ", event);
+    console.log("isBallCounted? ", ballNotCountedRegex.test(event));
+
     //update bowler stats
-    bowlerStats.balls =
-      ballNotCounted.includes(event) === true
-        ? bowlerStats.balls
-        : bowlerStats.balls + 1;
+    bowlerStats.balls = ballNotCountedRegex.test(event)
+      ? bowlerStats.balls
+      : bowlerStats.balls + 1;
 
     bowlerStats.runs_conceded += bat_run + extras.wide + extras.no_ball;
 
@@ -160,9 +193,14 @@ async function updateInnings(data) {
       ? (bowlerStats.runs_conceded / bowlerOver).toFixed(2)
       : 0;
 
+    //number of wides and nb are counted for batsman stats
     bowlerStats.extras = {
-      wide: bowlerStats.extras.wide + extras.wide,
-      no_ball: bowlerStats.extras.no_ball + extras.no_ball,
+      wide:
+        extras.wide > 0 ? bowlerStats.extras.wide + 1 : bowlerStats.extras.wide,
+      no_ball:
+        extras.no_ball > 0
+          ? bowlerStats.extras.no_ball + 1
+          : bowlerStats.extras.no_ball,
     };
 
     const updated = await Inning.save();

@@ -53,7 +53,6 @@ const Scoring = () => {
   const [ballingTeam, setballingTeam] = useState(null);
   const [inningNumber, setInningNumber] = useState(1);
 
-    const [howOut, setHowOut] = useState(null);
   const [showFielderModal, setShowFielderModal] = useState(false);
   // const [playState, setPlayState] = useState("in_play");
   const [matchState, setMatchState] = useState("live");
@@ -70,93 +69,95 @@ const Scoring = () => {
   const [ballByBallPayload, setBallByBallPayload] = useState({
     inningNumber: inningNumber,
     play_state: "inplay",
-    match_state: matchState?matchState:"live",
+    match_state: matchState ? matchState : "live",
     ball: 0,
     target: 0,
     striker: "",
     batsman_Name: "",
-    non_batsman_Name:"",
+    non_batsman_Name: "",
     bowler_Name: "",
     non_striker: "",
     bowler: "",
     ...initialBallFields,
   });
 
+  //to hold wicket data temporarily to hold for selecting fielders
+  const [tempWkt, setTempWkt] = useState(null);
+  const [fielders, setFielders] = useState(null);
+
   //to prevent the page reloading ,navigate or going back
 
-useEffect(() => {
-  const handleBeforeUnload = (event) => {
-    event.preventDefault();
-    event.returnValue = ""; // custom text ignored, but required for dialog
-  };
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = ""; // custom text ignored, but required for dialog
+    };
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
-useEffect(() => {
-  const handleBackButton = (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    const handleBackButton = (event) => {
+      event.preventDefault();
 
-    const confirmLeave = window.confirm(
-      "Are you sure you want to quit the live Scoring?"
-    );
+      const confirmLeave = window.confirm(
+        "Are you sure you want to quit the live Scoring?"
+      );
 
-    if (confirmLeave) {
-      // ✅ allow going back
+      if (confirmLeave) {
+        // ✅ allow going back
+        window.removeEventListener("popstate", handleBackButton);
+        window.history.back();
+      } else {
+        // ❌ stay on same page
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
       window.removeEventListener("popstate", handleBackButton);
-      window.history.back();
-    } else {
-      // ❌ stay on same page
-      window.history.pushState(null, "", window.location.href);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (inningNumber === 2) {
+      (async () => {
+        await swapTeams(); // Even if not truly async, for safety
+        await getFirstInning(); // Then fetch
+      })();
     }
-  };
+  }, [inningNumber]);
 
-  window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", handleBackButton);
+  useEffect(() => {
+    setUpdatedInning({
+      runs: 0,
+      wickets: 0,
+      over: 0,
+      balls: 0,
+      current_run_rate: 0,
+      required_run_rate: 0,
+    });
 
-  return () => {
-    window.removeEventListener("popstate", handleBackButton);
-  };
-}, []);
+    setBallByBallPayload((payload) => ({
+      ...payload,
+      ...initialBallFields,
+      inningNumber,
+      ball: 0,
+    }));
 
-
-  
-useEffect(() => {
-  if (inningNumber === 2) {
-    (async () => {
-      await swapTeams();       // Even if not truly async, for safety
-      await getFirstInning();  // Then fetch
-    })();
-  }
-}, [inningNumber]);
-
-useEffect(() => {
-  setUpdatedInning({
-    runs: 0,
-    wickets: 0,
-    over: 0,
-    balls: 0,
-current_run_rate:0,
-required_run_rate:0
-  });
-
-  setBallByBallPayload((payload) => ({
-    ...payload,
-    ...initialBallFields,
-    inningNumber,
-    ball: 0,
-  }));
-
-  setBallEvents([]);
-  set_lastWicket(null);
-  setSelectedBastman1(null);
-  setSelectedBastman2(null);
-  setSelectedbowler(null);
-}, [inningNumber]);
+    setBallEvents([]);
+    set_lastWicket(null);
+    setSelectedBastman1(null);
+    setSelectedBastman2(null);
+    setSelectedbowler(null);
+  }, [inningNumber]);
 
   // Fetch match on mount or matchId change
   useEffect(() => {
@@ -206,6 +207,28 @@ required_run_rate:0
     };
     fetchTeamsAndSetBatBall();
   }, [Match]);
+
+  useEffect(() => {
+    if (!tempWkt) return;
+
+    const needsFielder =
+      tempWkt.how_out === "caught" || tempWkt.how_out === "run_out_striker";
+
+    if ((needsFielder && tempWkt.fielders) || !needsFielder) {
+      setBallByBallPayload((prev) => {
+        const ballCount = prev.ball + 1;
+        return {
+          ...prev,
+          ball: ballCount,
+          ...tempWkt,
+        };
+      });
+
+      setTempWkt(null);
+    }
+  }, [tempWkt]);
+
+  //send to server
 
   useEffect(() => {
     if (isSendingRef.current) {
@@ -309,11 +332,23 @@ required_run_rate:0
         ballingId = Match.teamB_id;
         setBattingoptions(TeamA_squadArray);
         setbowlers(TeamB_squadArray);
+        setFielders(() =>
+          TeamB.map((player) => ({
+            value: player.player,
+            label: player.player,
+          }))
+        );
       } else {
         battingId = Match.teamB_id;
         ballingId = Match.teamA_id;
         setbowlers(TeamA_squadArray);
         setBattingoptions(TeamB_squadArray);
+        setFielders(() =>
+          TeamA.map((player) => ({
+            value: player.player,
+            label: player.player,
+          }))
+        );
       }
     } else {
       if (descision === "bat") {
@@ -321,18 +356,28 @@ required_run_rate:0
         ballingId = Match.teamA_id;
         setBattingoptions(TeamB_squadArray);
         setbowlers(TeamA_squadArray);
+        setFielders(() =>
+          TeamA.map((player) => ({
+            value: player.player,
+            label: player.player,
+          }))
+        );
       } else {
         battingId = Match.teamA_id;
         ballingId = Match.teamB_id;
         setBattingoptions(TeamA_squadArray);
         setbowlers(TeamB_squadArray);
+        setFielders(() =>
+          TeamB.map((player) => ({
+            value: player.player,
+            label: player.player,
+          }))
+        );
       }
     }
 
     setfieldingTeam_id(ballingId);
     setbatting_team_id(battingId);
-
-    // await CreateInning(battingId, ballingId);
 
     let batting_team = await getTeam(battingId);
     setbattingTeam(batting_team);
@@ -342,9 +387,6 @@ required_run_rate:0
 
     setLoading(100);
     setLoading(false);
-
-    // console.log("Bowlers" + TeamA_squadArray);
-    // console.log(TeamB_squadArray);
   };
 
   // Swap function
@@ -364,16 +406,26 @@ required_run_rate:0
 
   //swap teams in inning change
   const swapTeams = async () => {
+    
     setbattingTeam((prevBatTeam) => {
       const newTeam = ballingTeam;
       setballingTeam(prevBatTeam);
+      console.log("Previously batting team is: ",Battingoptions)
+      setFielders(() =>
+        Battingoptions.map((pb) => ({
+          value: pb.label,
+          label: pb.label,
+        }))
+      );
       return newTeam;
     });
+
     setBattingoptions((prevBatOpts) => {
       const newBatOpts = bowler;
       setbowlers(prevBatOpts);
       return newBatOpts;
     });
+
     setBallByBallPayload((payload) => {
       const reset = {
         ...payload,
@@ -384,54 +436,44 @@ required_run_rate:0
     });
   };
 
-  // const handleMatchStateChange = (selectedOption) => {
-  //   const selectedValue = selectedOption?.value || "live";
-  //   setMatchState(selectedValue);
-  //   setIsPause(selectedValue !== "live");
-  //     setBallByBallPayload((payload) => ({
-  //   ...payload,
-  //   match_state:selectedValue,
-  // }));
-  //   sendBallToServer();
-  // };
   const handleMatchStateChange = async (selectedOption) => {
-  const selectedValue = selectedOption?.value || "live";
-  setMatchState(selectedValue);
-  setIsPause(selectedValue !== "live");
+    const selectedValue = selectedOption?.value || "live";
+    setMatchState(selectedValue);
+    setIsPause(selectedValue !== "live");
 
-  try {
-    const response = await fetch(`${host}/api/cricscore/match/${matchId}/state`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        match_state: selectedValue,
-      }),
-    });
+    try {
+      const response = await fetch(
+        `${host}/api/cricscore/match/${matchId}/state`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            Accept: "*/*",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            match_state: selectedValue,
+          }),
+        }
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      alert("Match state updated successfully");
-      console.log("Match state updated successfully");
-    } else {
-      console.error("Failed to update match state:", data.message);
-      alert(`Error: ${data.message}`);
+      if (response.ok) {
+        alert("Match state updated successfully");
+        console.log("Match state updated successfully");
+      } else {
+        console.error("Failed to update match state:", data.message);
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating match state:", error);
+      alert("Something went wrong while updating match state.");
     }
-  } catch (error) {
-    console.error("Error updating match state:", error);
-    alert("Something went wrong while updating match state.");
-  }
-};
-
+  };
 
   const sendBallToServer = async () => {
-
-    if(!selectedBastman1 || !selectedBastman2 || !selectedbowler){
-
+    if (!selectedBastman1 || !selectedBastman2 || !selectedbowler) {
       alert("Player is not selected");
       return false;
     }
@@ -583,10 +625,10 @@ required_run_rate:0
           </h1>
           {/* inning selector  */}
           <div>
-<select
-  value={inningNumber}
-  onChange={(e) => setInningNumber(Number(e.target.value))}
->
+            <select
+              value={inningNumber}
+              onChange={(e) => setInningNumber(Number(e.target.value))}
+            >
               <option value={1}>First Inning</option>
               <option value={2}>Second Inning</option>
             </select>
@@ -641,48 +683,48 @@ required_run_rate:0
                   alignItems: "center",
                 }}
               >
-{/* Batting Team Summary */}
-    <div id="team_Batting">
-      <span style={{ fontSize: "20px", fontWeight: "650" }}>
-        {battingTeam?.teamName || Match?.teamA || "Team A"}
-      </span>
-      <span style={{ fontSize: "20px", fontWeight: "500" }}>
-        {updatedInning && firstInn?.balls!==0  ? (
-          <>
-            {updatedInning.runs}/{updatedInning.wickets}{" "}
-            <span style={{ marginLeft: "0.3rem" }}>
-              ({updatedInning.over}.{updatedInning.balls})
-            </span>
-          </>
-        ) : (
-          <>
-            0/0 <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
-          </>
-        )}
-      </span>
-    </div>
+                {/* Batting Team Summary */}
+                <div id="team_Batting">
+                  <span style={{ fontSize: "20px", fontWeight: "650" }}>
+                    {battingTeam?.teamName || Match?.teamA || "Team A"}
+                  </span>
+                  <span style={{ fontSize: "20px", fontWeight: "500" }}>
+                    {updatedInning && firstInn?.balls !== 0 ? (
+                      <>
+                        {updatedInning.runs}/{updatedInning.wickets}{" "}
+                        <span style={{ marginLeft: "0.3rem" }}>
+                          ({updatedInning.over}.{updatedInning.balls})
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        0/0 <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
+                      </>
+                    )}
+                  </span>
+                </div>
 
- {/* Bowling Team Summary */}
-    <div id="team_Bowling">
-      <span style={{ fontSize: "17px", fontWeight: "550" }}>
-        {ballingTeam?.teamName || Match?.teamB || "Team B"}
-      </span>
-      <span style={{ fontSize: "17px", fontWeight: "550" }}>
-        {inningNumber === 2 && firstInn ? (
-          <>
-            {firstInn.runs}/{firstInn.wickets}
-            <span style={{ marginLeft: "0.3rem" }}>
-              ({firstInn.over}.{firstInn.balls})
-            </span>
-          </>
-        ) : (
-          <>
-            Yet to bat
-            <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
-          </>
-        )}
-      </span>
-    </div>
+                {/* Bowling Team Summary */}
+                <div id="team_Bowling">
+                  <span style={{ fontSize: "17px", fontWeight: "550" }}>
+                    {ballingTeam?.teamName || Match?.teamB || "Team B"}
+                  </span>
+                  <span style={{ fontSize: "17px", fontWeight: "550" }}>
+                    {inningNumber === 2 && firstInn ? (
+                      <>
+                        {firstInn.runs}/{firstInn.wickets}
+                        <span style={{ marginLeft: "0.3rem" }}>
+                          ({firstInn.over}.{firstInn.balls})
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        Yet to bat
+                        <span style={{ marginLeft: "0.3rem" }}>(0.0)</span>
+                      </>
+                    )}
+                  </span>
+                </div>
                 {/* 
                 <div>Run rate </div>
                 <div>Result</div> */}
@@ -1059,7 +1101,6 @@ required_run_rate:0
                   </div>
                 </div>
 
-
                 {/* undo ball  */}
                 {/* <div style={{ display: "flex", justifyContent: "end" }}>
                   <button
@@ -1095,8 +1136,6 @@ required_run_rate:0
                     </svg>
                   </button>
                 </div> */}
-
-
               </div>
             </div>
             <div className="section-title">Player Statistics</div>
@@ -1142,13 +1181,8 @@ required_run_rate:0
                       return;
                     }
 
-                    setBallByBallPayload((payload) => {
-                      const ballCount = isBallCounted(howout)
-                        ? payload.ball + 1
-                        : payload.ball;
-
+                    setTempWkt(() => {
                       return {
-                        ...payload,
                         event: "wicket",
                         is_out: true,
                         how_out: howout,
@@ -1160,11 +1194,10 @@ required_run_rate:0
                           howout === "run_out_non_striker"
                             ? selectedBastman2_Name
                             : selectedBastman1_Name,
-                        fielders: [],
+                        fielders: null,
                         striker: selectedBastman1,
                         non_striker: selectedBastman2,
                         bowler: selectedbowler,
-                        ball: ballCount,
                       };
                     });
 
@@ -1182,14 +1215,13 @@ required_run_rate:0
                   key={""}
                   show={showFielderModal}
                   onClose={() => setShowFielderModal(false)}
-                  options={bowler ? bowler : null}
+                  options={fielders ? fielders : null}
                   onConfirm={(ids) => {
-                    setBallByBallPayload((payload) => {
+                    setTempWkt((payload) => {
                       const newPayload = {
                         ...payload,
                         fielders: ids,
                       };
-                      console.log(newPayload);
                       return newPayload;
                     });
                   }}
@@ -1206,7 +1238,6 @@ required_run_rate:0
                     Penalty
                   </button>
                 </div> */}
-
               </div>
 
               {scoring_btns.map((buttonGroup, i) => {

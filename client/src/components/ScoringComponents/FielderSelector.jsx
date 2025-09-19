@@ -28,7 +28,7 @@ const FielderSelector = ({ show, onClose, options, onConfirm }) => {
           closeMenuOnSelect={false}
           placeholder="Choose fielders..."
         />
-        <small className="text-muted">You must pick exactly 2 fielders</small>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>

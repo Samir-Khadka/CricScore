@@ -48,20 +48,6 @@ const PreMatchSetup = () => {
 
   const[FirstInn,setFirstInn]=useState(null);
 
-  //set teams from previous page
-  // useEffect(async () => {
-  //    getFirstInning();
-  //   setLoading(true);
-  //   setProgress(30);
-  //   getMatch(matchId); // fetch match first
-
-  //   if (location.state) {
-  //     setTeams(location.state?.teams || []);
-  //     setMatchId(matchId);
-  //   } else {
-  //     console.warn("No state received in navigation!");
-  //   }
-  // }, [location.state, matchId]);
 
   useEffect(() => {
   const fetchData = async () => {

@@ -21,11 +21,11 @@ const Scorecard = (props) => {
         <tbody className="text-subheading">
           {props.scorecard.batsmen.map((s, i) => {
             return (
-              <tr key={i}>
+              <tr key={i} className={`${s.status === "notOut" ? `font-medium` : ``}`}>
                 <td className="px-6 py-3 border-b-2 border-secondary">
                   {s.name}
                 </td>
-                <td className="p-2 border-b-2 border-secondary">{}</td>
+                <td className="p-2 border-b-2 border-secondary">{s.status === "notOut" ? `not out` : s.how_out}</td>
                 <td className="p-2 border-b-2 border-secondary font-space">
                   {s.runs}
                 </td>
@@ -40,14 +40,14 @@ const Scorecard = (props) => {
           })}
           <tr className="text-sm">
             <td className="px-6 py-2">Extras</td>
-            <td className="py-2"></td>
+            <td className="py-2">{props.scorecard.extras.wide} WD, {props.scorecard.extras.no_ball} NB, {props.scorecard.extras.bye} B, {props.scorecard.extras.leg_bye} LB, {props.scorecard.extras.penalty} P</td>
             <td colSpan={5}></td>
           </tr>
           <tr className="text-lg font-bold">
             <td colSpan={2} className="px-6 py-2">
               Total
             </td>
-            <td colSpan={5}>
+            <td colSpan={5} className="text-heading">
               {props.scorecard.runs}/{props.scorecard.wickets}{" "}
               <span className="text-sm">
                 ({props.scorecard.over}.{props.scorecard.balls})
@@ -94,10 +94,10 @@ const Scorecard = (props) => {
                   {s.economy}
                 </td>
                 <td className="p-2 border-b-2 border-secondary font-space">
-                  {s.extras.wide}
+                  {s.extras.no_ball}
                 </td>
                 <td className="p-2 border-b-2 border-secondary font-space">
-                  {s.extras.no_ball}
+                  {s.extras.wide}
                 </td>
               </tr>
             );
