@@ -12,7 +12,19 @@ const scorerSchema = new Schema(
       unique: true,
       required: true,
     },
-
+    phone:{
+      type: String,
+    },
+    country:{
+      type: String,
+    },
+    postalCode:{
+      type: String,
+    },
+      image: {
+    data: Buffer,
+    contentType: String,
+  },
     password: {
       type: String,
       required: true,

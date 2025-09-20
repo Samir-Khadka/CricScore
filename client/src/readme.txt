@@ -59,3 +59,4 @@ to install express validatior:->npm install express-validator
 to install json webtoken:-> npm i jsonwebtoken
 
 to installl top loading bar:->npm install react-top-loading-bar
+npm install multer
