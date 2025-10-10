@@ -70,7 +70,7 @@ npm install
 ```
 ---
 
-# Team
+# About Us
 
 <div align="center">
 
